@@ -1,6 +1,5 @@
 package com.standardkim.kanban.util;
 
-import java.security.Key;
 import java.util.Base64;
 
 import javax.annotation.PostConstruct;
@@ -11,12 +10,11 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenProvider {
 
-	@Value("{server.authentication.secret-key}")
+	@Value("{authentication.secret-key}")
 	private String secret;
 
 	private JwtParser jwtParser;
@@ -28,7 +26,7 @@ public class JwtTokenProvider {
 	}
 
 	public String buildToken() {
-
+		return "";
 	}
 
 	public boolean validateToken(String claimsJws) {
