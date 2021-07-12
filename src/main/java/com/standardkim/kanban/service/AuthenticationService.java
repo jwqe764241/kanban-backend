@@ -19,11 +19,10 @@ public class AuthenticationService {
 	private final UserRepository userRepository;
 
 	public void saveRefreshToken(Long userId, String token) {
-		User user = userRepository.findById(userId).get();
-
 		RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId);
 
 		if(refreshToken == null) {
+			User user = userRepository.findById(userId).get();
 			refreshToken = RefreshToken.builder()
 				.user(user)
 				.token(token)
