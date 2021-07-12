@@ -1,4 +1,4 @@
-package com.standardkim.kanban.config;
+package com.standardkim.kanban.config.filter;
 
 import java.io.IOException;
 
