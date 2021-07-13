@@ -1,5 +1,9 @@
 package com.standardkim.kanban.config;
 
+import com.standardkim.kanban.config.filter.JwtAuthenticationFilter;
+import com.standardkim.kanban.service.UserService;
+import com.standardkim.kanban.util.JwtTokenProvider;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,9 +12,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
@@ -20,6 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.anyRequest().authenticated()
 			.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Bean

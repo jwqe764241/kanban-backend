@@ -1,6 +1,7 @@
 package com.standardkim.kanban.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.validation.constraints.NotBlank;
@@ -26,6 +27,7 @@ public class UserDto {
 		private String password;
 		private String name;
 		private LocalDateTime registerDate;
+		private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
 		@Builder
 		public SecurityUser(Long id, String login, String password, String name, LocalDateTime registerDate) {
@@ -48,7 +50,7 @@ public class UserDto {
 
 		@Override
 		public Collection<? extends GrantedAuthority> getAuthorities() {
-			return null;
+			return authorities;
 		}
 
 		@Override

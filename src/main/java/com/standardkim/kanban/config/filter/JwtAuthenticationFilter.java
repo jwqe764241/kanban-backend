@@ -7,21 +7,48 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.standardkim.kanban.dto.UserDto.SecurityUser;
+import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	private final JwtTokenProvider jwtTokenProvider;
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+
+	@Autowired
+	private UserService userService;
+
+	private String getToken(HttpServletRequest request) {
+		return request.getHeader("Authorization");
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		String token = getToken(request);
+
+		if(token != null && jwtTokenProvider.validateToken(token)) {
+			try {
+				String login = jwtTokenProvider.getLogin(token);
+				SecurityUser securityUser = (SecurityUser) userService.loadUserByUsername(login);
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
+
+				if(securityUser.isEnabled()) {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		filterChain.doFilter(request, response);
 	}
 }

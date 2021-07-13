@@ -41,7 +41,7 @@ public class JwtTokenProvider {
 	@PostConstruct
 	public void init() {
 		signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-		jwtParser = Jwts.parserBuilder().setSigningKey(secret).build();
+		jwtParser = Jwts.parserBuilder().setSigningKey(signKey).build();
 	}
 
 	public String buildAccessToken(String login, String name) {
@@ -67,11 +67,16 @@ public class JwtTokenProvider {
 			.compact();
 	}
 
+	public String getLogin(String token) {
+		return jwtParser.parseClaimsJws(token).getBody().get("login", String.class);
+	}
+
 	public boolean validateToken(String claimsJws) {
 		try {
 			jwtParser.parseClaimsJws(claimsJws);
 			return true;
 		} catch (JwtException e) {
+			e.printStackTrace();
 		}
 
 		return false;

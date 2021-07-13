@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -60,7 +63,7 @@ public class TestController {
 		authenticationService.saveRefreshToken(securityUser.getId(), refreshToken);
 
 		//refresh token은 쿠키에 저장
-		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+		Cookie refreshTokenCookie = new Cookie("REFRESH_TOKEN", refreshToken);
 		refreshTokenCookie.setMaxAge(60);
 		refreshTokenCookie.setHttpOnly(true);
 		response.addCookie(refreshTokenCookie);
@@ -68,4 +71,10 @@ public class TestController {
 		//access token은 payload로 전송
 		return accessToken;
 	}
+
+	@GetMapping("/welcome")
+	public String welcome() {
+		return "Shit";
+	}
+	
 }
