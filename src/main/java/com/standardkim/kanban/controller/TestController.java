@@ -1,26 +1,9 @@
 package com.standardkim.kanban.controller;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
-import com.standardkim.kanban.dto.UserDto;
-import com.standardkim.kanban.dto.UserDto.SecurityUser;
-import com.standardkim.kanban.service.AuthenticationService;
-import com.standardkim.kanban.service.UserService;
-import com.standardkim.kanban.util.JwtTokenProvider;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -33,12 +16,6 @@ public class TestController {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final PasswordEncoder passwordEncoder;
-
-	@PostMapping("/join")
-	@ResponseStatus(HttpStatus.CREATED)
-	public void join(@RequestBody @Valid UserDto.JoinUserRequest joinUserRequest) {
-		userService.join(joinUserRequest);
-	}
 
 	@PostMapping("/login")
 	@ResponseStatus(HttpStatus.OK)
@@ -76,5 +53,4 @@ public class TestController {
 	public String welcome() {
 		return "Shit";
 	}
-	
 }
