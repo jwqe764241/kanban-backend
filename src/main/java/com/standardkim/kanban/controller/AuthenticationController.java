@@ -4,9 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import com.standardkim.kanban.dto.UserDto.JoinUserRequest;
-import com.standardkim.kanban.dto.UserDto.LoginUserRequest;
-import com.standardkim.kanban.dto.UserDto.SecurityUser;
+import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
+import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -62,5 +61,11 @@ public class AuthenticationController {
 
 		//access token은 payload로 전송
 		return accessToken;
+	}
+
+	@PostMapping("/auth/refresh-access-token")
+	@ResponseStatus(HttpStatus.OK)
+	public void refreshAccessToken(@RequestBody String accessToken, HttpServletResponse response) {
+		
 	}
 }

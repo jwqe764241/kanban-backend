@@ -1,7 +1,7 @@
 package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.UserDto;
-import com.standardkim.kanban.dto.UserDto.SecurityUser;
+import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.repository.UserRepository;
 
