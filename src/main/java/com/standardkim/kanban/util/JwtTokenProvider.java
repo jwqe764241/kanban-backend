@@ -67,7 +67,7 @@ public class JwtTokenProvider {
 			.compact();
 	}
 
-	public boolean validateToken(String claimsJws, Integer ttl) {
+	public boolean validateToken(String claimsJws) {
 		try {
 			jwtParser.parseClaimsJws(claimsJws);
 			return true;
