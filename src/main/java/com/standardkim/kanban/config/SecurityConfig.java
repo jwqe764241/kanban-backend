@@ -1,8 +1,6 @@
 package com.standardkim.kanban.config;
 
 import com.standardkim.kanban.config.filter.JwtAuthenticationFilter;
-import com.standardkim.kanban.service.UserService;
-import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
