@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.service.AuthenticationService;
-import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.http.HttpStatus;
@@ -23,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController {
-	private final UserService userService;
-
 	private final AuthenticationService authenticationService;
 
 	private final JwtTokenProvider jwtTokenProvider;
@@ -37,7 +34,7 @@ public class AuthenticationController {
 		SecurityUser securityUser = null;
 
 		try {
-			securityUser = (SecurityUser) userService.loadUserByUsername(loginUserRequest.getLogin());
+			securityUser = (SecurityUser) authenticationService.loadUserByUsername(loginUserRequest.getLogin());
 		}
 		catch (UsernameNotFoundException e) {
 			throw e;
