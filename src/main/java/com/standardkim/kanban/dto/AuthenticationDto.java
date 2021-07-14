@@ -82,4 +82,17 @@ public class AuthenticationDto {
 		@Size(min = 5, max = 20)
 		private String password;
 	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class AuthenticationToken {
+		String accessToken;
+		String refreshToken;
+
+		@Builder
+		public AuthenticationToken(String accessToken, String refreshToken) {
+			this.accessToken = accessToken;
+			this.refreshToken = refreshToken;
+		}
+	}
 }

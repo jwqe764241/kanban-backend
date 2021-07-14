@@ -1,17 +1,21 @@
 package com.standardkim.kanban.controller;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.service.AuthenticationService;
+import com.standardkim.kanban.util.AuthenticationUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -62,7 +66,15 @@ public class AuthenticationController {
 
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
-	public void refreshAccessToken(@RequestBody String accessToken, HttpServletResponse response) {
-		
+	public String refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		AuthenticationToken token = AuthenticationUtil.getAuthenticationTokens(request);
+		String newAccessToken = authenticationService.refreshAccessToken(token.getAccessToken(), token.getRefreshToken());
+		return newAccessToken;
+	}
+
+	@GetMapping("/welcome")
+	@ResponseStatus(HttpStatus.OK)
+	public String welcome() {
+		return "Welcome";
 	}
 }

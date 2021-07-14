@@ -1,10 +1,13 @@
 package com.standardkim.kanban.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.repository.UserRepository;
+import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +24,8 @@ public class AuthenticationService implements UserDetailsService {
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	private final UserRepository userRepository;
+
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -57,5 +62,20 @@ public class AuthenticationService implements UserDetailsService {
 		}
 		
 		refreshTokenRepository.save(refreshToken);
+	}
+
+	public String refreshAccessToken(String accessToken, String refreshToken) throws Exception {
+		if(accessToken == null || refreshToken == null) 
+			throw new NullPointerException("AccessToken or RefreshToken must not be null");
+		
+		String login = jwtTokenProvider.getLogin(accessToken);
+		User user = userRepository.findByLogin(login);
+		RefreshToken token = refreshTokenRepository.findByUserId(user.getId());
+		
+		if(!token.getToken().equals(refreshToken)) 
+			throw new Exception("Refresh token does not matched");
+
+		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
+		return newAccessToken;
 	}
 }
