@@ -79,6 +79,16 @@ public class JwtTokenProvider {
 		return login;
 	}
 
+	public boolean isTokenExpired(String token) {
+		try {
+			jwtParser.parseClaimsJws(token);
+		} catch (ExpiredJwtException e) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public boolean validateToken(String claimsJws) {
 		try {
 			jwtParser.parseClaimsJws(claimsJws);
