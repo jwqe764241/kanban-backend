@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -64,7 +66,17 @@ public class JwtTokenProvider {
 	}
 
 	public String getLogin(String token) {
-		return jwtParser.parseClaimsJws(token).getBody().get("login", String.class);
+		String login = null;
+
+		try {
+			login = jwtParser.parseClaimsJws(token)
+				.getBody()
+				.get("login", String.class);
+		} catch (ExpiredJwtException e) {
+			login = e.getClaims().get("login", String.class);
+		}
+
+		return login;
 	}
 
 	public boolean validateToken(String claimsJws) {
