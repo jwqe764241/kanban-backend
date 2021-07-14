@@ -23,7 +23,7 @@ public class RefreshToken {
 	Long userId;
 
 	@MapsId
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 
