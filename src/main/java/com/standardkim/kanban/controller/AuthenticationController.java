@@ -12,6 +12,7 @@ import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.AuthenticationUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +32,9 @@ public class AuthenticationController {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final PasswordEncoder passwordEncoder;
+
+	@Value("${authentication.refresh-token-ttl}")
+	private int refreshTokenTTL;
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
@@ -56,7 +60,7 @@ public class AuthenticationController {
 
 		//refresh token은 쿠키에 저장
 		Cookie refreshTokenCookie = new Cookie("REFRESH_TOKEN", refreshToken);
-		refreshTokenCookie.setMaxAge(60);
+		refreshTokenCookie.setMaxAge(refreshTokenTTL);
 		refreshTokenCookie.setHttpOnly(true);
 		response.addCookie(refreshTokenCookie);
 
