@@ -16,8 +16,8 @@ public class ErrorMessageDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
 	public static class ErrorMessage {
-		private String error;
 		private String message;
+		private String detail;
 		@Builder.Default
 		private LocalDateTime date = LocalDateTime.now();
 		@Builder.Default
