@@ -70,7 +70,7 @@ public class AuthenticationService implements UserDetailsService {
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
 	public String refreshAccessToken(String accessToken, String refreshToken) {
-		if(accessToken == null || refreshToken == null) 
+		if((accessToken == null || accessToken.isBlank()) || (refreshToken == null || refreshToken.isBlank())) 
 			throw new TokenNotProvidedException("token must not be null");
 		
 		String login = jwtTokenProvider.getLogin(accessToken);
