@@ -94,9 +94,7 @@ public class JwtTokenProvider {
 			jwtParser.parseClaimsJws(claimsJws);
 			return true;
 		} catch (JwtException e) {
-			e.printStackTrace();
+			return false;
 		}
-
-		return false;
 	}
 }
