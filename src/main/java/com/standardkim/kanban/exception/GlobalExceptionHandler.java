@@ -68,4 +68,14 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
 	}
+
+	@ExceptionHandler(LoginFailedException.class)
+	public ResponseEntity<ErrorMessage> loginFailed(LoginFailedException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("login error")
+			.detail("login failed. check username of password")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	}
 }

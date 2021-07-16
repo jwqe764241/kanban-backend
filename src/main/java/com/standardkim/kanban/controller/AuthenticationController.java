@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.exception.LoginFailedException;
 import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.AuthenticationUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -45,11 +46,11 @@ public class AuthenticationController {
 			securityUser = (SecurityUser) authenticationService.loadUserByUsername(loginUserRequest.getLogin());
 		}
 		catch (UsernameNotFoundException e) {
-			throw e;
+			throw new LoginFailedException("user not found");
 		}
 
 		if(!passwordEncoder.matches(loginUserRequest.getPassword(), securityUser.getPassword())) {
-			throw new Exception("Password not matched");
+			throw new LoginFailedException("password not matched");
 		}
 
 		String refreshToken = jwtTokenProvider.buildRefreshToken();
