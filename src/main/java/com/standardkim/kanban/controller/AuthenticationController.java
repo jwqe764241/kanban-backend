@@ -7,16 +7,11 @@ import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.exception.LoginFailedException;
 import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.AuthenticationUtil;
-import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,43 +25,24 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
-	private final JwtTokenProvider jwtTokenProvider;
-
-	private final PasswordEncoder passwordEncoder;
-
 	@Value("${authentication.refresh-token-ttl}")
 	private int refreshTokenTTL;
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
 	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletResponse response) throws Exception {
-		SecurityUser securityUser = null;
-
-		try {
-			securityUser = (SecurityUser) authenticationService.loadUserByUsername(loginUserRequest.getLogin());
-		}
-		catch (UsernameNotFoundException e) {
-			throw new LoginFailedException("user not found");
-		}
-
-		if(!passwordEncoder.matches(loginUserRequest.getPassword(), securityUser.getPassword())) {
-			throw new LoginFailedException("password not matched");
-		}
-
-		String refreshToken = jwtTokenProvider.buildRefreshToken();
-		String accessToken = jwtTokenProvider.buildAccessToken(securityUser.getLogin(), securityUser.getName());
-
-		//DB에 refershToken 등록 이미 있으면 교체
-		authenticationService.saveRefreshToken(securityUser.getId(), refreshToken);
-
+		AuthenticationToken authenticationToken = authenticationService.getAuthenticationToken(
+			loginUserRequest.getLogin(), 
+			loginUserRequest.getPassword());
+		
 		//refresh token은 쿠키에 저장
-		Cookie refreshTokenCookie = new Cookie("REFRESH_TOKEN", refreshToken);
+		Cookie refreshTokenCookie = new Cookie("REFRESH_TOKEN", authenticationToken.getRefreshToken());
 		refreshTokenCookie.setMaxAge(refreshTokenTTL);
 		refreshTokenCookie.setHttpOnly(true);
 		response.addCookie(refreshTokenCookie);
 
 		//access token은 payload로 전송
-		return accessToken;
+		return authenticationToken.getAccessToken();
 	}
 
 	@PostMapping("/auth/refresh-access-token")

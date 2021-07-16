@@ -1,9 +1,11 @@
 package com.standardkim.kanban.service;
 
+import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.LoginFailedException;
 import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
 import com.standardkim.kanban.exception.TokenNotProvidedException;
@@ -15,6 +17,7 @@ import com.standardkim.kanban.util.JwtTokenProvider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,8 @@ public class AuthenticationService implements UserDetailsService {
 	private final UserRepository userRepository;
 
 	private final JwtTokenProvider jwtTokenProvider;
+
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = true)
@@ -44,6 +49,32 @@ public class AuthenticationService implements UserDetailsService {
 			.build();
 
 		return securityUser;
+	}
+
+	public AuthenticationToken getAuthenticationToken(String login, String password) {
+		SecurityUser securityUser = null;
+
+		try {
+			securityUser = (SecurityUser) loadUserByUsername(login);
+		}
+		catch (UsernameNotFoundException e) {
+			throw new LoginFailedException("user not found");
+		}
+
+		if(!passwordEncoder.matches(password, securityUser.getPassword())) {
+			throw new LoginFailedException("password not matched");
+		}
+
+		String refreshToken = jwtTokenProvider.buildRefreshToken();
+		String accessToken = jwtTokenProvider.buildAccessToken(securityUser.getLogin(), securityUser.getName());
+
+		//DB에 refershToken 등록 이미 있으면 교체
+		saveRefreshToken(securityUser.getId(), refreshToken);
+
+		return AuthenticationToken.builder()
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
 	}
 
 	@Transactional(rollbackFor = Exception.class)
