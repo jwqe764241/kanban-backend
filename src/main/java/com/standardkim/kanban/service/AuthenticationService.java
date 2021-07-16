@@ -1,13 +1,13 @@
 package com.standardkim.kanban.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
 import com.standardkim.kanban.exception.TokenNotProvidedException;
+import com.standardkim.kanban.exception.UserNotFoundException;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -32,10 +32,8 @@ public class AuthenticationService implements UserDetailsService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByLogin(username);
-		
-		if (user == null)
-			throw new UsernameNotFoundException("cannot find user");
+		User user = userRepository.findByLogin(username)
+			.orElseThrow(() -> new UsernameNotFoundException("cannot find user"));
 
 		SecurityUser securityUser = SecurityUser.builder()
 			.id(user.getId())
@@ -50,10 +48,12 @@ public class AuthenticationService implements UserDetailsService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void saveRefreshToken(Long userId, String token) {
-		RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId);
+		RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId).get();
 
 		if(refreshToken == null) {
-			User user = userRepository.findById(userId).get();
+			User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UsernameNotFoundException("user not found"));
+
 			refreshToken = RefreshToken.builder()
 				.user(user)
 				.token(token)
@@ -69,13 +69,18 @@ public class AuthenticationService implements UserDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String refreshAccessToken(String accessToken, String refreshToken) {
+	public String refreshAccessToken(String accessToken, String refreshToken) throws Exception{
 		if((accessToken == null || accessToken.isBlank()) || (refreshToken == null || refreshToken.isBlank())) 
 			throw new TokenNotProvidedException("token must not be null");
 		
 		String login = jwtTokenProvider.getLogin(accessToken);
-		User user = userRepository.findByLogin(login);
-		RefreshToken token = refreshTokenRepository.findByUserId(user.getId());
+
+		User user = userRepository.findByLogin(login)
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
+
+		RefreshToken token = refreshTokenRepository.findByUserId(user.getId())
+			.orElseThrow(() -> new RefreshTokenNotFoundException("refresh token not found"));
+
 		String userRefreshToken = token.getToken();
 
 		if(!userRefreshToken.equals(refreshToken)) {

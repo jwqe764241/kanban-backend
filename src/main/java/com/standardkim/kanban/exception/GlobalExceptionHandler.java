@@ -48,4 +48,24 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(RefreshTokenNotFoundException.class)
+	public ResponseEntity<ErrorMessage> refreshTokenNotFound(RefreshTokenNotFoundException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("token error")
+			.detail("can't find user's refresh token. please login")
+			.build();
+		
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ErrorMessage> userNotFound(UserNotFoundException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("token error")
+			.detail("can't find user. check account")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	}
 }

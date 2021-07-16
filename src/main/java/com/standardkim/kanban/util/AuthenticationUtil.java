@@ -1,7 +1,5 @@
 package com.standardkim.kanban.util;
 
-import java.util.Arrays;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
