@@ -13,6 +13,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,8 @@ import lombok.NoArgsConstructor;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "login" }) })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +42,4 @@ public class User {
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
-
-	@Builder
-	public User(Long id, String login, String password, String name, LocalDateTime registerDate) {
-		this.id = id;
-		this.login = login;
-		this.password = password;
-		this.name = name;
-		this.registerDate = registerDate;
-	}
 }
