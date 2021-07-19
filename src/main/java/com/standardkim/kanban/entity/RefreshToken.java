@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "refresh_token")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder(toBuilder = true)
+@AllArgsConstructor
 public class RefreshToken {
 	@Id
-	Long userId;
+	private Long userId;
 
 	@MapsId
 	@OneToOne(cascade = CascadeType.DETACH)
@@ -29,11 +32,4 @@ public class RefreshToken {
 
 	@Column(nullable = false)
 	private String token;
-
-	@Builder(toBuilder = true)
-	public RefreshToken(Long userId, User user, String token) {
-		this.userId = userId;
-		this.user = user;
-		this.token = token;
-	}
 }

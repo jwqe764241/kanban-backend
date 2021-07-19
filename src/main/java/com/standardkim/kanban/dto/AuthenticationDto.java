@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ import lombok.NoArgsConstructor;
 public class AuthenticationDto {
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
 	public static class SecurityUser implements UserDetails {
 		private Long id;
 		private String login;
@@ -25,15 +28,6 @@ public class AuthenticationDto {
 		private String name;
 		private LocalDateTime registerDate;
 		private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-
-		@Builder
-		public SecurityUser(Long id, String login, String password, String name, LocalDateTime registerDate) {
-			this.id = id;
-			this.login = login;
-			this.password = password;
-			this.name = name;
-			this.registerDate = registerDate;
-		}
 
 		@Override
 		public String getUsername() {
@@ -85,14 +79,10 @@ public class AuthenticationDto {
 
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
 	public static class AuthenticationToken {
-		String accessToken;
-		String refreshToken;
-
-		@Builder
-		public AuthenticationToken(String accessToken, String refreshToken) {
-			this.accessToken = accessToken;
-			this.refreshToken = refreshToken;
-		}
+		private String accessToken;
+		private String refreshToken;
 	}
 }

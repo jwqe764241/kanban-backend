@@ -78,4 +78,14 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
 	}
+
+	@ExceptionHandler(LoginAlreadyInUse.class)
+	public ResponseEntity<ErrorMessage> loginAlreadyInUse(LoginAlreadyInUse e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("join error")
+			.detail("login is already in use, use another login")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+	}
 }

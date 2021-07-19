@@ -8,6 +8,7 @@ import com.standardkim.kanban.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class UserDto {
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
 	public static class JoinUserRequest {
 		@NotBlank
 		@Size(min = 5, max = 20)
@@ -27,13 +30,6 @@ public class UserDto {
 		@NotBlank
 		@Size(min = 2, max = 20)
 		private String name;
-
-		@Builder
-		public JoinUserRequest(String login, String password, String name) {
-			this.login = login;
-			this.password = password;
-			this.name = name;
-		}
 
 		public User toEntity(PasswordEncoder passwordEncoder) {
 			return User.builder()
