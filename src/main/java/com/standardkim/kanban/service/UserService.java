@@ -3,6 +3,7 @@ package com.standardkim.kanban.service;
 import java.sql.SQLException;
 
 import com.standardkim.kanban.dto.UserDto;
+import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUse;
 import com.standardkim.kanban.repository.UserRepository;
@@ -23,13 +24,15 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Transactional(rollbackFor = Exception.class)
-	public void join(UserDto.JoinUserRequest joinUserRequest) {
+	public UserInfo join(UserDto.JoinUserRequest joinUserRequest) {
 		if(userRepository.findByLogin(joinUserRequest.getLogin()).isPresent()) {
 			throw new LoginAlreadyInUse("login already in use");
 		}
 
 		User joinUser = joinUserRequest.toEntity(passwordEncoder);
-		userRepository.save(joinUser);
+		
+		UserInfo newUserInfo = new UserInfo(userRepository.save(joinUser));
+		return newUserInfo;
 	}
 
 	public void update() {

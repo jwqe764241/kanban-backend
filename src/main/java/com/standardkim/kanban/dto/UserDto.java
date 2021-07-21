@@ -1,5 +1,7 @@
 package com.standardkim.kanban.dto;
 
+import java.time.LocalDateTime;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -37,6 +39,24 @@ public class UserDto {
 				.password(passwordEncoder.encode(password))
 				.name(name)
 				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
+	public static class UserInfo {
+		private Long id;
+		private String login;
+		private String name;
+		private LocalDateTime registerDate;
+
+		public UserInfo(User user) {
+			this.id = user.getId();
+			this.login = user.getLogin();
+			this.name = user.getName();
+			this.registerDate = user.getRegisterDate();
 		}
 	}
 }
