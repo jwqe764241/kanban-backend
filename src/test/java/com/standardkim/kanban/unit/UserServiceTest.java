@@ -44,7 +44,7 @@ public class UserServiceTest {
 	@Test
 	public void when_AddUserSuccessfully_expect_ReturnAddedUserInfo() {
 		//given
-		final NewUserInfo newUserInfo = new NewUserInfo(getJoinUserRequest());
+		final NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
 		final User fakeUser = new User(1L, newUserInfo.getLogin(), 
 			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), LocalDateTime.now());
 
@@ -69,7 +69,7 @@ public class UserServiceTest {
 	@Test
 	public void when_LoginAlreadyInUse_expect_ExceptionThrown() {
 		//given
-		NewUserInfo newUserInfo = new NewUserInfo(getJoinUserRequest());
+		NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
 		final User fakeUser = new User(1L, newUserInfo.getLogin(), newUserInfo.getPassword(), newUserInfo.getName(), LocalDateTime.now());
 
 		given(userRepository.findByLogin(anyString())).willReturn(Optional.of(fakeUser));

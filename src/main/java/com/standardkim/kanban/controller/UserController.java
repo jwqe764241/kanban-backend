@@ -22,7 +22,7 @@ public class UserController {
 	@PostMapping("/join")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void join(@RequestBody @Valid JoinUserRequest joinUserRequest) {
-		NewUserInfo newUserInfo = new NewUserInfo(joinUserRequest);
+		NewUserInfo newUserInfo = NewUserInfo.from(joinUserRequest);
 		userService.addUser(newUserInfo);
 	}
 }

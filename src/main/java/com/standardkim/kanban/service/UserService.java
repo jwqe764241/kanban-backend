@@ -1,6 +1,5 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.UserDto;
 import com.standardkim.kanban.dto.UserDto.NewUserInfo;
 import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
