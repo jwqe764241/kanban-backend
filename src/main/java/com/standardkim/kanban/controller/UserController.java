@@ -21,6 +21,6 @@ public class UserController {
 	@PostMapping("/join")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void join(@RequestBody @Valid JoinUserRequest joinUserRequest) {
-		userService.join(joinUserRequest);
+		userService.addUser(joinUserRequest);
 	}
 }
