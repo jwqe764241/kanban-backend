@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.standardkim.kanban.entity.User;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,22 @@ public class UserDto {
 		@NotBlank
 		@Size(min = 2, max = 20)
 		private String name;
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
+	public static class NewUserInfo {
+		private String login;
+		private String password;
+		private String name;
+
+		public NewUserInfo(JoinUserRequest joinUserRequest) {
+			this.login = joinUserRequest.getLogin();
+			this.password = joinUserRequest.getPassword();
+			this.name = joinUserRequest.getName();
+		}
 
 		public User toEntity(PasswordEncoder passwordEncoder) {
 			return User.builder()

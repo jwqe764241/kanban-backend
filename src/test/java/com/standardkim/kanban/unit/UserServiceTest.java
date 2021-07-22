@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.standardkim.kanban.dto.UserDto.JoinUserRequest;
+import com.standardkim.kanban.dto.UserDto.NewUserInfo;
 import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
@@ -20,6 +21,8 @@ import org.mockito.Spy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,25 +44,23 @@ public class UserServiceTest {
 	@Test
 	public void when_AddUserSuccessfully_expect_ReturnAddedUserInfo() {
 		//given
-		String login = "test";
-		String password = "1234";
-		JoinUserRequest request = new JoinUserRequest(login, password, "test");
-		final String encryptedPassword = passwordEncoder.encode(password);
-		final User fakeUser = new User(1L, login, encryptedPassword, "test", LocalDateTime.now());
+		final NewUserInfo newUserInfo = new NewUserInfo(getJoinUserRequest());
+		final User fakeUser = new User(1L, newUserInfo.getLogin(), 
+			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), LocalDateTime.now());
 
-		given(userRepository.findByLogin(login)).willReturn(Optional.empty());
-		given(userRepository.findById(1L)).willReturn(Optional.of(fakeUser));
+		given(userRepository.findByLogin(anyString())).willReturn(Optional.empty());
+		given(userRepository.findById(anyLong())).willReturn(Optional.of(fakeUser));
 		given(userRepository.save(any(User.class))).willReturn(fakeUser);
 
 		//when
-		UserInfo addedUserInfo = userService.addUser(request);
+		UserInfo addedUserInfo = userService.addUser(newUserInfo);
 
 		//then
 		User addedUser = userRepository.findById(addedUserInfo.getId()).get();
 
 		assertEquals(fakeUser.getId(), addedUser.getId());
 		assertEquals(fakeUser.getLogin(), addedUser.getLogin());
-		assertEquals(true, passwordEncoder.matches(password, addedUser.getPassword()));
+		assertEquals(true, passwordEncoder.matches(newUserInfo.getPassword(), addedUser.getPassword()));
 		assertEquals(fakeUser.getName(), addedUser.getName());
 		assertEquals(fakeUser.getRegisterDate(), addedUser.getRegisterDate());
 	}
@@ -68,14 +69,19 @@ public class UserServiceTest {
 	@Test
 	public void when_LoginAlreadyInUse_expect_ExceptionThrown() {
 		//given
-		JoinUserRequest request = new JoinUserRequest("aaa", "1234", "test");
-		final User fakeUser = new User(1L, "aaa", "1234", "test", LocalDateTime.now());
+		NewUserInfo newUserInfo = new NewUserInfo(getJoinUserRequest());
+		final User fakeUser = new User(1L, newUserInfo.getLogin(), newUserInfo.getPassword(), newUserInfo.getName(), LocalDateTime.now());
 
-		given(userRepository.findByLogin("aaa")).willReturn(Optional.of(fakeUser));
+		given(userRepository.findByLogin(anyString())).willReturn(Optional.of(fakeUser));
 
 		//when, then
 		assertThrows(LoginAlreadyInUseException.class, () -> {
-			userService.addUser(request);
+			userService.addUser(newUserInfo);
 		});
+	}
+
+	private JoinUserRequest getJoinUserRequest() {
+		JoinUserRequest result = new JoinUserRequest("test", "1234", "test");
+		return result;
 	}
 }

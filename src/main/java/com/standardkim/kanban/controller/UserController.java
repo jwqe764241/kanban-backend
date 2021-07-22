@@ -3,6 +3,7 @@ package com.standardkim.kanban.controller;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.UserDto.JoinUserRequest;
+import com.standardkim.kanban.dto.UserDto.NewUserInfo;
 import com.standardkim.kanban.service.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ public class UserController {
 	@PostMapping("/join")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void join(@RequestBody @Valid JoinUserRequest joinUserRequest) {
-		userService.addUser(joinUserRequest);
+		NewUserInfo newUserInfo = new NewUserInfo(joinUserRequest);
+		userService.addUser(newUserInfo);
 	}
 }

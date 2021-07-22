@@ -1,6 +1,7 @@
 package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.UserDto;
+import com.standardkim.kanban.dto.UserDto.NewUserInfo;
 import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
@@ -20,15 +21,15 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Transactional(rollbackFor = Exception.class)
-	public UserInfo addUser(UserDto.JoinUserRequest joinUserRequest) {
-		if(userRepository.findByLogin(joinUserRequest.getLogin()).isPresent()) {
+	public UserInfo addUser(NewUserInfo newUserInfo) {
+		if(isUserExist(newUserInfo.getLogin())) {
 			throw new LoginAlreadyInUseException("login already in use");
 		}
 
-		User joinUser = joinUserRequest.toEntity(passwordEncoder);
-		
-		UserInfo newUserInfo = new UserInfo(userRepository.save(joinUser));
-		return newUserInfo;
+		User user = newUserInfo.toEntity(passwordEncoder);
+		User result = userRepository.save(user);
+		UserInfo addedUserInfo = new UserInfo(result);
+		return addedUserInfo;
 	}
 
 	public void update() {
@@ -36,4 +37,8 @@ public class UserService {
 
 	public void remove() {
 	}
+
+	private boolean isUserExist(String login) {
+		return userRepository.findByLogin(login).isPresent() ? true : false;
+	} 
 }
