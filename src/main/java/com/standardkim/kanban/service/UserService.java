@@ -3,7 +3,7 @@ package com.standardkim.kanban.service;
 import com.standardkim.kanban.dto.UserDto;
 import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.LoginAlreadyInUse;
+import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +22,7 @@ public class UserService {
 	@Transactional(rollbackFor = Exception.class)
 	public UserInfo addUser(UserDto.JoinUserRequest joinUserRequest) {
 		if(userRepository.findByLogin(joinUserRequest.getLogin()).isPresent()) {
-			throw new LoginAlreadyInUse("login already in use");
+			throw new LoginAlreadyInUseException("login already in use");
 		}
 
 		User joinUser = joinUserRequest.toEntity(passwordEncoder);
