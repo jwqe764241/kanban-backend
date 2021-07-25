@@ -12,6 +12,7 @@ import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		//preflight 요청은 200으로 응답함.
+		if(request.getMethod().equals(HttpMethod.OPTIONS.name()))
+		{
+			response.setHeader("Access-Control-Allow-Origin", "http://localhost:10000");
+			response.setHeader("Access-Control-Allow-Credentials", "true");
+			response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+			response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, OPTION");
+			response.setStatus(200);
+			return;
+		}
+
 		String token = getToken(request);
 
 		if(token != null && !token.isBlank() && jwtTokenProvider.validateToken(token)) {
