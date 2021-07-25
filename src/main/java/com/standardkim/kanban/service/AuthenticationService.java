@@ -79,7 +79,7 @@ public class AuthenticationService implements UserDetailsService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void saveRefreshToken(Long userId, String token) {
-		RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId).get();
+		RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId).orElse(null);
 
 		if(refreshToken == null) {
 			User user = userRepository.findById(userId)
