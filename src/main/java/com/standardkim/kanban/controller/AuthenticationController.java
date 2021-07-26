@@ -25,8 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
-	@Value("${authentication.refresh-token-ttl}")
+	@Value("${config.authentication.refresh-token-ttl}")
 	private int refreshTokenTTL;
+
+	@Value("${config.refresh-token-name}")
+	private String refreshTokenName;
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
@@ -38,7 +41,7 @@ public class AuthenticationController {
 			loginUserRequest.getPassword());
 		
 		//refresh token은 쿠키에 저장
-		Cookie refreshTokenCookie = new Cookie("REFRESH_TOKEN", authenticationToken.getRefreshToken());
+		Cookie refreshTokenCookie = new Cookie(refreshTokenName, authenticationToken.getRefreshToken());
 		refreshTokenCookie.setMaxAge(refreshTokenTTL);
 		refreshTokenCookie.setHttpOnly(true);
 		response.addCookie(refreshTokenCookie);
@@ -50,7 +53,7 @@ public class AuthenticationController {
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public String refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		AuthenticationToken token = AuthenticationUtil.getAuthenticationTokens(request);
+		AuthenticationToken token = AuthenticationUtil.getAuthenticationTokens(request, refreshTokenName);
 		String newAccessToken = authenticationService.refreshAccessToken(token.getAccessToken(), token.getRefreshToken());
 		return newAccessToken;
 	}

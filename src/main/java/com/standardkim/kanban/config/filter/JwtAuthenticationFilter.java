@@ -2,6 +2,7 @@ package com.standardkim.kanban.config.filter;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private AuthenticationService authenticationService;
 
+	@Value("${config.allowed-origins}")
+	String[] allowedOrigins;
+
+	private String flattenAllowedOrigins;
+
+	@PostConstruct
+	public void init() {
+		flattenAllowedOrigins = String.join(",", allowedOrigins);
+	}
+
 	private String getToken(HttpServletRequest request) {
 		return request.getHeader("Authorization");
 	}
@@ -36,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		//preflight 요청은 200으로 응답함.
 		if(request.getMethod().equals(HttpMethod.OPTIONS.name()))
 		{
-			response.setHeader("Access-Control-Allow-Origin", "http://localhost:10000");
+			response.setHeader("Access-Control-Allow-Origin", flattenAllowedOrigins);
 			response.setHeader("Access-Control-Allow-Credentials", "true");
 			response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 			response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, OPTION");
