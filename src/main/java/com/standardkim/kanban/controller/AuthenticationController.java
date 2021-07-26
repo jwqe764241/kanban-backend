@@ -30,7 +30,9 @@ public class AuthenticationController {
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
-	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletResponse response) throws Exception {
+	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		//TODO:Add prev refresh token to blacklist
+		
 		AuthenticationToken authenticationToken = authenticationService.getAuthenticationToken(
 			loginUserRequest.getLogin(), 
 			loginUserRequest.getPassword());
