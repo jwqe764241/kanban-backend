@@ -12,7 +12,6 @@ import com.standardkim.kanban.util.AuthenticationUtil;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -56,11 +55,5 @@ public class AuthenticationController {
 		AuthenticationToken token = AuthenticationUtil.getAuthenticationTokens(request, refreshTokenName);
 		String newAccessToken = authenticationService.refreshAccessToken(token.getAccessToken(), token.getRefreshToken());
 		return newAccessToken;
-	}
-
-	@GetMapping("/welcome")
-	@ResponseStatus(HttpStatus.OK)
-	public String welcome() {
-		return "Welcome";
 	}
 }
