@@ -1,6 +1,5 @@
 package com.standardkim.kanban.controller;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -12,6 +11,7 @@ import com.standardkim.kanban.util.AuthenticationUtil;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,18 +32,20 @@ public class AuthenticationController {
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
-	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		
 		AuthenticationToken authenticationToken = authenticationService.getAuthenticationToken(
 			loginUserRequest.getLogin(), 
 			loginUserRequest.getPassword());
 		
-		//refresh token은 쿠키에 저장
-		Cookie refreshTokenCookie = new Cookie(refreshTokenName, authenticationToken.getRefreshToken());
-		refreshTokenCookie.setMaxAge(refreshTokenTTL);
-		refreshTokenCookie.setHttpOnly(true);
-		response.addCookie(refreshTokenCookie);
+		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
+			.domain("localhost")
+			.path("/")
+			.sameSite("Lax")
+			.maxAge(refreshTokenTTL)
+			.httpOnly(true)
+			.build();
+		response.setHeader("Set-Cookie", cookie.toString());
 
 		//access token은 payload로 전송
 		return authenticationToken.getAccessToken();
@@ -51,7 +53,7 @@ public class AuthenticationController {
 
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
-	public String refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public String refreshAccessToken(HttpServletRequest request) throws Exception {
 		AuthenticationToken token = AuthenticationUtil.getAuthenticationTokens(request, refreshTokenName);
 		String newAccessToken = authenticationService.refreshAccessToken(token.getAccessToken(), token.getRefreshToken());
 		return newAccessToken;
