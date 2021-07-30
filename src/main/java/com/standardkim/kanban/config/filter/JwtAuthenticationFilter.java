@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.standardkim.kanban.dto.AuthenticationDto.AuthorizationHeader;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -38,8 +39,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		flattenAllowedOrigins = String.join(",", allowedOrigins);
 	}
 
-	private String getToken(HttpServletRequest request) {
-		return request.getHeader("Authorization");
+	private AuthorizationHeader parseAuthorizationHeader(HttpServletRequest request) {
+		String raw = request.getHeader("Authorization");
+		if(raw == null) {
+			throw new NullPointerException("Authorization is null");
+		}
+
+		String[] tokenized = raw.split(" ");
+
+		if(tokenized.length != 2) {
+			throw new IllegalArgumentException("invalid header data");
+		}
+
+		AuthorizationHeader header = AuthorizationHeader.builder()
+			.type(tokenized[0])
+			.credentials(tokenized[1])
+			.build();
+
+		return header;
 	}
 
 	@Override
@@ -56,23 +73,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String token = getToken(request);
+		AuthorizationHeader authorizationHeader = null;
 
-		if(token != null && !token.isBlank() && jwtTokenProvider.validateToken(token)) {
-			try {
-				String login = jwtTokenProvider.getLogin(token);
-				SecurityUser securityUser = (SecurityUser) authenticationService.loadUserByUsername(login);
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
-
-				if(securityUser.isEnabled()) {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
+		try {
+			authorizationHeader = parseAuthorizationHeader(request);
+		} catch (Exception e) {
 		}
 
+		if(authorizationHeader != null) {
+			String type = authorizationHeader.getType();
+			String token = authorizationHeader.getCredentials();
+
+			if(type.equals("Bearer")){
+				if(token != null && !token.isBlank() && jwtTokenProvider.validateToken(token)) {
+					try {
+						String login = jwtTokenProvider.getLogin(token);
+						SecurityUser securityUser = (SecurityUser) authenticationService.loadUserByUsername(login);
+						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
+		
+						if(securityUser.isEnabled()) {
+							SecurityContextHolder.getContext().setAuthentication(authentication);
+						}
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
 		filterChain.doFilter(request, response);
 	}
 }
