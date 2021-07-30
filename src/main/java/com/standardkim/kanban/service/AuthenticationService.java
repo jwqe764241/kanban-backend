@@ -65,7 +65,7 @@ public class AuthenticationService implements UserDetailsService {
 			throw new LoginFailedException("password not matched");
 		}
 
-		String refreshToken = jwtTokenProvider.buildRefreshToken();
+		String refreshToken = jwtTokenProvider.buildRefreshToken(securityUser.getLogin());
 		String accessToken = jwtTokenProvider.buildAccessToken(securityUser.getLogin(), securityUser.getName());
 
 		//DB에 refershToken 등록 이미 있으면 교체
@@ -100,11 +100,11 @@ public class AuthenticationService implements UserDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String refreshAccessToken(String accessToken, String refreshToken) throws Exception{
-		if((accessToken == null || accessToken.isBlank()) || (refreshToken == null || refreshToken.isBlank())) 
+	public String refreshAccessToken(String refreshToken) throws Exception{
+		if(refreshToken == null || refreshToken.isBlank()) 
 			throw new TokenNotProvidedException("token must not be null");
 		
-		String login = jwtTokenProvider.getLogin(accessToken);
+		String login = jwtTokenProvider.getLogin(refreshToken);
 
 		User user = userRepository.findByLogin(login)
 			.orElseThrow(() -> new UserNotFoundException("user not found"));

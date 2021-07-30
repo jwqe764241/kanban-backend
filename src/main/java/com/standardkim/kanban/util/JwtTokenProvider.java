@@ -49,8 +49,11 @@ public class JwtTokenProvider {
 		return buildToken(claims, accessTokenTTL);
 	}
 
-	public String buildRefreshToken() {
-		return buildToken(null, refreshTokenTTL);
+	public String buildRefreshToken(String login) {
+		Claims claims = Jwts.claims();
+		claims.put("login", login);
+
+		return buildToken(claims, refreshTokenTTL);
 	}
 
 	public String buildToken(Claims claims, Long ttl) {

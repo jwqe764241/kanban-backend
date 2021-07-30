@@ -12,6 +12,7 @@ import com.standardkim.kanban.util.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -54,8 +55,12 @@ public class AuthenticationController {
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public String refreshAccessToken(HttpServletRequest request) throws Exception {
-		AuthenticationToken token = AuthenticationUtil.getAuthenticationTokens(request, refreshTokenName);
-		String newAccessToken = authenticationService.refreshAccessToken(token.getAccessToken(), token.getRefreshToken());
+		String refreshToken = AuthenticationUtil.getRefreshToken(request, refreshTokenName);
+		String newAccessToken = authenticationService.refreshAccessToken(refreshToken);
 		return newAccessToken;
 	}
+
+	@GetMapping("/auth/check-token")
+	@ResponseStatus(HttpStatus.OK)
+	public void checkToken() {}
 }
