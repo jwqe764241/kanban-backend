@@ -85,4 +85,13 @@ public class AuthenticationDto {
 		private String accessToken;
 		private String refreshToken;
 	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
+	public static class AuthorizationHeader { 
+		private String type;
+		private String credentials;
+	}
 }

@@ -1,6 +1,7 @@
 package com.standardkim.kanban.config;
 
 import com.standardkim.kanban.config.filter.JwtAuthenticationFilter;
+import com.standardkim.kanban.config.handler.AuthenticationFailedHandler;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+	private final AuthenticationFailedHandler authenticationFailedHandler;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
@@ -27,7 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests().antMatchers(HttpMethod.POST, "/join", "/auth/login", "/auth/refresh-access-token").permitAll()
 				.anyRequest().authenticated()
 			.and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+				.exceptionHandling()
+					.authenticationEntryPoint(authenticationFailedHandler);
 
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}

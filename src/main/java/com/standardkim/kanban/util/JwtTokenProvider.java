@@ -22,13 +22,13 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtTokenProvider {
 
-	@Value("${authentication.secret-key}")
+	@Value("${config.authentication.secret-key}")
 	private String secret;
 
-	@Value("${authentication.access-token-ttl}")
+	@Value("${config.authentication.access-token-ttl}")
 	private Long accessTokenTTL;
 
-	@Value("${authentication.refresh-token-ttl}")
+	@Value("${config.authentication.refresh-token-ttl}")
 	private Long refreshTokenTTL;
 
 	private Key signKey;
@@ -49,8 +49,11 @@ public class JwtTokenProvider {
 		return buildToken(claims, accessTokenTTL);
 	}
 
-	public String buildRefreshToken() {
-		return buildToken(null, refreshTokenTTL);
+	public String buildRefreshToken(String login) {
+		Claims claims = Jwts.claims();
+		claims.put("login", login);
+
+		return buildToken(claims, refreshTokenTTL);
 	}
 
 	public String buildToken(Claims claims, Long ttl) {
