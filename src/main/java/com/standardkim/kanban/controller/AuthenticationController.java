@@ -52,6 +52,22 @@ public class AuthenticationController {
 		return authenticationToken.getAccessToken();
 	}
 
+	@PostMapping("/auth/logout")
+	@ResponseStatus(HttpStatus.OK)
+	public void logout(HttpServletRequest request, HttpServletResponse response) {
+		String refreshToken = AuthenticationUtil.getRefreshToken(request, refreshTokenName);
+		authenticationService.removeRefreshToken(refreshToken);
+
+		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
+			.domain("localhost")
+			.path("/")
+			.sameSite("Lax")
+			.maxAge(0)
+			.httpOnly(true)
+			.build();
+		response.setHeader("Set-Cookie", cookie.toString());
+	}
+
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public String refreshAccessToken(HttpServletRequest request) throws Exception {

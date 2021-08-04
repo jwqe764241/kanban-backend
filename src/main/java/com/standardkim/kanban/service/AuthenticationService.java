@@ -1,5 +1,7 @@
 package com.standardkim.kanban.service;
 
+import java.util.Optional;
+
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
@@ -97,6 +99,15 @@ public class AuthenticationService implements UserDetailsService {
 		}
 		
 		refreshTokenRepository.save(refreshToken);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void removeRefreshToken(String refreshToken) {
+		String login = jwtTokenProvider.getLogin(refreshToken);
+		Optional<User> user = userRepository.findByLogin(login);
+		if(user.isPresent()) {
+			refreshTokenRepository.deleteByUserId(user.get().getId());
+		};
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
