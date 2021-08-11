@@ -88,4 +88,14 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
 	}
+
+	@ExceptionHandler(ProjectAlreadyExistException.class)
+	public ResponseEntity<ErrorMessage> projectAlreadyExist(ProjectAlreadyExistException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("create error")
+			.detail("project name already exist, please use another project name")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+	}
 }
