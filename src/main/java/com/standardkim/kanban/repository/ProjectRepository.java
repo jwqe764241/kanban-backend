@@ -8,4 +8,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ProjectRepository extends CrudRepository<Project, Long>{
 	Optional<Project> findByName(String name);
+	boolean existsByName(String name);
 }

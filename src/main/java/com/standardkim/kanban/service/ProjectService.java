@@ -25,14 +25,14 @@ public class ProjectService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public Project createProject(String name, String description) {
+		if(projectRepository.existsByName(name)) {
+			throw new ProjectAlreadyExistException("project already exist.");
+		}
+
 		SecurityUser securityUser = authenticationFacade.getSecurityUser();
 
 		User user = userRepository.findById(securityUser.getId())
 			.orElseThrow(() -> new UserNotFoundException("use not found"));
-
-		if(isProjectExist(name)) {
-			throw new ProjectAlreadyExistException("project already exist.");
-		}
 
 		Project newProject = Project.builder()
 			.name(name)
@@ -43,9 +43,5 @@ public class ProjectService {
 		newProject = projectRepository.save(newProject);
 		
 		return newProject;
-	}
-
-	private boolean isProjectExist(String name) {
-		return projectRepository.findByName(name).isPresent();
 	}
 }

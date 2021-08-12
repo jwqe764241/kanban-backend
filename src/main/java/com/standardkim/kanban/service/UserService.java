@@ -21,7 +21,7 @@ public class UserService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public UserInfo addUser(NewUserInfo newUserInfo) {
-		if(isUserExist(newUserInfo.getLogin())) {
+		if(userRepository.existsByLogin(newUserInfo.getLogin())) {
 			throw new LoginAlreadyInUseException("login already in use");
 		}
 
@@ -36,8 +36,4 @@ public class UserService {
 
 	public void remove() {
 	}
-
-	private boolean isUserExist(String login) {
-		return userRepository.findByLogin(login).isPresent() ? true : false;
-	} 
 }
