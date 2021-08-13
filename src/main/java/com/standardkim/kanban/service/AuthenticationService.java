@@ -74,7 +74,7 @@ public class AuthenticationService implements UserDetailsService {
 		saveRefreshToken(securityUser.getId(), refreshToken);
 
 		return AuthenticationToken.builder()
-			.accessToken(accessToken)
+			.accessToken("Bearer " + accessToken)
 			.refreshToken(refreshToken)
 			.build();
 	}
@@ -135,6 +135,6 @@ public class AuthenticationService implements UserDetailsService {
 		}
  
 		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
-		return newAccessToken;
+		return "Bearer " + newAccessToken;
 	}
 }
