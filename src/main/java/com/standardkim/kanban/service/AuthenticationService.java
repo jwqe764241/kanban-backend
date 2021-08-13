@@ -67,7 +67,7 @@ public class AuthenticationService implements UserDetailsService {
 			throw new LoginFailedException("password not matched");
 		}
 
-		String refreshToken = jwtTokenProvider.buildRefreshToken(securityUser.getLogin());
+		String refreshToken = jwtTokenProvider.buildRefreshToken(securityUser.getLogin(), securityUser.getName());
 		String accessToken = jwtTokenProvider.buildAccessToken(securityUser.getLogin(), securityUser.getName());
 
 		//DB에 refershToken 등록 이미 있으면 교체
