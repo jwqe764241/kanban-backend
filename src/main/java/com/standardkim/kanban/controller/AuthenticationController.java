@@ -56,6 +56,9 @@ public class AuthenticationController {
 	@ResponseStatus(HttpStatus.OK)
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = AuthenticationUtil.getRefreshToken(request, refreshTokenName);
+		if(refreshToken == null)
+			return;
+
 		authenticationService.removeRefreshToken(refreshToken);
 
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
