@@ -2,9 +2,12 @@ package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.Project;
+import com.standardkim.kanban.entity.ProjectMember;
+import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.ProjectAlreadyExistException;
 import com.standardkim.kanban.exception.UserNotFoundException;
+import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.ProjectRepository;
 import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.util.AuthenticationFacade;
@@ -20,6 +23,8 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 
 	private final UserRepository userRepository;
+
+	private final ProjectMemberRepository projectMemberRepository;
 
 	private final AuthenticationFacade authenticationFacade;
 
@@ -39,8 +44,14 @@ public class ProjectService {
 			.description(description)
 			.user(user)
 			.build();
-
 		newProject = projectRepository.save(newProject);
+
+		//Add to project member as register
+		ProjectMember projectMember = ProjectMember.builder()
+			.id(new ProjectMemberKey(newProject.getId(), user.getId()))
+			.isRegister(true)
+			.build();
+		projectMemberRepository.save(projectMember);
 		
 		return newProject;
 	}
