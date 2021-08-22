@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,10 +34,10 @@ public class Project {
 	private Long id;
 
 	@Column(length = 50, nullable = false, unique = true)
-	String name;
+	private String name;
 
 	@Column(length = 200)
-	String description;
+	private String description;
 
 	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
 	@JoinColumn(name = "register_user_id", referencedColumnName = "id")
@@ -46,6 +47,6 @@ public class Project {
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
-	@OneToMany(mappedBy = "project")
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
 	private Set<ProjectMember> members;
 }
