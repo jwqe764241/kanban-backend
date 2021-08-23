@@ -1,5 +1,7 @@
 package com.standardkim.kanban.dto;
 
+import java.time.LocalDateTime;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -21,5 +23,16 @@ public class ProjectDto {
 
 		@Size(max = 200)
 		private String description;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class ProjectInfo {
+		private Long id;
+		private String name;
+		private String description;
+		private LocalDateTime registerDate;
 	}
 }
