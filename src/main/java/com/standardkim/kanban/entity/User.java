@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -47,5 +48,6 @@ public class User {
 	private LocalDateTime registerDate;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	@OrderBy("register_date desc")
 	private Set<ProjectMember> projects;
 }
