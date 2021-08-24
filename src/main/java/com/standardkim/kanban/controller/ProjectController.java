@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectController {
 	private final ProjectService projectService;
 
-	@PostMapping("/project")
+	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid NewProjectRequest newProjectRequest) {
 		projectService.createProject(newProjectRequest.getName(), newProjectRequest.getDescription());
