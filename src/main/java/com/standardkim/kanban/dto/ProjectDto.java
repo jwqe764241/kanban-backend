@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.standardkim.kanban.dto.UserDto.UserInfo;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +35,7 @@ public class ProjectDto {
 		private Long id;
 		private String name;
 		private String description;
+		private String registerUsername;
 		private LocalDateTime registerDate;
 	}
 }

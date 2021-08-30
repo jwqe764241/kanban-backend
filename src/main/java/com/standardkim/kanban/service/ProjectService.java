@@ -79,6 +79,7 @@ public class ProjectService {
 				.name(project.getName())
 				.description(project.getDescription())
 				.registerDate(project.getRegisterDate())
+				.registerUsername(project.getUser().getName())
 				.build();
 			projects.add(info);
 		}
@@ -106,6 +107,7 @@ public class ProjectService {
 			.name(project.getName())
 			.description(project.getDescription())
 			.registerDate(project.getRegisterDate())
+			.registerUsername(project.getUser().getName())
 			.build();
 
 		return info;
