@@ -88,4 +88,34 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
 	}
+
+	@ExceptionHandler(ProjectAlreadyExistException.class)
+	public ResponseEntity<ErrorMessage> projectAlreadyExist(ProjectAlreadyExistException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("create error")
+			.detail("project name already exist, please use another project name")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorMessage> resourceNotFound(ResourceNotFoundException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("resource error")
+			.detail("resource not found")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(PermissionException.class)
+	public ResponseEntity<ErrorMessage> permissionException(PermissionException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("permission error")
+			.detail("you have no permission to access this resource")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.FORBIDDEN);
+	}
 }

@@ -1,5 +1,7 @@
 package com.standardkim.kanban.service;
 
+import java.util.Optional;
+
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
@@ -65,14 +67,14 @@ public class AuthenticationService implements UserDetailsService {
 			throw new LoginFailedException("password not matched");
 		}
 
-		String refreshToken = jwtTokenProvider.buildRefreshToken(securityUser.getLogin());
+		String refreshToken = jwtTokenProvider.buildRefreshToken(securityUser.getLogin(), securityUser.getName());
 		String accessToken = jwtTokenProvider.buildAccessToken(securityUser.getLogin(), securityUser.getName());
 
 		//DB에 refershToken 등록 이미 있으면 교체
 		saveRefreshToken(securityUser.getId(), refreshToken);
 
 		return AuthenticationToken.builder()
-			.accessToken(accessToken)
+			.accessToken("Bearer " + accessToken)
 			.refreshToken(refreshToken)
 			.build();
 	}
@@ -97,6 +99,15 @@ public class AuthenticationService implements UserDetailsService {
 		}
 		
 		refreshTokenRepository.save(refreshToken);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void removeRefreshToken(String refreshToken) {
+		String login = jwtTokenProvider.getLogin(refreshToken);
+		Optional<User> user = userRepository.findByLogin(login);
+		if(user.isPresent()) {
+			refreshTokenRepository.deleteByUserId(user.get().getId());
+		};
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
@@ -124,6 +135,6 @@ public class AuthenticationService implements UserDetailsService {
 		}
  
 		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
-		return newAccessToken;
+		return "Bearer " + newAccessToken;
 	}
 }

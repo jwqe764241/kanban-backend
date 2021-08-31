@@ -46,9 +46,9 @@ public class UserServiceTest {
 		//given
 		final NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
 		final User fakeUser = new User(1L, newUserInfo.getLogin(), 
-			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), LocalDateTime.now());
+			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), LocalDateTime.now(), null);
 
-		given(userRepository.findByLogin(anyString())).willReturn(Optional.empty());
+		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.findById(anyLong())).willReturn(Optional.of(fakeUser));
 		given(userRepository.save(any(User.class))).willReturn(fakeUser);
 
@@ -70,9 +70,8 @@ public class UserServiceTest {
 	public void when_LoginAlreadyInUse_expect_ExceptionThrown() {
 		//given
 		NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
-		final User fakeUser = new User(1L, newUserInfo.getLogin(), newUserInfo.getPassword(), newUserInfo.getName(), LocalDateTime.now());
 
-		given(userRepository.findByLogin(anyString())).willReturn(Optional.of(fakeUser));
+		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
 		//when, then
 		assertThrows(LoginAlreadyInUseException.class, () -> {

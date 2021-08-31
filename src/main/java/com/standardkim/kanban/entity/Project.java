@@ -3,16 +3,16 @@ package com.standardkim.kanban.entity;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -23,31 +23,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "login" }) })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @AllArgsConstructor
-public class User {
+@Builder
+public class Project {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
 	private Long id;
 
-	@Column(length = 50, nullable = false)
-	private String login;
-
-	@Column(length = 200, nullable = false)
-	private String password;
-
-	@Column(length = 20, nullable = false)
+	@Column(length = 50, nullable = false, unique = true)
 	private String name;
 
+	@Column(length = 200)
+	private String description;
+
+	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
+	@JoinColumn(name = "register_user_id", referencedColumnName = "id")
+	private User user;
+	
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	@OrderBy("register_date desc")
-	private Set<ProjectMember> projects;
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+	private Set<ProjectMember> members;
 }
