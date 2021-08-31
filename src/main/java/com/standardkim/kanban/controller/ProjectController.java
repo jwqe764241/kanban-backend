@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
 import com.standardkim.kanban.service.ProjectService;
