@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 
-	@PostMapping("/join")
+	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void join(@RequestBody @Valid JoinUserRequest joinUserRequest) {
 		NewUserInfo newUserInfo = NewUserInfo.from(joinUserRequest);
