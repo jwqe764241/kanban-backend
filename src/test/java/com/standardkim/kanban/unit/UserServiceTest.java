@@ -46,7 +46,7 @@ public class UserServiceTest {
 		//given
 		final NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
 		final User fakeUser = new User(1L, newUserInfo.getLogin(), 
-			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), LocalDateTime.now(), null);
+			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), newUserInfo.getEmail(), LocalDateTime.now(), null);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.findById(anyLong())).willReturn(Optional.of(fakeUser));
@@ -80,7 +80,7 @@ public class UserServiceTest {
 	}
 
 	private JoinUserRequest getJoinUserRequest() {
-		JoinUserRequest result = new JoinUserRequest("test", "1234", "test");
+		JoinUserRequest result = new JoinUserRequest("test", "1234", "test", "aaa@example.com");
 		return result;
 	}
 }

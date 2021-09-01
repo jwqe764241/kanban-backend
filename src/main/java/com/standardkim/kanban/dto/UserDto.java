@@ -32,6 +32,10 @@ public class UserDto {
 		@NotBlank
 		@Size(min = 2, max = 20)
 		private String name;
+
+		@NotBlank
+		@Size(min = 5, max = 320)
+		private String email;
 	}
 
 	@Getter
@@ -42,12 +46,14 @@ public class UserDto {
 		private String login;
 		private String password;
 		private String name;
+		private String email;
 
 		public User toEntity(PasswordEncoder passwordEncoder) {
 			return User.builder()
 				.login(login)
 				.password(passwordEncoder.encode(password))
 				.name(name)
+				.email(email)
 				.build();
 		}
 
@@ -56,6 +62,7 @@ public class UserDto {
 				.login(joinUserRequest.getLogin())
 				.password(joinUserRequest.getPassword())
 				.name(joinUserRequest.getName())
+				.email(joinUserRequest.getEmail())
 				.build();
 		}
 	}
@@ -68,12 +75,14 @@ public class UserDto {
 		private Long id;
 		private String login;
 		private String name;
+		private String email;
 		private LocalDateTime registerDate;
 
 		public UserInfo(User user) {
 			this.id = user.getId();
 			this.login = user.getLogin();
 			this.name = user.getName();
+			this.email = user.getEmail();
 			this.registerDate = user.getRegisterDate();
 		}
 	}
