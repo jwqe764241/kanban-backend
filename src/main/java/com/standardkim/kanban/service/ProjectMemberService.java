@@ -55,6 +55,7 @@ public class ProjectMemberService {
 		for(ProjectMember member : members) {
 			User user = member.getUser();
 			ProjectMemberInfo info = ProjectMemberInfo.builder()
+				.id(user.getId())
 				.name(user.getName())
 				.email(user.getEmail())
 				.date(member.getRegisterDate())

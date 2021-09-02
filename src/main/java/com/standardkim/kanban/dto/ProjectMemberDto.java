@@ -14,6 +14,7 @@ public class ProjectMemberDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
 	public static class ProjectMemberInfo {
+		private Long id;
 		private String name;
 		private String email;
 		private LocalDateTime date;
