@@ -1,11 +1,14 @@
 package com.standardkim.kanban.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
+import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class ProjectController {
 	private final ProjectService projectService;
 
+	private final ProjectMemberService projectMemberService;
+
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid NewProjectRequest newProjectRequest) {
@@ -40,5 +45,11 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public ProjectInfo getProject(@PathVariable Long id, Authentication authentication) {
 		return projectService.getProjectById(id);
+	}
+
+	@GetMapping("/projects/{id}/members")
+	@ResponseStatus(HttpStatus.OK)
+	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long id) {
+		return projectMemberService.getProjectMembersById(id);
 	}
 }
