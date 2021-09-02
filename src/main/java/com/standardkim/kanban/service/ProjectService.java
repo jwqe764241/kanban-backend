@@ -112,4 +112,9 @@ public class ProjectService {
 
 		return info;
 	}
+
+	@Transactional(rollbackFor = Exception.class, readOnly = true)
+	public boolean isProjectOwner(Long projectId, Long registerUserId) {
+		return projectRepository.existsByIdAndRegisterUserId(projectId, registerUserId);
+	}
 }

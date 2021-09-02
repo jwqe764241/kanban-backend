@@ -9,6 +9,7 @@ import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
+import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
 import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
@@ -26,6 +27,8 @@ public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
 
 	private final ProjectRepository projectRepository;
+
+	private final ProjectService projectService;
 
 	private final AuthenticationFacade authenticationFacade;
 
@@ -60,5 +63,28 @@ public class ProjectMemberService {
 		}
 		
 		return result;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteProjectMember(Long projectId, Long userId) {
+		SecurityUser securityUser = authenticationFacade.getSecurityUser();
+		if(!projectService.isProjectOwner(projectId, securityUser.getId())) {
+			throw new PermissionException("no permission to access project [" + projectId + "]");
+		}
+
+		ProjectMemberKey key = ProjectMemberKey.builder()
+			.projectId(projectId)
+			.userId(userId)
+			.build();
+		ProjectMember member = projectMemberRepository.findById(key).orElseGet(() -> null);
+		if(member == null) {
+			return;
+		}
+
+		if(member.isRegister()) {
+			throw new CannotDeleteProjectOwnerException();
+		}
+
+		projectMemberRepository.delete(member);
 	}
 }

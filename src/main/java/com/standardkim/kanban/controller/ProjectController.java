@@ -13,6 +13,7 @@ import com.standardkim.kanban.service.ProjectService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,5 +52,11 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long id) {
 		return projectMemberService.getProjectMembersById(id);
+	}
+
+	@DeleteMapping("/projects/{id}/members/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
+		projectMemberService.deleteProjectMember(id, userId);
 	}
 }

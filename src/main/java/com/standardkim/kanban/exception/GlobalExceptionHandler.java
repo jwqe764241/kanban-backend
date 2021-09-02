@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 
 import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,5 +118,15 @@ public class GlobalExceptionHandler {
 			.build();
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(CannotDeleteProjectOwnerException.class)
+	public ResponseEntity<ErrorMessage> cannotDeleteProjectOwnerException(CannotDeleteProjectOwnerException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("request error")
+			.detail("can't remove project owner")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
 }
