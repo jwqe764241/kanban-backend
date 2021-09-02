@@ -41,7 +41,7 @@ public class Project {
 
 	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
 	@JoinColumn(name = "register_user_id", referencedColumnName = "id")
-	private User user;
+	private User registerUser;
 	
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)

@@ -48,7 +48,7 @@ public class ProjectService {
 		Project newProject = Project.builder()
 			.name(name)
 			.description(description)
-			.user(user)
+			.registerUser(user)
 			.build();
 		newProject = projectRepository.save(newProject);
 
@@ -79,7 +79,7 @@ public class ProjectService {
 				.name(project.getName())
 				.description(project.getDescription())
 				.registerDate(project.getRegisterDate())
-				.registerUsername(project.getUser().getName())
+				.registerUsername(project.getRegisterUser().getName())
 				.build();
 			projects.add(info);
 		}
@@ -107,7 +107,7 @@ public class ProjectService {
 			.name(project.getName())
 			.description(project.getDescription())
 			.registerDate(project.getRegisterDate())
-			.registerUsername(project.getUser().getName())
+			.registerUsername(project.getRegisterUser().getName())
 			.build();
 
 		return info;
