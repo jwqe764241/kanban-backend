@@ -50,7 +50,7 @@ public class ProjectMemberService {
 			throw new PermissionException("you have no permission to access this project.");
 		}
 
-		List<ProjectMember> members = projectMemberRepository.findByProjectId(project.getId());
+		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(project.getId());
 		List<ProjectMemberInfo> result = new ArrayList<>(members.size());
 		for(ProjectMember member : members) {
 			User user = member.getUser();

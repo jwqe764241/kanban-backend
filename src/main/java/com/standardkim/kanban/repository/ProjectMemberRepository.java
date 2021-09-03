@@ -8,5 +8,5 @@ import com.standardkim.kanban.entity.ProjectMemberKey;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ProjectMemberRepository extends CrudRepository<ProjectMember, ProjectMemberKey>{
-	List<ProjectMember> findByProjectId(Long projectId);
+	List<ProjectMember> findByProjectIdOrderByRegisterDateAsc(Long projectId);
 }
