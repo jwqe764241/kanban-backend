@@ -1,6 +1,10 @@
 package com.standardkim.kanban.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.standardkim.kanban.dto.UserDto.NewUserInfo;
+import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
 import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
@@ -35,5 +39,21 @@ public class UserService {
 	}
 
 	public void remove() {
+	}
+
+	@Transactional(rollbackFor = Exception.class, readOnly = true)
+	public List<SuggestionUserInfo> getUserSuggestions(Long projectId, String query) {
+		List<User> users = userRepository.findUserSuggestions(projectId, query);
+		List<SuggestionUserInfo> result = new ArrayList<>(users.size());
+		for(User user : users) {
+			SuggestionUserInfo info = SuggestionUserInfo.builder()
+				.id(user.getId())
+				.login(user.getLogin())
+				.name(user.getName())
+				.build();
+			result.add(info);
+		}
+
+		return result;
 	}
 }

@@ -8,8 +8,10 @@ import javax.validation.Valid;
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
+import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
+import com.standardkim.kanban.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +32,8 @@ public class ProjectController {
 	private final ProjectService projectService;
 
 	private final ProjectMemberService projectMemberService;
+
+	private final UserService userService;
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -52,6 +57,12 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long id) {
 		return projectMemberService.getProjectMembersById(id);
+	}
+
+	@GetMapping("/projects/{id}/members/suggestions")
+	@ResponseStatus(HttpStatus.OK)
+	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
+		return userService.getUserSuggestions(id, query);
 	}
 
 	@DeleteMapping("/projects/{id}/members/{userId}")

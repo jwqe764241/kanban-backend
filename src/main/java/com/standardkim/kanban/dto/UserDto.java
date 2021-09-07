@@ -86,4 +86,14 @@ public class UserDto {
 			this.registerDate = user.getRegisterDate();
 		}
 	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class SuggestionUserInfo {
+		private Long id;
+		private String login;
+		private String name;
+	}
 }
