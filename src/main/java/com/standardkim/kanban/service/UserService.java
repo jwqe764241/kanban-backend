@@ -1,6 +1,5 @@
 package com.standardkim.kanban.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.standardkim.kanban.dto.UserDto.NewUserInfo;
@@ -10,6 +9,8 @@ import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.repository.UserRepository;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +24,17 @@ public class UserService {
 
 	private final PasswordEncoder passwordEncoder;
 
+	private final ModelMapper modelMapper;
+
 	@Transactional(rollbackFor = Exception.class)
 	public UserInfo addUser(NewUserInfo newUserInfo) {
 		if(userRepository.existsByLogin(newUserInfo.getLogin())) {
 			throw new LoginAlreadyInUseException("login already in use");
 		}
 
-		User user = newUserInfo.toEntity(passwordEncoder);
-		User result = userRepository.save(user);
-		UserInfo addedUserInfo = new UserInfo(result);
-		return addedUserInfo;
+		User newUser = newUserInfo.toEntity(passwordEncoder);
+		newUser = userRepository.save(newUser);
+		return modelMapper.map(newUser, UserInfo.class);
 	}
 
 	public void update() {
@@ -44,16 +46,7 @@ public class UserService {
 	@Transactional(rollbackFor = Exception.class, readOnly = true)
 	public List<SuggestionUserInfo> getUserSuggestions(Long projectId, String query) {
 		List<User> users = userRepository.findUserSuggestions(projectId, query);
-		List<SuggestionUserInfo> result = new ArrayList<>(users.size());
-		for(User user : users) {
-			SuggestionUserInfo info = SuggestionUserInfo.builder()
-				.id(user.getId())
-				.login(user.getLogin())
-				.name(user.getName())
-				.build();
-			result.add(info);
-		}
-
+		List<SuggestionUserInfo> result = modelMapper.map(users, new TypeToken<List<SuggestionUserInfo>>(){}.getType());
 		return result;
 	}
 }

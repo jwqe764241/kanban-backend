@@ -1,6 +1,7 @@
 package com.standardkim.kanban.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
@@ -18,6 +19,8 @@ import com.standardkim.kanban.repository.ProjectRepository;
 import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.util.AuthenticationFacade;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,8 @@ public class ProjectService {
 	private final ProjectMemberRepository projectMemberRepository;
 
 	private final AuthenticationFacade authenticationFacade;
+
+	private final ModelMapper modelMapper;
 
 	@Transactional(rollbackFor = Exception.class)
 	public Project createProject(String name, String description) {
@@ -70,19 +75,7 @@ public class ProjectService {
 			.orElseThrow(() -> new UserNotFoundException("user not found"));
 
 		Set<ProjectMember> projectMembers = user.getProjects();
-		ArrayList<ProjectInfo> projects = new ArrayList<ProjectInfo>(projectMembers.size());
-
-		for(ProjectMember member : projectMembers) {
-			Project project = member.getProject();
-			ProjectInfo info = ProjectInfo.builder()
-				.id(project.getId())
-				.name(project.getName())
-				.description(project.getDescription())
-				.registerDate(project.getRegisterDate())
-				.registerUsername(project.getRegisterUser().getName())
-				.build();
-			projects.add(info);
-		}
+		ArrayList<ProjectInfo> projects = modelMapper.map(projectMembers, new TypeToken<List<ProjectInfo>>(){}.getType());
 
 		return projects;
 	}
@@ -102,13 +95,7 @@ public class ProjectService {
 			throw new PermissionException("no permission to access project [" + projectId + "]");
 		}
 
-		ProjectInfo info = ProjectInfo.builder()
-			.id(project.getId())
-			.name(project.getName())
-			.description(project.getDescription())
-			.registerDate(project.getRegisterDate())
-			.registerUsername(project.getRegisterUser().getName())
-			.build();
+		ProjectInfo info = modelMapper.map(project, ProjectInfo.class);
 
 		return info;
 	}
