@@ -56,15 +56,6 @@ public class UserDto {
 				.email(email)
 				.build();
 		}
-
-		public static NewUserInfo from(JoinUserRequest joinUserRequest) {
-			return builder()
-				.login(joinUserRequest.getLogin())
-				.password(joinUserRequest.getPassword())
-				.name(joinUserRequest.getName())
-				.email(joinUserRequest.getEmail())
-				.build();
-		}
 	}
 
 	@Getter
@@ -77,14 +68,6 @@ public class UserDto {
 		private String name;
 		private String email;
 		private LocalDateTime registerDate;
-
-		public UserInfo(User user) {
-			this.id = user.getId();
-			this.login = user.getLogin();
-			this.name = user.getName();
-			this.email = user.getEmail();
-			this.registerDate = user.getRegisterDate();
-		}
 	}
 
 	@Getter

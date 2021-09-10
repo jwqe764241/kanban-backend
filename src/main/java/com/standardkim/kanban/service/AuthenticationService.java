@@ -16,6 +16,7 @@ import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,19 +37,15 @@ public class AuthenticationService implements UserDetailsService {
 
 	private final PasswordEncoder passwordEncoder;
 
+	private final ModelMapper modelMapper;
+
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByLogin(username)
 			.orElseThrow(() -> new UsernameNotFoundException("cannot find user"));
 
-		SecurityUser securityUser = SecurityUser.builder()
-			.id(user.getId())
-			.login(user.getLogin())
-			.password(user.getPassword())
-			.name(user.getName())
-			.registerDate(user.getRegisterDate())
-			.build();
+		SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
 
 		return securityUser;
 	}
