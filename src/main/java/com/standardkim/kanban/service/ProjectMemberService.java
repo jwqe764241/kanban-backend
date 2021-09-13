@@ -1,17 +1,16 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
-import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
 import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
-import com.standardkim.kanban.repository.ProjectRepository;
 import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
@@ -26,14 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
 
-	private final ProjectRepository projectRepository;
-
-	private final ProjectService projectService;
-
 	private final AuthenticationFacade authenticationFacade;
 
 	private final ModelMapper modelMapper;
 
+	@Transactional(readOnly = true)
 	public boolean isMemberExists(Long projectId, Long userId){
 		ProjectMemberKey id = ProjectMemberKey.builder()
 			.projectId(projectId)
@@ -42,35 +38,59 @@ public class ProjectMemberService {
 		return projectMemberRepository.existsById(id);
 	}
 
-	@Transactional(rollbackFor = Exception.class, readOnly = true)
-	public List<ProjectMemberInfo> getProjectMembersById(Long projectId) {
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new ResourceNotFoundException("project not found"));
+	@Transactional(readOnly = true)
+	public boolean isProjectOwner(Long projectId, Long userId) {
+		try {
+			ProjectMember projectMember = getProjectMemberById(projectId, userId);
+			return projectMember.isRegister();
+		}
+		catch (ResourceNotFoundException e) {
+			return false;
+		}
+	}
 
+	@Transactional(readOnly = true)
+	public ProjectMember getProjectMemberById(Long projectId, Long userId) {
+		ProjectMemberKey key = ProjectMemberKey.builder()
+			.projectId(projectId)
+			.userId(userId)
+			.build();
+		Optional<ProjectMember> projectMember = projectMemberRepository.findById(key);
+		return projectMember.orElseThrow(() -> new ResourceNotFoundException("project member not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public List<ProjectMemberInfo> getProjectMembersById(Long projectId) {
 		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		if(!isMemberExists(project.getId(), securityUser.getId())) {
+		if(!isMemberExists(projectId, securityUser.getId())) {
 			throw new PermissionException("you have no permission to access this project.");
 		}
-
-		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(project.getId());
+		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
 		List<ProjectMemberInfo> result = modelMapper.map(members, new TypeToken<List<ProjectMemberInfo>>(){}.getType());
-		
 		return result;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public ProjectMember addProjectMemeber(Long projectId, Long userId, boolean isRegister) {
+		ProjectMember projectMember = ProjectMember.builder()
+			.id(new ProjectMemberKey(projectId, userId))
+			.isRegister(isRegister)
+			.build();
+		projectMember = projectMemberRepository.save(projectMember);
+		return projectMember;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteProjectMember(Long projectId, Long userId) {
 		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		if(!projectService.isProjectOwner(projectId, securityUser.getId())) {
+		if(!isProjectOwner(projectId, securityUser.getId())) {
 			throw new PermissionException("no permission to access project [" + projectId + "]");
 		}
 
-		ProjectMemberKey key = ProjectMemberKey.builder()
-			.projectId(projectId)
-			.userId(userId)
-			.build();
-		ProjectMember member = projectMemberRepository.findById(key).orElseGet(() -> null);
-		if(member == null) {
+		ProjectMember member = null;
+		try {
+			member = getProjectMemberById(projectId, userId);
+		} catch (ResourceNotFoundException e) {
 			return;
 		}
 

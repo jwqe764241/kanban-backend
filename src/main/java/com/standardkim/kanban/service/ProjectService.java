@@ -2,21 +2,18 @@ package com.standardkim.kanban.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
-import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.ProjectAlreadyExistException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
-import com.standardkim.kanban.exception.UserNotFoundException;
-import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.ProjectRepository;
-import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
@@ -31,77 +28,63 @@ import lombok.RequiredArgsConstructor;
 public class ProjectService {
 	private final ProjectRepository projectRepository;
 
-	private final UserRepository userRepository;
+	private final ProjectMemberService projectMemberService;
 
-	private final ProjectMemberRepository projectMemberRepository;
-
-	private final AuthenticationFacade authenticationFacade;
+	private final UserService userService;
 
 	private final ModelMapper modelMapper;
 
-	@Transactional(rollbackFor = Exception.class)
-	public Project createProject(String name, String description) {
-		if(projectRepository.existsByName(name)) {
-			throw new ProjectAlreadyExistException("project already exist.");
-		}
+	private final AuthenticationFacade authenticationFacade;
 
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-
-		User user = userRepository.findById(securityUser.getId())
-			.orElseThrow(() -> new UserNotFoundException("use not found"));
-
-		Project newProject = Project.builder()
-			.name(name)
-			.description(description)
-			.registerUser(user)
-			.build();
-		newProject = projectRepository.save(newProject);
-
-		//Add to project member as register
-		ProjectMember projectMember = ProjectMember.builder()
-			.id(new ProjectMemberKey(newProject.getId(), user.getId()))
-			.isRegister(true)
-			.build();
-		projectMemberRepository.save(projectMember);
-		
-		return newProject;
+	@Transactional(readOnly = true)
+	public boolean isProjectNameExists(String name) {
+		return projectRepository.existsByName(name);
 	}
 
-	@Transactional(rollbackFor = Exception.class, readOnly = true)
+	@Transactional(readOnly = true)
+	public Project getProjectById(Long projectId) {
+		Optional<Project> project = projectRepository.findById(projectId);
+		return project.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	}	
+
+	@Transactional(readOnly = true)
 	public ArrayList<ProjectInfo> getMyProjects() {
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-
-		User user = userRepository.findById(securityUser.getId())
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
-
+		User user = userService.getAuthenticatedUser();
 		Set<ProjectMember> projectMembers = user.getProjects();
 		ArrayList<ProjectInfo> projects = modelMapper.map(projectMembers, new TypeToken<List<ProjectInfo>>(){}.getType());
-
 		return projects;
 	}
 
-	@Transactional(rollbackFor = Exception.class, readOnly = true)
-	public ProjectInfo getProjectById(Long projectId) {
+	@Transactional(readOnly = true)
+	public ProjectInfo getProjectInfoById(Long projectId) {
 		SecurityUser user = authenticationFacade.getSecurityUser();
-	
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
-
-		ProjectMemberKey key = ProjectMemberKey.builder()
-			.userId(user.getId())
-			.projectId(projectId)
-			.build();
-		if(!projectMemberRepository.existsById(key)) {
+		Project project = getProjectById(projectId);
+		if(!projectMemberService.isMemberExists(project.getId(), user.getId())) {
 			throw new PermissionException("no permission to access project [" + projectId + "]");
 		}
-
 		ProjectInfo info = modelMapper.map(project, ProjectInfo.class);
-
 		return info;
 	}
 
-	@Transactional(rollbackFor = Exception.class, readOnly = true)
-	public boolean isProjectOwner(Long projectId, Long registerUserId) {
-		return projectRepository.existsByIdAndRegisterUserId(projectId, registerUserId);
+	@Transactional(rollbackFor = Exception.class) 
+	public Project createProject(String name, String description, User registerUser) {
+		Project project = Project.builder()
+			.name(name)
+			.description(description)
+			.registerUser(registerUser)
+			.build();
+		project = projectRepository.save(project);
+		return project;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public Project createProject(String name, String description) {
+		if(isProjectNameExists(name)) {
+			throw new ProjectAlreadyExistException("project already exist.");
+		}
+		User user = userService.getAuthenticatedUser();
+		Project project = createProject(name, description, user);
+		projectMemberService.addProjectMemeber(project.getId(), user.getId(), true);
+		return project;
 	}
 }

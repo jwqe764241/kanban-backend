@@ -50,7 +50,7 @@ public class ProjectController {
 	@GetMapping("/projects/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public ProjectInfo getProject(@PathVariable Long id, Authentication authentication) {
-		return projectService.getProjectById(id);
+		return projectService.getProjectInfoById(id);
 	}
 
 	@GetMapping("/projects/{id}/members")
