@@ -83,6 +83,30 @@ public class AuthenticationService implements UserDetailsService {
 			.build();
 	}
 
+	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
+	public String refreshAccessToken(String refreshToken) throws Exception{
+		if(refreshToken == null || refreshToken.isBlank()) {
+			throw new TokenNotProvidedException("token must not be null");
+		}
+		
+		String login = jwtTokenProvider.getLogin(refreshToken);
+		User user = userService.getUserByLogin(login);
+		RefreshToken token = getRefreshTokenByUserId(user.getId());
+		String userRefreshToken = token.getToken();
+
+		if(!userRefreshToken.equals(refreshToken)) {
+			throw new RefreshTokenNotMatchedException("refresh token not matched");
+		}
+
+		if(jwtTokenProvider.isTokenExpired(userRefreshToken)) {
+			refreshTokenRepository.delete(token);
+			throw new ExpiredRefreshTokenException("refresh token is expired");
+		}
+ 
+		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
+		return "Bearer " + newAccessToken;
+	}
+
 	@Transactional(rollbackFor = Exception.class)
 	public RefreshToken createRefreshToken(Long userId, String token) {
 		User user = userService.getUserById(userId);
@@ -122,29 +146,5 @@ public class AuthenticationService implements UserDetailsService {
 		} catch (UserNotFoundException e) {
 			return;
 		}
-	}
-
-	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String refreshAccessToken(String refreshToken) throws Exception{
-		if(refreshToken == null || refreshToken.isBlank()) {
-			throw new TokenNotProvidedException("token must not be null");
-		}
-		
-		String login = jwtTokenProvider.getLogin(refreshToken);
-		User user = userService.getUserByLogin(login);
-		RefreshToken token = getRefreshTokenByUserId(user.getId());
-		String userRefreshToken = token.getToken();
-
-		if(!userRefreshToken.equals(refreshToken)) {
-			throw new RefreshTokenNotMatchedException("refresh token not matched");
-		}
-
-		if(jwtTokenProvider.isTokenExpired(userRefreshToken)) {
-			refreshTokenRepository.delete(token);
-			throw new ExpiredRefreshTokenException("refresh token is expired");
-		}
- 
-		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
-		return "Bearer " + newAccessToken;
 	}
 }
