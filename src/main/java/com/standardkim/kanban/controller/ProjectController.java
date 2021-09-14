@@ -7,8 +7,10 @@ import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectMemberDto.InviteProjectMemeberRequest;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
+import com.standardkim.kanban.service.ProjectInvitationService;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
 import com.standardkim.kanban.service.UserService;
@@ -32,6 +34,8 @@ public class ProjectController {
 	private final ProjectService projectService;
 
 	private final ProjectMemberService projectMemberService;
+
+	private final ProjectInvitationService projectInvitationService;
 
 	private final UserService userService;
 
@@ -63,6 +67,20 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
 		return userService.getUserSuggestions(id, query);
+	}
+
+	@PostMapping("/projects/{id}/members")
+	@ResponseStatus(HttpStatus.OK)
+	public void inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
+		//projectMemberService.inviteProjectMember(id, request.getUserId());
+		projectInvitationService.inviteUser(id, request.getUserId());
+	}
+
+	@PostMapping("/projects/{id}/invitation")
+	@ResponseStatus(HttpStatus.OK)
+	public void acceptInvitation(@PathVariable Long id) {
+		//accept invitation
+		projectInvitationService.acceptInvite(id);
 	}
 
 	@DeleteMapping("/projects/{id}/members/{userId}")

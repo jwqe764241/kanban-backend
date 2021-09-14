@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProjectInvitation {
 	@EmbeddedId
-	private ProjectInvitationKey key;
+	private ProjectInvitationKey id;
 
 	@ManyToOne
 	@MapsId("project_id")

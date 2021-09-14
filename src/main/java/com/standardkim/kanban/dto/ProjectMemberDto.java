@@ -2,6 +2,8 @@ package com.standardkim.kanban.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +20,14 @@ public class ProjectMemberDto {
 		private String name;
 		private String email;
 		private LocalDateTime date;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class InviteProjectMemeberRequest {
+		@NotNull
+		private Long userId;
 	}
 }
