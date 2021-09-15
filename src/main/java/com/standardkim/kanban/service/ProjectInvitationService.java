@@ -1,5 +1,7 @@
 package com.standardkim.kanban.service;
 
+import com.standardkim.kanban.dto.MailDto.ProjectInvitationMailInfo;
+import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.User;
@@ -18,9 +20,13 @@ import lombok.RequiredArgsConstructor;
 public class ProjectInvitationService {
 	private final ProjectInvitationRepository projectInvitationRepository;
 
+	private final ProjectService projectService;
+
 	private final ProjectMemberService projectMemberService;
 	
 	private final UserService userService;
+
+	private final MailService mailService;
 
 	@Transactional(readOnly = true)
 	public boolean isInvitationExists(Long projectId, Long invitedUserId) {
@@ -52,11 +58,24 @@ public class ProjectInvitationService {
 			throw new PermissionException("no permission to access project [" + projectId + "]");
 		}
 
-		if(isInvitationExists(projectId, invitedUserId)) {
+		User invitedUser = userService.getUserById(invitedUserId);
+		if(isInvitationExists(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 
-		addProjectInvite(projectId, invitedUserId, user);
+		Project project = projectService.getProjectById(projectId);
+
+		addProjectInvite(projectId, invitedUser.getId(), user);
+
+		ProjectInvitationMailInfo info = ProjectInvitationMailInfo.builder()
+			.inviteeMailAddress(invitedUser.getEmail())
+			.projectId(project.getId())
+			.projectName(project.getName())
+			.inviteeLogin(invitedUser.getLogin())
+			.inviterLogin(user.getLogin())
+			.build();
+		
+		mailService.sendProjectInvitationMessage(info);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
