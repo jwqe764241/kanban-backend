@@ -138,4 +138,13 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
 	}
+
+	@ExceptionHandler(UserNotInvitedException.class)
+	public ResponseEntity<ErrorMessage> userNotInvitedException(UserNotInvitedException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("invite error")
+			.detail("you are not invited")
+			.build();
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+	}
 }

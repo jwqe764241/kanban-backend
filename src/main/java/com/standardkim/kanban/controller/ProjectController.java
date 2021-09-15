@@ -72,14 +72,12 @@ public class ProjectController {
 	@PostMapping("/projects/{id}/members")
 	@ResponseStatus(HttpStatus.OK)
 	public void inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
-		//projectMemberService.inviteProjectMember(id, request.getUserId());
 		projectInvitationService.inviteUser(id, request.getUserId());
 	}
 
 	@PostMapping("/projects/{id}/invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long id) {
-		//accept invitation
 		projectInvitationService.acceptInvite(id);
 	}
 

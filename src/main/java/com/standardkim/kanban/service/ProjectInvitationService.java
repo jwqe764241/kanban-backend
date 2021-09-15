@@ -5,6 +5,7 @@ import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.UserAlreadyInvitedException;
+import com.standardkim.kanban.exception.UserNotInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
 import org.springframework.stereotype.Service;
@@ -58,7 +59,22 @@ public class ProjectInvitationService {
 		addProjectInvite(projectId, invitedUserId, user);
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	public void acceptInvite(Long projectId) {
+		User user = userService.getAuthenticatedUser();
+		if(!isInvitationExists(projectId, user.getId())) {
+			throw new UserNotInvitedException("user not invited");
+		}
+		projectMemberService.addProjectMemeber(projectId, user.getId(), false);
+		deleteInvitation(projectId, user.getId());
+	}
 
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteInvitation(Long projectId, Long invitedUserId) {
+		ProjectInvitationKey key = ProjectInvitationKey.builder()
+			.projectId(projectId)
+			.invitedUserId(invitedUserId)
+			.build();
+		projectInvitationRepository.deleteById(key);
 	}
 }
