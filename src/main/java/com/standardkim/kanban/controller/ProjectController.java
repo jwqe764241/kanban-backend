@@ -81,6 +81,12 @@ public class ProjectController {
 		projectInvitationService.acceptInvite(id);
 	}
 
+	@DeleteMapping("/projects/{id}/invitations/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
+		projectInvitationService.deleteInvitation(id, userId);
+	}
+
 	@DeleteMapping("/projects/{id}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {

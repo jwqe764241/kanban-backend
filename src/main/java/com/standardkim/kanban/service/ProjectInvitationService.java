@@ -90,6 +90,15 @@ public class ProjectInvitationService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteInvitation(Long projectId, Long invitedUserId) {
+		User user = userService.getAuthenticatedUser();
+		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
+			throw new PermissionException("no permission to access project [" + projectId + "]");
+		}
+
+		if(!isInvitationExists(projectId, invitedUserId)) {
+			return;
+		}
+
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
 			.projectId(projectId)
 			.invitedUserId(invitedUserId)
