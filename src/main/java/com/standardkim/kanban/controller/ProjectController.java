@@ -7,7 +7,8 @@ import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
-import com.standardkim.kanban.dto.ProjectMemberDto.InviteProjectMemeberRequest;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberRequest;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
 import com.standardkim.kanban.service.ProjectInvitationService;
@@ -79,6 +80,12 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long id) {
 		projectInvitationService.acceptInvite(id);
+	}
+
+	@GetMapping("/projects/{id}/invitations")
+	@ResponseStatus(HttpStatus.OK)
+	public List<InvitedUserInfo> getInvitations(@PathVariable Long id) {
+		return projectInvitationService.getInvitedUsers(id);
 	}
 
 	@DeleteMapping("/projects/{id}/invitations/{userId}")

@@ -1,6 +1,9 @@
 package com.standardkim.kanban.service;
 
+import java.util.List;
+
 import com.standardkim.kanban.dto.MailDto.ProjectInvitationMailInfo;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
@@ -10,6 +13,8 @@ import com.standardkim.kanban.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.exception.UserNotInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +31,8 @@ public class ProjectInvitationService {
 	
 	private final UserService userService;
 
+	private final ModelMapper modelMapper;
+
 	private final MailService mailService;
 
 	@Transactional(readOnly = true)
@@ -35,6 +42,23 @@ public class ProjectInvitationService {
 			.invitedUserId(invitedUserId)
 			.build();
 		return projectInvitationRepository.existsById(key);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ProjectInvitation> getInvitationsByProjectId(Long projectId) {
+		return projectInvitationRepository.findByProjectId(projectId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<InvitedUserInfo> getInvitedUsers(Long projectId) {
+		User user = userService.getAuthenticatedUser();
+		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
+			throw new PermissionException("no permission to access project [" + projectId + "]");
+		}
+
+		List<ProjectInvitation> invitations = getInvitationsByProjectId(projectId);
+		List<InvitedUserInfo> invitedUsers = modelMapper.map(invitations, new TypeToken<List<InvitedUserInfo>>(){}.getType());
+		return invitedUsers;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
