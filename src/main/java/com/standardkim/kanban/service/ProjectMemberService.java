@@ -77,6 +77,10 @@ public class ProjectMemberService {
 
 	@Transactional(readOnly = true)
 	public List<SuggestionUserInfo> getUserSuggestions(Long projectId, String query) {
+		SecurityUser securityUser = authenticationFacade.getSecurityUser();
+		if(!isProjectOwner(projectId, securityUser.getId())) {
+			throw new PermissionException("no permission to access project [" + projectId + "]");
+		}
 		List<User> users = userRepository.findUserSuggestions(projectId, query);
 		List<SuggestionUserInfo> result = modelMapper.map(users, new TypeToken<List<SuggestionUserInfo>>(){}.getType());
 		return result;
