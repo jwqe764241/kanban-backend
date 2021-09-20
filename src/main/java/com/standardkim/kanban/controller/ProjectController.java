@@ -14,7 +14,6 @@ import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
 import com.standardkim.kanban.service.ProjectInvitationService;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
-import com.standardkim.kanban.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -37,8 +36,6 @@ public class ProjectController {
 	private final ProjectMemberService projectMemberService;
 
 	private final ProjectInvitationService projectInvitationService;
-
-	private final UserService userService;
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -67,7 +64,7 @@ public class ProjectController {
 	@GetMapping("/projects/{id}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
 	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
-		return userService.getUserSuggestions(id, query);
+		return projectMemberService.getUserSuggestions(id, query);
 	}
 
 	@PostMapping("/projects/{id}/members")
