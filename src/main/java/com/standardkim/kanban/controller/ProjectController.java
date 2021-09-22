@@ -94,6 +94,6 @@ public class ProjectController {
 	@DeleteMapping("/projects/{id}/invitations/{userId}")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
-		projectInvitationService.deleteInvitation(id, userId);
+		projectInvitationService.cancelInvitation(id, userId);
 	}
 }

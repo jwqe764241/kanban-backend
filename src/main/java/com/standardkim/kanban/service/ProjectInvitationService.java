@@ -103,6 +103,19 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
+	public void deleteInvitation(Long projectId, Long invitedUserId) {
+		if(!isInvitationExists(projectId, invitedUserId)) {
+			return;
+		}
+
+		ProjectInvitationKey key = ProjectInvitationKey.builder()
+			.projectId(projectId)
+			.invitedUserId(invitedUserId)
+			.build();
+		projectInvitationRepository.deleteById(key);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
 	public void acceptInvite(Long projectId) {
 		User user = userService.getAuthenticatedUser();
 		if(!isInvitationExists(projectId, user.getId())) {
@@ -113,20 +126,11 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteInvitation(Long projectId, Long invitedUserId) {
+	public void cancelInvitation(Long projectId, Long invitedUserId) {
 		User user = userService.getAuthenticatedUser();
 		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
 			throw new PermissionException("no permission to access project [" + projectId + "]");
 		}
-
-		if(!isInvitationExists(projectId, invitedUserId)) {
-			return;
-		}
-
-		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(projectId)
-			.invitedUserId(invitedUserId)
-			.build();
-		projectInvitationRepository.deleteById(key);
+		deleteInvitation(projectId, user.getId());
 	}
 }
