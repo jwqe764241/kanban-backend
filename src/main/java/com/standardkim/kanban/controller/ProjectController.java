@@ -73,6 +73,12 @@ public class ProjectController {
 		projectInvitationService.inviteUser(id, request.getUserId());
 	}
 
+	@DeleteMapping("/projects/{id}/members/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
+		projectMemberService.deleteProjectMember(id, userId);
+	}
+
 	@PostMapping("/projects/{id}/invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long id) {
@@ -89,11 +95,5 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
 		projectInvitationService.deleteInvitation(id, userId);
-	}
-
-	@DeleteMapping("/projects/{id}/members/{userId}")
-	@ResponseStatus(HttpStatus.OK)
-	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
-		projectMemberService.deleteProjectMember(id, userId);
 	}
 }
