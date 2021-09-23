@@ -1,5 +1,9 @@
 package com.standardkim.kanban.exception;
 
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 import javax.annotation.PostConstruct;
 
 import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
@@ -7,6 +11,8 @@ import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -146,5 +152,30 @@ public class GlobalExceptionHandler {
 			.detail("you are not invited")
 			.build();
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+		Map<String, Object> errors = toValidationError(e);
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("validation error")
+			.detail("validation failed")
+			.data(errors)
+			.build();
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+	}
+
+	private Map<String, Object> toValidationError(MethodArgumentNotValidException e) {
+		List<FieldError> list = e.getFieldErrors();
+		Map<String, Object> result = new HashMap<>();
+		for(FieldError fieldError : list) {
+			ValidationError error = ValidationError.builder()
+				.fieldName(fieldError.getField())
+				.rejectedValue(fieldError.getRejectedValue())
+				.message(fieldError.getDefaultMessage())
+				.build();
+			result.put(fieldError.getField(), error);
+		}
+		return result;
 	}
 }

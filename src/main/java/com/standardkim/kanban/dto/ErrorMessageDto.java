@@ -1,8 +1,6 @@
 package com.standardkim.kanban.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +18,6 @@ public class ErrorMessageDto {
 		private String detail;
 		@Builder.Default
 		private LocalDateTime date = LocalDateTime.now();
-		@Builder.Default
-		private List<Object> datas = new ArrayList<Object>();
+		private Object data;
 	}
 }
