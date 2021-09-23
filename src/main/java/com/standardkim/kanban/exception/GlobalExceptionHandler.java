@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 
 import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -127,6 +126,25 @@ public class GlobalExceptionHandler {
 			.detail("can't remove project owner")
 			.build();
 
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(UserAlreadyInvitedException.class)
+	public ResponseEntity<ErrorMessage> userAlreadyInvitedException(UserAlreadyInvitedException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("invite error")
+			.detail("user already invited")
+			.build();
+
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler(UserNotInvitedException.class)
+	public ResponseEntity<ErrorMessage> userNotInvitedException(UserNotInvitedException e) {
+		ErrorMessage errorMessage = ErrorMessage.builder()
+			.message("invite error")
+			.detail("you are not invited")
+			.build();
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
 }

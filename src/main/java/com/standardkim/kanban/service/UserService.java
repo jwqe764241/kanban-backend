@@ -1,11 +1,9 @@
 package com.standardkim.kanban.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.NewUserInfo;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
 import com.standardkim.kanban.dto.UserDto.UserInfo;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
@@ -14,7 +12,6 @@ import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,12 +66,5 @@ public class UserService {
 	}
 
 	public void remove() {
-	}
-
-	@Transactional(readOnly = true)
-	public List<SuggestionUserInfo> getUserSuggestions(Long projectId, String query) {
-		List<User> users = userRepository.findUserSuggestions(projectId, query);
-		List<SuggestionUserInfo> result = modelMapper.map(users, new TypeToken<List<SuggestionUserInfo>>(){}.getType());
-		return result;
 	}
 }

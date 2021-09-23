@@ -7,11 +7,13 @@ import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberRequest;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
+import com.standardkim.kanban.service.ProjectInvitationService;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
-import com.standardkim.kanban.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -33,7 +35,7 @@ public class ProjectController {
 
 	private final ProjectMemberService projectMemberService;
 
-	private final UserService userService;
+	private final ProjectInvitationService projectInvitationService;
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -62,12 +64,36 @@ public class ProjectController {
 	@GetMapping("/projects/{id}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
 	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
-		return userService.getUserSuggestions(id, query);
+		return projectMemberService.getUserSuggestions(id, query);
+	}
+
+	@PostMapping("/projects/{id}/members")
+	@ResponseStatus(HttpStatus.OK)
+	public void inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
+		projectInvitationService.inviteUser(id, request.getUserId());
 	}
 
 	@DeleteMapping("/projects/{id}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
 		projectMemberService.deleteProjectMember(id, userId);
+	}
+
+	@PostMapping("/projects/{id}/invitation")
+	@ResponseStatus(HttpStatus.OK)
+	public void acceptInvitation(@PathVariable Long id) {
+		projectInvitationService.acceptInvite(id);
+	}
+
+	@GetMapping("/projects/{id}/invitations")
+	@ResponseStatus(HttpStatus.OK)
+	public List<InvitedUserInfo> getInvitations(@PathVariable Long id) {
+		return projectInvitationService.getInvitedUsers(id);
+	}
+
+	@DeleteMapping("/projects/{id}/invitations/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
+		projectInvitationService.cancelInvitation(id, userId);
 	}
 }
