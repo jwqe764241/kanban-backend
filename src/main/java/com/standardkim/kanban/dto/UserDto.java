@@ -32,6 +32,10 @@ public class UserDto {
 		@NotBlank
 		@Size(min = 2, max = 20)
 		private String name;
+
+		@NotBlank
+		@Size(min = 5, max = 320)
+		private String email;
 	}
 
 	@Getter
@@ -42,20 +46,14 @@ public class UserDto {
 		private String login;
 		private String password;
 		private String name;
+		private String email;
 
 		public User toEntity(PasswordEncoder passwordEncoder) {
 			return User.builder()
 				.login(login)
 				.password(passwordEncoder.encode(password))
 				.name(name)
-				.build();
-		}
-
-		public static NewUserInfo from(JoinUserRequest joinUserRequest) {
-			return builder()
-				.login(joinUserRequest.getLogin())
-				.password(joinUserRequest.getPassword())
-				.name(joinUserRequest.getName())
+				.email(email)
 				.build();
 		}
 	}
@@ -68,13 +66,17 @@ public class UserDto {
 		private Long id;
 		private String login;
 		private String name;
+		private String email;
 		private LocalDateTime registerDate;
+	}
 
-		public UserInfo(User user) {
-			this.id = user.getId();
-			this.login = user.getLogin();
-			this.name = user.getName();
-			this.registerDate = user.getRegisterDate();
-		}
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class SuggestionUserInfo {
+		private Long id;
+		private String login;
+		private String name;
 	}
 }

@@ -8,16 +8,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class ErrorMessageDto {
+public class ProjectMemberDto {
 	@Getter
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class ErrorMessage {
-		private String message;
-		private String detail;
-		@Builder.Default
-		private LocalDateTime date = LocalDateTime.now();
-		private Object data;
+	public static class ProjectMemberInfo {
+		private Long id;
+		private String name;
+		private String email;
+		private LocalDateTime date;
 	}
 }

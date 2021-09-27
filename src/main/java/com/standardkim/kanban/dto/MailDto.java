@@ -1,23 +1,21 @@
 package com.standardkim.kanban.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class ErrorMessageDto {
+public class MailDto {
 	@Getter
-	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
 	@AllArgsConstructor
-	public static class ErrorMessage {
-		private String message;
-		private String detail;
-		@Builder.Default
-		private LocalDateTime date = LocalDateTime.now();
-		private Object data;
+	public static class ProjectInvitationMailInfo {
+		private String inviteeMailAddress;
+		private Long projectId;
+		private String projectName;
+		private String inviterLogin;
+		private String inviteeLogin;
 	}
 }

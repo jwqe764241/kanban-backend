@@ -6,6 +6,7 @@ import com.standardkim.kanban.dto.UserDto.JoinUserRequest;
 import com.standardkim.kanban.dto.UserDto.NewUserInfo;
 import com.standardkim.kanban.service.UserService;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +20,12 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 
-	@PostMapping("/join")
+	private final ModelMapper modelMapper;
+
+	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void join(@RequestBody @Valid JoinUserRequest joinUserRequest) {
-		NewUserInfo newUserInfo = NewUserInfo.from(joinUserRequest);
+		NewUserInfo newUserInfo = modelMapper.map(joinUserRequest, NewUserInfo.class);
 		userService.addUser(newUserInfo);
 	}
 }

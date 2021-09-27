@@ -43,6 +43,9 @@ public class User {
 	@Column(length = 20, nullable = false)
 	private String name;
 
+	@Column(length = 320, nullable = false)
+	private String email;
+
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;

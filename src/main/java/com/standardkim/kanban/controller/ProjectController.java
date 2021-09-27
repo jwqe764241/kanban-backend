@@ -1,19 +1,28 @@
 package com.standardkim.kanban.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
 import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberRequest;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
+import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
+import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
+import com.standardkim.kanban.service.ProjectInvitationService;
+import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +32,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectController {
 	private final ProjectService projectService;
+
+	private final ProjectMemberService projectMemberService;
+
+	private final ProjectInvitationService projectInvitationService;
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -39,6 +52,48 @@ public class ProjectController {
 	@GetMapping("/projects/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public ProjectInfo getProject(@PathVariable Long id, Authentication authentication) {
-		return projectService.getProjectById(id);
+		return projectService.getProjectInfoById(id);
+	}
+
+	@GetMapping("/projects/{id}/members")
+	@ResponseStatus(HttpStatus.OK)
+	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long id) {
+		return projectMemberService.getProjectMembersById(id);
+	}
+
+	@GetMapping("/projects/{id}/members/suggestions")
+	@ResponseStatus(HttpStatus.OK)
+	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
+		return projectMemberService.getUserSuggestions(id, query);
+	}
+
+	@PostMapping("/projects/{id}/members")
+	@ResponseStatus(HttpStatus.OK)
+	public void inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
+		projectInvitationService.inviteUser(id, request.getUserId());
+	}
+
+	@DeleteMapping("/projects/{id}/members/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
+		projectMemberService.deleteProjectMember(id, userId);
+	}
+
+	@PostMapping("/projects/{id}/invitation")
+	@ResponseStatus(HttpStatus.OK)
+	public void acceptInvitation(@PathVariable Long id) {
+		projectInvitationService.acceptInvite(id);
+	}
+
+	@GetMapping("/projects/{id}/invitations")
+	@ResponseStatus(HttpStatus.OK)
+	public List<InvitedUserInfo> getInvitations(@PathVariable Long id) {
+		return projectInvitationService.getInvitedUsers(id);
+	}
+
+	@DeleteMapping("/projects/{id}/invitations/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
+		projectInvitationService.cancelInvitation(id, userId);
 	}
 }

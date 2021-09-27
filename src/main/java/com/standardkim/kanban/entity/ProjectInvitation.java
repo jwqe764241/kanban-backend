@@ -1,18 +1,14 @@
 package com.standardkim.kanban.entity;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.MapsId;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,26 +23,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Project {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(updatable = false, nullable = false)
-	private Long id;
+public class ProjectInvitation {
+	@EmbeddedId
+	private ProjectInvitationKey id;
 
-	@Column(length = 50, nullable = false, unique = true)
-	private String name;
+	@ManyToOne
+	@MapsId("project_id")
+	@JoinColumn(name = "project_id", nullable = false, insertable = false)
+	private Project project;
 
-	@Column(length = 200)
-	private String description;
+	@ManyToOne
+	@MapsId("invited_user_id")
+	@JoinColumn(name = "invited_user_id", nullable = false, insertable = false)
+	private User invitedUser;
 
 	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
-	@JoinColumn(name = "register_user_id", referencedColumnName = "id")
+	@JoinColumn(name = "register_user_id", referencedColumnName = "id", nullable = false, updatable = false)
 	private User registerUser;
-	
+
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
-
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-	private Set<ProjectMember> members;
 }

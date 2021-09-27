@@ -11,6 +11,7 @@ import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.service.UserService;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -37,16 +40,26 @@ public class UserServiceTest {
 	@Spy
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+	@Spy
+	private ModelMapper modelMapper = new ModelMapper();
+
 	@InjectMocks
 	private UserService userService;
+
+	@BeforeEach
+    void setUp() {
+		modelMapper.getConfiguration()
+			.setFieldAccessLevel(AccessLevel.PRIVATE)
+			.setFieldMatchingEnabled(true);
+    }
 
 	@DisplayName("When add user successfully, return added user's info")
 	@Test
 	public void when_AddUserSuccessfully_expect_ReturnAddedUserInfo() {
 		//given
-		final NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
+		final NewUserInfo newUserInfo = modelMapper.map(getJoinUserRequest(), NewUserInfo.class);
 		final User fakeUser = new User(1L, newUserInfo.getLogin(), 
-			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), LocalDateTime.now(), null);
+			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), newUserInfo.getEmail(), LocalDateTime.now(), null);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.findById(anyLong())).willReturn(Optional.of(fakeUser));
@@ -69,7 +82,7 @@ public class UserServiceTest {
 	@Test
 	public void when_LoginAlreadyInUse_expect_ExceptionThrown() {
 		//given
-		NewUserInfo newUserInfo = NewUserInfo.from(getJoinUserRequest());
+		NewUserInfo newUserInfo = modelMapper.map(getJoinUserRequest(), NewUserInfo.class);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
@@ -80,7 +93,7 @@ public class UserServiceTest {
 	}
 
 	private JoinUserRequest getJoinUserRequest() {
-		JoinUserRequest result = new JoinUserRequest("test", "1234", "test");
+		JoinUserRequest result = new JoinUserRequest("test", "1234", "test", "aaa@example.com");
 		return result;
 	}
 }
