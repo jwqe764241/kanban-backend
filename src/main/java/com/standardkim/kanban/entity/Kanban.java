@@ -1,9 +1,7 @@
 package com.standardkim.kanban.entity;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,29 +24,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Project {
+public class Kanban {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
 	private Long id;
 
-	@Column(length = 50, nullable = false, unique = true)
-	private String name;
-
 	@Column(length = 200)
 	private String description;
 
-	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
-	@JoinColumn(name = "register_user_id", referencedColumnName = "id")
-	private User registerUser;
-	
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-	private Set<ProjectMember> members;
-
-	@OneToMany(mappedBy = "project", orphanRemoval = true)
-	private Set<Kanban> kanbans;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "project_id")
+	private Project project;
 }
