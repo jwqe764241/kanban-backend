@@ -115,16 +115,6 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.NOT_FOUND);
 	}
 
-	@ExceptionHandler(PermissionException.class)
-	public ResponseEntity<ErrorMessage> permissionException(PermissionException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("permission error")
-			.detail("you have no permission to access this resource")
-			.build();
-
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.FORBIDDEN);
-	}
-
 	@ExceptionHandler(CannotDeleteProjectOwnerException.class)
 	public ResponseEntity<ErrorMessage> cannotDeleteProjectOwnerException(CannotDeleteProjectOwnerException e) {
 		ErrorMessage errorMessage = ErrorMessage.builder()

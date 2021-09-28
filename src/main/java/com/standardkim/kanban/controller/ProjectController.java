@@ -16,6 +16,7 @@ import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,30 +52,35 @@ public class ProjectController {
 
 	@GetMapping("/projects/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectMember(#id)")
 	public ProjectInfo getProject(@PathVariable Long id, Authentication authentication) {
 		return projectService.getProjectInfoById(id);
 	}
 
 	@GetMapping("/projects/{id}/members")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectMember(#id)")
 	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long id) {
 		return projectMemberService.getProjectMembersById(id);
 	}
 
 	@GetMapping("/projects/{id}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#id)")
 	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
 		return projectMemberService.getUserSuggestions(id, query);
 	}
 
 	@PostMapping("/projects/{id}/members")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#id)")
 	public void inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
 		projectInvitationService.inviteUser(id, request.getUserId());
 	}
 
 	@DeleteMapping("/projects/{id}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#id)")
 	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
 		projectMemberService.deleteProjectMember(id, userId);
 	}
@@ -87,13 +93,15 @@ public class ProjectController {
 
 	@GetMapping("/projects/{id}/invitations")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#id)")
 	public List<InvitedUserInfo> getInvitations(@PathVariable Long id) {
 		return projectInvitationService.getInvitedUsers(id);
 	}
 
 	@DeleteMapping("/projects/{id}/invitations/{userId}")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#id)")
 	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
-		projectInvitationService.cancelInvitation(id, userId);
+		projectInvitationService.deleteInvitation(id, userId);
 	}
 }
