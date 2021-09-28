@@ -3,18 +3,15 @@ package com.standardkim.kanban.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
-import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.UserRepository;
-import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -29,8 +26,6 @@ public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
 
 	private final UserRepository userRepository;
-
-	private final AuthenticationFacade authenticationFacade;
 
 	private final ModelMapper modelMapper;
 
@@ -66,10 +61,6 @@ public class ProjectMemberService {
 
 	@Transactional(readOnly = true)
 	public List<ProjectMemberInfo> getProjectMembersById(Long projectId) {
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		if(!isMemberExists(projectId, securityUser.getId())) {
-			throw new PermissionException("you have no permission to access this project.");
-		}
 		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
 		List<ProjectMemberInfo> result = modelMapper.map(members, new TypeToken<List<ProjectMemberInfo>>(){}.getType());
 		return result;
@@ -77,10 +68,6 @@ public class ProjectMemberService {
 
 	@Transactional(readOnly = true)
 	public List<SuggestionUserInfo> getUserSuggestions(Long projectId, String query) {
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		if(!isProjectOwner(projectId, securityUser.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
 		List<User> users = userRepository.findUserSuggestions(projectId, query);
 		List<SuggestionUserInfo> result = modelMapper.map(users, new TypeToken<List<SuggestionUserInfo>>(){}.getType());
 		return result;
@@ -98,11 +85,6 @@ public class ProjectMemberService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteProjectMember(Long projectId, Long userId) {
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		if(!isProjectOwner(projectId, securityUser.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
-
 		ProjectMember member = null;
 		try {
 			member = getProjectMemberById(projectId, userId);

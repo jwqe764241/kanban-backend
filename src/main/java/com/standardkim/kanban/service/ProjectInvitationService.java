@@ -8,7 +8,6 @@ import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.exception.UserNotInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
@@ -51,11 +50,6 @@ public class ProjectInvitationService {
 
 	@Transactional(readOnly = true)
 	public List<InvitedUserInfo> getInvitedUsers(Long projectId) {
-		User user = userService.getAuthenticatedUser();
-		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
-
 		List<ProjectInvitation> invitations = getInvitationsByProjectId(projectId);
 		List<InvitedUserInfo> invitedUsers = modelMapper.map(invitations, new TypeToken<List<InvitedUserInfo>>(){}.getType());
 		return invitedUsers;
@@ -77,16 +71,12 @@ public class ProjectInvitationService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void inviteUser(Long projectId, Long invitedUserId) {
-		User user = userService.getAuthenticatedUser();
-		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
-
 		User invitedUser = userService.getUserById(invitedUserId);
 		if(isInvitationExists(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 
+		User user = userService.getAuthenticatedUser();
 		Project project = projectService.getProjectById(projectId);
 
 		addProjectInvite(projectId, invitedUser.getId(), user);
@@ -122,15 +112,6 @@ public class ProjectInvitationService {
 			throw new UserNotInvitedException("user not invited");
 		}
 		projectMemberService.addProjectMemeber(projectId, user.getId(), false);
-		deleteInvitation(projectId, user.getId());
-	}
-
-	@Transactional(rollbackFor = Exception.class)
-	public void cancelInvitation(Long projectId, Long invitedUserId) {
-		User user = userService.getAuthenticatedUser();
-		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
 		deleteInvitation(projectId, user.getId());
 	}
 }
