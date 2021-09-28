@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 public class MethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 	private final ProjectMemberService projectMemberService;
 
+	private Object filterObject;
+    private Object returnObject;
+
 	public MethodSecurityExpressionRoot(Authentication authentication, ProjectMemberService projectMemberService) {
 		super(authentication);
 		this.projectMemberService = projectMemberService;
@@ -31,32 +34,28 @@ public class MethodSecurityExpressionRoot extends SecurityExpressionRoot impleme
 	}
 
 	@Override
-	public void setFilterObject(Object filterObject) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public Object getFilterObject() {
-		// TODO Auto-generated method stub
-		return null;
+		return filterObject;
 	}
 
 	@Override
-	public void setReturnObject(Object returnObject) {
-		// TODO Auto-generated method stub
-		
+	public void setFilterObject(Object filterObject) {
+		this.filterObject = filterObject;
 	}
 
 	@Override
 	public Object getReturnObject() {
-		// TODO Auto-generated method stub
-		return null;
+		return returnObject;
+	}
+
+	@Override
+	public void setReturnObject(Object returnObject) {
+		this.returnObject = returnObject;
+		
 	}
 
 	@Override
 	public Object getThis() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 }
