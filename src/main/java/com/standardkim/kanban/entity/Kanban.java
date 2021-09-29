@@ -30,6 +30,9 @@ public class Kanban {
 	@Column(updatable = false, nullable = false)
 	private Long id;
 
+	@Column(length = 50)
+	private String name;
+
 	@Column(length = 200)
 	private String description;
 
