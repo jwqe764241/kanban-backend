@@ -1,5 +1,6 @@
 package com.standardkim.kanban.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanDTO;
@@ -12,6 +13,7 @@ import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.KanbanSequenceRepository;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +31,22 @@ public class KanbanService {
 	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	public KanbanSequence getKanbanSequence(Long kanbanId) {
+	public KanbanSequence getKanbanSequenceByKanbanId(Long kanbanId) {
 		Optional<KanbanSequence> kanbanSequence = kanbanSequenceRepository.findById(kanbanId);
 		return kanbanSequence.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public List<KanbanSequence> getKanbanSequencesByProjectId(Long projectId) {
+		Optional<List<KanbanSequence>> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
+		return kanbanSequences.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public List<KanbanInfoDto> getKanbanInfosByProjectId(Long projectId) {
+		List<KanbanSequence> kanbanSequences = getKanbanSequencesByProjectId(projectId);
+		List<KanbanInfoDto> kanbanInfos = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanInfoDto>>(){}.getType());
+		return kanbanInfos;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -44,7 +59,7 @@ public class KanbanService {
 			.build();
 		kanbanRepository.save(kanban);
 
-		KanbanSequence sequence = getKanbanSequence(kanban.getId());
+		KanbanSequence sequence = getKanbanSequenceByKanbanId(kanban.getId());
 		KanbanInfoDto info = modelMapper.map(sequence, KanbanInfoDto.class);
 		return info;
 	}
