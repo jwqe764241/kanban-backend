@@ -10,6 +10,7 @@ import com.standardkim.kanban.service.KanbanService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,5 +37,12 @@ public class KanbanController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<KanbanInfoDto> getKanbans(@PathVariable Long projectId) {
 		return kanbanService.getKanbanInfosByProjectId(projectId);
+	}
+
+	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")
+	@PreAuthorize("isProjectOwner(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public void removeKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
+		kanbanService.deleteKanban(projectId, sequenceId);
 	}
 }

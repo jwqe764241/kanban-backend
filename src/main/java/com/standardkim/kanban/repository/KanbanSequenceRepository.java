@@ -9,4 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface KanbanSequenceRepository extends CrudRepository<KanbanSequence, Long>{
 	Optional<List<KanbanSequence>> findByProjectIdAndIsDeletedOrderBySequenceId(Long projectId, boolean isDeleted);
+	Optional<KanbanSequence> findByProjectIdAndSequenceId(Long projectId, Long sequenceId);
 }
