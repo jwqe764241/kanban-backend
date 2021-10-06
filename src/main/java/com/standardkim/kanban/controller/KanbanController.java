@@ -39,6 +39,13 @@ public class KanbanController {
 		return kanbanService.getKanbanInfosByProjectId(projectId);
 	}
 
+	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}")
+	@PreAuthorize("isProjectMember(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public KanbanInfoDto getKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
+		return kanbanService.getKanbanInfoBySequenceId(projectId, sequenceId);
+	}
+
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
