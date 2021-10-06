@@ -55,6 +55,20 @@ public class KanbanService {
 		return kanbanInfos;
 	}
 
+	@Transactional(readOnly = true)
+	public KanbanInfoDto getKanbanInfoBySequenceId(Long projectId, Long sequenceId) {
+		KanbanSequence kanbanSequence = getKanbanSequenceBySequenceId(projectId, sequenceId);
+		KanbanInfoDto kanbanInfo = modelMapper.map(kanbanSequence, KanbanInfoDto.class);
+		return kanbanInfo;
+	}
+
+	@Transactional(readOnly = true)
+	public Kanban getKanbanBySequenceId(Long projectId, Long sequenceId) {
+		KanbanSequence kanbanSequence = getKanbanSequenceBySequenceId(projectId, sequenceId);
+		Optional<Kanban> kanban = kanbanRepository.findById(kanbanSequence.getId());
+		return kanban.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	}
+
 	@Transactional(rollbackFor = Exception.class)
 	public KanbanInfoDto createKanban(Long projectId, CreateKanbanDTO createKanbanDto) {
 		Project project = projectService.getProjectById(projectId);
@@ -73,8 +87,8 @@ public class KanbanService {
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteKanban(Long projectId, Long sequenceId) {
 		try {
-			KanbanSequence kanbanSequence = getKanbanSequenceBySequenceId(projectId, sequenceId);
-			kanbanRepository.deleteById(kanbanSequence.getId());
+			Kanban kanban = getKanbanBySequenceId(projectId, sequenceId);
+			kanban.updateToDeleted();
 		}
 		catch (ResourceNotFoundException e) {
 			return;

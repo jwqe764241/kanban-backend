@@ -50,4 +50,8 @@ public class Kanban {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id", nullable = false)
 	private Project project;
+
+	public void updateToDeleted() {
+		isDeleted = true;
+	}
 }
