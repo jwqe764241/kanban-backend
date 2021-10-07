@@ -17,7 +17,6 @@ import com.standardkim.kanban.service.ProjectService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,58 +49,58 @@ public class ProjectController {
 		return projectService.getMyProjects();
 	}
 
-	@GetMapping("/projects/{id}")
+	@GetMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectMember(#id)")
-	public ProjectInfo getProject(@PathVariable Long id, Authentication authentication) {
-		return projectService.getProjectInfoById(id);
+	@PreAuthorize("isProjectMember(#projectId)")
+	public ProjectInfo getProject(@PathVariable Long projectId) {
+		return projectService.getProjectInfoById(projectId);
 	}
 
-	@GetMapping("/projects/{id}/members")
+	@GetMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectMember(#id)")
-	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long id) {
-		return projectMemberService.getProjectMembersById(id);
+	@PreAuthorize("isProjectMember(#projectId)")
+	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long projectId) {
+		return projectMemberService.getProjectMembersById(projectId);
 	}
 
-	@GetMapping("/projects/{id}/members/suggestions")
+	@GetMapping("/projects/{projectId}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#id)")
-	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long id, @RequestParam("q") String query) {
-		return projectMemberService.getUserSuggestions(id, query);
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
+		return projectMemberService.getUserSuggestions(projectId, query);
 	}
 
-	@PostMapping("/projects/{id}/members")
+	@PostMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#id)")
-	public InvitedUserInfo inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
-		return projectInvitationService.inviteUser(id, request.getUserId());
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public InvitedUserInfo inviteProjectMember(@PathVariable Long projectId, @RequestBody @Valid InviteProjectMemeberRequest request) {
+		return projectInvitationService.inviteUser(projectId, request.getUserId());
 	}
 
-	@DeleteMapping("/projects/{id}/members/{userId}")
+	@DeleteMapping("/projects/{projectId}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#id)")
-	public void removeProjectMember(@PathVariable Long id, @PathVariable Long userId) {
-		projectMemberService.deleteProjectMember(id, userId);
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
+		projectMemberService.deleteProjectMember(projectId, userId);
 	}
 
-	@PostMapping("/projects/{id}/invitation")
+	@PostMapping("/projects/{projectId}/invitation")
 	@ResponseStatus(HttpStatus.OK)
-	public void acceptInvitation(@PathVariable Long id) {
-		projectInvitationService.acceptInvite(id);
+	public void acceptInvitation(@PathVariable Long projectId) {
+		projectInvitationService.acceptInvite(projectId);
 	}
 
-	@GetMapping("/projects/{id}/invitations")
+	@GetMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#id)")
-	public List<InvitedUserInfo> getInvitations(@PathVariable Long id) {
-		return projectInvitationService.getInvitedUsers(id);
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public List<InvitedUserInfo> getInvitations(@PathVariable Long projectId) {
+		return projectInvitationService.getInvitedUsers(projectId);
 	}
 
-	@DeleteMapping("/projects/{id}/invitations/{userId}")
+	@DeleteMapping("/projects/{projectId}/invitations/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#id)")
-	public void removeInvitation(@PathVariable Long id, @PathVariable Long userId) {
-		projectInvitationService.deleteInvitation(id, userId);
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public void removeInvitation(@PathVariable Long projectId, @PathVariable Long userId) {
+		projectInvitationService.deleteInvitation(projectId, userId);
 	}
 }
