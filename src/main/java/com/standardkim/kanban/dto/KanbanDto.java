@@ -29,6 +29,19 @@ public class KanbanDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
+	public static class UpdateKanbanDto {
+		@NotBlank
+		@Size(min = 2, max = 50)
+		private String name;
+		
+		@Size(max = 200)
+		private String description;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
 	public static class KanbanInfoDto {
 		private Long projectId;
 		private Long sequenceId;

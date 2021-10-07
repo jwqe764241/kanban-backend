@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanDTO;
 import com.standardkim.kanban.dto.KanbanDto.KanbanInfoDto;
+import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanDto;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
 import com.standardkim.kanban.entity.Project;
@@ -82,6 +83,12 @@ public class KanbanService {
 		KanbanSequence sequence = getKanbanSequenceByKanbanId(kanban.getId());
 		KanbanInfoDto info = modelMapper.map(sequence, KanbanInfoDto.class);
 		return info;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void updateKanbanInfo(Long projectId, Long sequenceId, UpdateKanbanDto updateKanbanDto) {
+		Kanban kanban = getKanbanBySequenceId(projectId, sequenceId);
+		kanban.updateKanbanInfo(updateKanbanDto);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
