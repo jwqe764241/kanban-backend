@@ -44,33 +44,36 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectInvitation> getInvitationsByProjectId(Long projectId) {
+	public List<ProjectInvitation> getProjectInvitationsByProjectId(Long projectId) {
 		return projectInvitationRepository.findByProjectId(projectId);
 	}
 
 	@Transactional(readOnly = true)
 	public List<InvitedUserInfo> getInvitedUsers(Long projectId) {
-		List<ProjectInvitation> invitations = getInvitationsByProjectId(projectId);
+		List<ProjectInvitation> invitations = getProjectInvitationsByProjectId(projectId);
 		List<InvitedUserInfo> invitedUsers = modelMapper.map(invitations, new TypeToken<List<InvitedUserInfo>>(){}.getType());
 		return invitedUsers;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	private ProjectInvitation addProjectInvite(Long projectId, Long invitedUserId, User registerUser) {
+	private ProjectInvitation addProjectInvitation(Project project, User invitedUser, User registerUser) {
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(projectId)
-			.invitedUserId(invitedUserId)
+			.projectId(project.getId())
+			.invitedUserId(invitedUser.getId())
 			.build();
 		ProjectInvitation invitation = ProjectInvitation.builder()
 			.id(key)
+			.project(project)
+			.invitedUser(invitedUser)
 			.registerUser(registerUser)
 			.build();
-		invitation = projectInvitationRepository.save(invitation);
-		return invitation;
+
+		ProjectInvitation newInvitation = projectInvitationRepository.saveAndFlush(invitation);
+		return newInvitation;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void inviteUser(Long projectId, Long invitedUserId) {
+	public InvitedUserInfo inviteUser(Long projectId, Long invitedUserId) {
 		User invitedUser = userService.getUserById(invitedUserId);
 		if(isInvitationExists(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
@@ -78,8 +81,7 @@ public class ProjectInvitationService {
 
 		User user = userService.getAuthenticatedUser();
 		Project project = projectService.getProjectById(projectId);
-
-		addProjectInvite(projectId, invitedUser.getId(), user);
+		ProjectInvitation projectInvitation = addProjectInvitation(project, invitedUser, user);
 
 		ProjectInvitationMailInfo info = ProjectInvitationMailInfo.builder()
 			.inviteeMailAddress(invitedUser.getEmail())
@@ -90,6 +92,9 @@ public class ProjectInvitationService {
 			.build();
 		
 		mailService.sendProjectInvitationMessage(info);
+
+		InvitedUserInfo invitedUserInfo = modelMapper.map(projectInvitation, InvitedUserInfo.class);
+		return invitedUserInfo;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

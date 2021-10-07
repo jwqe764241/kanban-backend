@@ -74,8 +74,8 @@ public class ProjectController {
 	@PostMapping("/projects/{id}/members")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#id)")
-	public void inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
-		projectInvitationService.inviteUser(id, request.getUserId());
+	public InvitedUserInfo inviteProjectMember(@PathVariable Long id, @RequestBody @Valid InviteProjectMemeberRequest request) {
+		return projectInvitationService.inviteUser(id, request.getUserId());
 	}
 
 	@DeleteMapping("/projects/{id}/members/{userId}")
