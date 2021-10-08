@@ -3,8 +3,8 @@ package com.standardkim.kanban.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
+import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
+import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
@@ -60,16 +60,16 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectMemberInfo> getProjectMembersById(Long projectId) {
+	public List<ProjectMemberDetail> getProjectMembersById(Long projectId) {
 		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
-		List<ProjectMemberInfo> result = modelMapper.map(members, new TypeToken<List<ProjectMemberInfo>>(){}.getType());
+		List<ProjectMemberDetail> result = modelMapper.map(members, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
 		return result;
 	}
 
 	@Transactional(readOnly = true)
-	public List<SuggestionUserInfo> getUserSuggestions(Long projectId, String query) {
+	public List<SuggestionUserDetail> getUserSuggestions(Long projectId, String query) {
 		List<User> users = userRepository.findUserSuggestions(projectId, query);
-		List<SuggestionUserInfo> result = modelMapper.map(users, new TypeToken<List<SuggestionUserInfo>>(){}.getType());
+		List<SuggestionUserDetail> result = modelMapper.map(users, new TypeToken<List<SuggestionUserDetail>>(){}.getType());
 		return result;
 	}
 

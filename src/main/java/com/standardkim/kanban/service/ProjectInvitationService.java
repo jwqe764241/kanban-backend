@@ -2,8 +2,8 @@ package com.standardkim.kanban.service;
 
 import java.util.List;
 
-import com.standardkim.kanban.dto.MailDto.ProjectInvitationMailInfo;
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
+import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
@@ -49,10 +49,10 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<InvitedUserInfo> getInvitedUsers(Long projectId) {
+	public List<InvitedUserDetail> getInvitedUsers(Long projectId) {
 		List<ProjectInvitation> invitations = getProjectInvitationsByProjectId(projectId);
-		List<InvitedUserInfo> invitedUsers = modelMapper.map(invitations, new TypeToken<List<InvitedUserInfo>>(){}.getType());
-		return invitedUsers;
+		List<InvitedUserDetail> invitedUserDetails = modelMapper.map(invitations, new TypeToken<List<InvitedUserDetail>>(){}.getType());
+		return invitedUserDetails;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -73,7 +73,7 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public InvitedUserInfo inviteUser(Long projectId, Long invitedUserId) {
+	public InvitedUserDetail inviteUser(Long projectId, Long invitedUserId) {
 		User invitedUser = userService.getUserById(invitedUserId);
 		if(isInvitationExists(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
@@ -83,7 +83,7 @@ public class ProjectInvitationService {
 		Project project = projectService.getProjectById(projectId);
 		ProjectInvitation projectInvitation = addProjectInvitation(project, invitedUser, user);
 
-		ProjectInvitationMailInfo info = ProjectInvitationMailInfo.builder()
+		InviteProjectMailParam inviteProjectParam = InviteProjectMailParam.builder()
 			.inviteeMailAddress(invitedUser.getEmail())
 			.projectId(project.getId())
 			.projectName(project.getName())
@@ -91,10 +91,10 @@ public class ProjectInvitationService {
 			.inviterLogin(user.getLogin())
 			.build();
 		
-		mailService.sendProjectInvitationMessage(info);
+		mailService.sendProjectInvitationMessage(inviteProjectParam);
 
-		InvitedUserInfo invitedUserInfo = modelMapper.map(projectInvitation, InvitedUserInfo.class);
-		return invitedUserInfo;
+		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
+		return invitedUserDetail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

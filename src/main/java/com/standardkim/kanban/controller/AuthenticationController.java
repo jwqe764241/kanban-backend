@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
+import com.standardkim.kanban.dto.AuthenticationDto.LoginParameter;
 import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.AuthenticationUtil;
 
@@ -33,11 +33,11 @@ public class AuthenticationController {
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
-	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletResponse response) throws Exception {
+	public String login(@RequestBody @Valid LoginParameter loginParameter, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
 		AuthenticationToken authenticationToken = authenticationService.getAuthenticationToken(
-			loginUserRequest.getLogin(), 
-			loginUserRequest.getPassword());
+			loginParameter.getLogin(), 
+			loginParameter.getPassword());
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain("localhost")

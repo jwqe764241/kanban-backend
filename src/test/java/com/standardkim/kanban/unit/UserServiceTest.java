@@ -3,9 +3,8 @@ package com.standardkim.kanban.unit;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import com.standardkim.kanban.dto.UserDto.JoinUserRequest;
-import com.standardkim.kanban.dto.UserDto.NewUserInfo;
-import com.standardkim.kanban.dto.UserDto.UserInfo;
+import com.standardkim.kanban.dto.UserDto.CreateUserParameter;
+import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.repository.UserRepository;
@@ -53,27 +52,27 @@ public class UserServiceTest {
 			.setFieldMatchingEnabled(true);
     }
 
-	@DisplayName("When add user successfully, return added user's info")
+	@DisplayName("When add user successfully, return added user's detail")
 	@Test
-	public void when_AddUserSuccessfully_expect_ReturnAddedUserInfo() {
+	public void when_AddUserSuccessfully_expect_ReturnAddedUserDetail() {
 		//given
-		final NewUserInfo newUserInfo = modelMapper.map(getJoinUserRequest(), NewUserInfo.class);
-		final User fakeUser = new User(1L, newUserInfo.getLogin(), 
-			passwordEncoder.encode(newUserInfo.getPassword()), newUserInfo.getName(), newUserInfo.getEmail(), LocalDateTime.now(), null);
+		final CreateUserParameter createUserParameter = modelMapper.map(getCreateUserParameter(), CreateUserParameter.class);
+		final User fakeUser = new User(1L, createUserParameter.getLogin(), 
+			passwordEncoder.encode(createUserParameter.getPassword()), createUserParameter.getName(), createUserParameter.getEmail(), LocalDateTime.now(), null);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.findById(anyLong())).willReturn(Optional.of(fakeUser));
 		given(userRepository.save(any(User.class))).willReturn(fakeUser);
 
 		//when
-		UserInfo addedUserInfo = userService.addUser(newUserInfo);
+		UserDetail addedUserDetail = userService.addUser(createUserParameter);
 
 		//then
-		User addedUser = userRepository.findById(addedUserInfo.getId()).get();
+		User addedUser = userRepository.findById(addedUserDetail.getId()).get();
 
 		assertEquals(fakeUser.getId(), addedUser.getId());
 		assertEquals(fakeUser.getLogin(), addedUser.getLogin());
-		assertEquals(true, passwordEncoder.matches(newUserInfo.getPassword(), addedUser.getPassword()));
+		assertEquals(true, passwordEncoder.matches(createUserParameter.getPassword(), addedUser.getPassword()));
 		assertEquals(fakeUser.getName(), addedUser.getName());
 		assertEquals(fakeUser.getRegisterDate(), addedUser.getRegisterDate());
 	}
@@ -82,18 +81,18 @@ public class UserServiceTest {
 	@Test
 	public void when_LoginAlreadyInUse_expect_ExceptionThrown() {
 		//given
-		NewUserInfo newUserInfo = modelMapper.map(getJoinUserRequest(), NewUserInfo.class);
+		CreateUserParameter createUserParameter = modelMapper.map(getCreateUserParameter(), CreateUserParameter.class);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
 		//when, then
 		assertThrows(LoginAlreadyInUseException.class, () -> {
-			userService.addUser(newUserInfo);
+			userService.addUser(createUserParameter);
 		});
 	}
 
-	private JoinUserRequest getJoinUserRequest() {
-		JoinUserRequest result = new JoinUserRequest("test", "1234", "test", "aaa@example.com");
+	private CreateUserParameter getCreateUserParameter() {
+		CreateUserParameter result = new CreateUserParameter("test", "1234", "test", "aaa@example.com");
 		return result;
 	}
 }

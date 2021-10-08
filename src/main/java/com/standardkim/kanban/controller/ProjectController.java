@@ -1,16 +1,15 @@
 package com.standardkim.kanban.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.dto.ProjectDto.NewProjectRequest;
-import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
-import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberRequest;
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberInfo;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserInfo;
+import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberParam;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
+import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
+import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.service.ProjectInvitationService;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
@@ -39,42 +38,42 @@ public class ProjectController {
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void createProject(@RequestBody @Valid NewProjectRequest newProjectRequest) {
-		projectService.createProject(newProjectRequest.getName(), newProjectRequest.getDescription());
+	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
+		projectService.createProject(createProjectParam);
 	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
-	public ArrayList<ProjectInfo> getMyProject() {
-		return projectService.getMyProjects();
+	public List<ProjectDetail> getMyProject() {
+		return projectService.getMyProjectDetails();
 	}
 
 	@GetMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
-	public ProjectInfo getProject(@PathVariable Long projectId) {
-		return projectService.getProjectInfoById(projectId);
+	public ProjectDetail getProject(@PathVariable Long projectId) {
+		return projectService.getProjectDetailById(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
-	public List<ProjectMemberInfo> getProjectMember(@PathVariable Long projectId) {
+	public List<ProjectMemberDetail> getProjectMember(@PathVariable Long projectId) {
 		return projectMemberService.getProjectMembersById(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
-	public List<SuggestionUserInfo> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
+	public List<SuggestionUserDetail> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
 		return projectMemberService.getUserSuggestions(projectId, query);
 	}
 
 	@PostMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
-	public InvitedUserInfo inviteProjectMember(@PathVariable Long projectId, @RequestBody @Valid InviteProjectMemeberRequest request) {
-		return projectInvitationService.inviteUser(projectId, request.getUserId());
+	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, @RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
+		return projectInvitationService.inviteUser(projectId, inviteProjectMemeberParam.getUserId());
 	}
 
 	@DeleteMapping("/projects/{projectId}/members/{userId}")
@@ -93,7 +92,7 @@ public class ProjectController {
 	@GetMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
-	public List<InvitedUserInfo> getInvitations(@PathVariable Long projectId) {
+	public List<InvitedUserDetail> getInvitations(@PathVariable Long projectId) {
 		return projectInvitationService.getInvitedUsers(projectId);
 	}
 

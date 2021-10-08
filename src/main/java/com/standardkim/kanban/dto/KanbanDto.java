@@ -16,7 +16,7 @@ public class KanbanDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class CreateKanbanDTO {
+	public static class CreateKanbanParam {
 		@NotBlank
 		@Size(min = 2, max = 50)
 		private String name;
@@ -29,7 +29,7 @@ public class KanbanDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class UpdateKanbanDto {
+	public static class UpdateKanbanParam {
 		@NotBlank
 		@Size(min = 2, max = 50)
 		private String name;
@@ -42,7 +42,7 @@ public class KanbanDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class KanbanInfoDto {
+	public static class KanbanDetail {
 		private Long projectId;
 		private Long sequenceId;
 		private String name;

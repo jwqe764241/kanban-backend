@@ -15,7 +15,7 @@ public class ProjectInvitationDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class InviteProjectMemeberRequest {
+	public static class InviteProjectMemeberParam {
 		@NotNull
 		private Long userId;
 	}
@@ -24,7 +24,7 @@ public class ProjectInvitationDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class InvitedUserInfo {
+	public static class InvitedUserDetail {
 		private Long id;
 		private String name;
 		private String email;

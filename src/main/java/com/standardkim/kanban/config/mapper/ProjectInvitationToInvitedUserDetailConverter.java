@@ -1,6 +1,6 @@
 package com.standardkim.kanban.config.mapper;
 
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.User;
 
@@ -9,20 +9,20 @@ import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProjectInvitationToInvitedUserInfoConverter extends ModelMapperConverter<ProjectInvitation, InvitedUserInfo> {
+public class ProjectInvitationToInvitedUserDetailConverter extends ModelMapperConverter<ProjectInvitation, InvitedUserDetail> {
 	@Override
-	protected Converter<ProjectInvitation, InvitedUserInfo> converter() {
-		return new AbstractConverter<ProjectInvitation, InvitedUserInfo>() {
+	protected Converter<ProjectInvitation, InvitedUserDetail> converter() {
+		return new AbstractConverter<ProjectInvitation, InvitedUserDetail>() {
 			@Override
-			public InvitedUserInfo convert(ProjectInvitation projectInvitation) {
+			public InvitedUserDetail convert(ProjectInvitation projectInvitation) {
 				User invitedUser = projectInvitation.getInvitedUser();
-				InvitedUserInfo invitedUserInfo = InvitedUserInfo.builder()
+				InvitedUserDetail invitedUserDetail = InvitedUserDetail.builder()
 					.id(invitedUser.getId())
 					.name(invitedUser.getName())
 					.email(invitedUser.getEmail())
 					.date(projectInvitation.getRegisterDate())
 					.build();
-				return invitedUserInfo;
+				return invitedUserDetail;
 			}
 		};
 	}
