@@ -11,7 +11,7 @@ public class MailDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@Builder
 	@AllArgsConstructor
-	public static class ProjectInvitationMailInfo {
+	public static class InviteProjectMailParam {
 		private String inviteeMailAddress;
 		private Long projectId;
 		private String projectName;

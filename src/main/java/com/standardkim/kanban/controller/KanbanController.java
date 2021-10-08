@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.dto.KanbanDto.CreateKanbanDTO;
-import com.standardkim.kanban.dto.KanbanDto.KanbanInfoDto;
-import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanDto;
+import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
+import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
+import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.service.KanbanService;
 
 import org.springframework.http.HttpStatus;
@@ -30,29 +30,29 @@ public class KanbanController {
 	@PostMapping("/projects/{projectId}/kanbans")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.CREATED)
-	public KanbanInfoDto createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanDTO createKanbanDto) {
-		return kanbanService.createKanban(projectId, createKanbanDto);
+	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
+		return kanbanService.createKanban(projectId, createKanbanParam);
 	}
 
 	@GetMapping("/projects/{projectId}/kanbans")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
-	public List<KanbanInfoDto> getKanbans(@PathVariable Long projectId) {
-		return kanbanService.getKanbanInfosByProjectId(projectId);
+	public List<KanbanDetail> getKanbans(@PathVariable Long projectId) {
+		return kanbanService.getKanbanDetailsByProjectId(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
-	public KanbanInfoDto getKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		return kanbanService.getKanbanInfoBySequenceId(projectId, sequenceId);
+	public KanbanDetail getKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
+		return kanbanService.getKanbanDetailBySequenceId(projectId, sequenceId);
 	}
 
 	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
-	public void updateKanbanInfo(@PathVariable Long projectId, @PathVariable Long sequenceId, @RequestBody @Valid UpdateKanbanDto updateKanbanDto) {
-		kanbanService.updateKanbanInfo(projectId, sequenceId, updateKanbanDto);
+	public void updateKanban(@PathVariable Long projectId, @PathVariable Long sequenceId, @RequestBody @Valid UpdateKanbanParam updateKanbanParam) {
+		kanbanService.updateKanban(projectId, sequenceId, updateKanbanParam);
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")

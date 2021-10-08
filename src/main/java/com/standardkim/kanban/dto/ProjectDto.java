@@ -16,7 +16,7 @@ public class ProjectDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class NewProjectRequest {
+	public static class CreateProjectParam {
 		@NotBlank
 		@Size(min = 2, max = 50)
 		private String name;
@@ -29,7 +29,7 @@ public class ProjectDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class ProjectInfo {
+	public static class ProjectDetail {
 		private Long id;
 		private String name;
 		private String description;

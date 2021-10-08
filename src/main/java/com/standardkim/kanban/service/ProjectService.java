@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.User;
@@ -43,25 +44,25 @@ public class ProjectService {
 	}	
 
 	@Transactional(readOnly = true)
-	public ArrayList<ProjectInfo> getMyProjects() {
+	public List<ProjectDetail> getMyProjectDetails() {
 		User user = userService.getAuthenticatedUser();
 		Set<ProjectMember> projectMembers = user.getProjects();
-		ArrayList<ProjectInfo> projects = modelMapper.map(projectMembers, new TypeToken<List<ProjectInfo>>(){}.getType());
-		return projects;
+		ArrayList<ProjectDetail> projectDetails = modelMapper.map(projectMembers, new TypeToken<List<ProjectDetail>>(){}.getType());
+		return projectDetails;
 	}
 
 	@Transactional(readOnly = true)
-	public ProjectInfo getProjectInfoById(Long projectId) {
+	public ProjectDetail getProjectDetailById(Long projectId) {
 		Project project = getProjectById(projectId);
-		ProjectInfo info = modelMapper.map(project, ProjectInfo.class);
-		return info;
+		ProjectDetail detail = modelMapper.map(project, ProjectDetail.class);
+		return detail;
 	}
 
 	@Transactional(rollbackFor = Exception.class) 
-	public Project createProject(String name, String description, User registerUser) {
+	public Project createProject(CreateProjectParam createProjectParam, User registerUser) {
 		Project project = Project.builder()
-			.name(name)
-			.description(description)
+			.name(createProjectParam.getName())
+			.description(createProjectParam.getDescription())
 			.registerUser(registerUser)
 			.build();
 		project = projectRepository.save(project);
@@ -69,12 +70,12 @@ public class ProjectService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Project createProject(String name, String description) {
-		if(isProjectNameExists(name)) {
+	public Project createProject(CreateProjectParam createProjectParam) {
+		if(isProjectNameExists(createProjectParam.getName())) {
 			throw new ProjectAlreadyExistException("project already exist.");
 		}
 		User user = userService.getAuthenticatedUser();
-		Project project = createProject(name, description, user);
+		Project project = createProject(createProjectParam, user);
 		projectMemberService.addProjectMemeber(project.getId(), user.getId(), true);
 		return project;
 	}

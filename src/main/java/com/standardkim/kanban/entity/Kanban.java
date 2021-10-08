@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanDto;
+import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.util.BooleanToYNConverter;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -56,8 +56,8 @@ public class Kanban {
 		isDeleted = true;
 	}
 
-	public void updateKanbanInfo(UpdateKanbanDto updateKanbanDto) {
-		name = updateKanbanDto.getName();
-		description = updateKanbanDto.getDescription();
+	public void updateKanban(UpdateKanbanParam updateKanbanParam) {
+		name = updateKanbanParam.getName();
+		description = updateKanbanParam.getDescription();
 	}
 }

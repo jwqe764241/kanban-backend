@@ -13,7 +13,7 @@ public class ProjectMemberDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class ProjectMemberInfo {
+	public static class ProjectMemberDetail {
 		private Long id;
 		private String name;
 		private String email;

@@ -20,7 +20,7 @@ public class UserDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@Builder
 	@AllArgsConstructor
-	public static class JoinUserRequest {
+	public static class CreateUserParameter {
 		@NotBlank
 		@Size(min = 5, max = 20)
 		private String login;
@@ -35,17 +35,6 @@ public class UserDto {
 
 		@NotBlank
 		@Size(min = 5, max = 320)
-		private String email;
-	}
-
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
-	@Builder
-	@AllArgsConstructor
-	public static class NewUserInfo {
-		private String login;
-		private String password;
-		private String name;
 		private String email;
 
 		public User toEntity(PasswordEncoder passwordEncoder) {
@@ -62,7 +51,7 @@ public class UserDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@Builder
 	@AllArgsConstructor
-	public static class UserInfo {
+	public static class UserDetail {
 		private Long id;
 		private String login;
 		private String name;
@@ -74,7 +63,7 @@ public class UserDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class SuggestionUserInfo {
+	public static class SuggestionUserDetail {
 		private Long id;
 		private String login;
 		private String name;

@@ -3,9 +3,9 @@ package com.standardkim.kanban.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.standardkim.kanban.dto.KanbanDto.CreateKanbanDTO;
-import com.standardkim.kanban.dto.KanbanDto.KanbanInfoDto;
-import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanDto;
+import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
+import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
+import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
 import com.standardkim.kanban.entity.Project;
@@ -50,17 +50,17 @@ public class KanbanService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<KanbanInfoDto> getKanbanInfosByProjectId(Long projectId) {
+	public List<KanbanDetail> getKanbanDetailsByProjectId(Long projectId) {
 		List<KanbanSequence> kanbanSequences = getKanbanSequencesByProjectId(projectId);
-		List<KanbanInfoDto> kanbanInfos = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanInfoDto>>(){}.getType());
-		return kanbanInfos;
+		List<KanbanDetail> kanbanDetails = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanDetail>>(){}.getType());
+		return kanbanDetails;
 	}
 
 	@Transactional(readOnly = true)
-	public KanbanInfoDto getKanbanInfoBySequenceId(Long projectId, Long sequenceId) {
+	public KanbanDetail getKanbanDetailBySequenceId(Long projectId, Long sequenceId) {
 		KanbanSequence kanbanSequence = getKanbanSequenceBySequenceId(projectId, sequenceId);
-		KanbanInfoDto kanbanInfo = modelMapper.map(kanbanSequence, KanbanInfoDto.class);
-		return kanbanInfo;
+		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
+		return kanbanDetail;
 	}
 
 	@Transactional(readOnly = true)
@@ -71,24 +71,24 @@ public class KanbanService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public KanbanInfoDto createKanban(Long projectId, CreateKanbanDTO createKanbanDto) {
+	public KanbanDetail createKanban(Long projectId, CreateKanbanParam createKanbanParam) {
 		Project project = projectService.getProjectById(projectId);
 		Kanban kanban = Kanban.builder()
-			.name(createKanbanDto.getName())
-			.description(createKanbanDto.getDescription())
+			.name(createKanbanParam.getName())
+			.description(createKanbanParam.getDescription())
 			.project(project)
 			.build();
 		kanbanRepository.save(kanban);
 
-		KanbanSequence sequence = getKanbanSequenceByKanbanId(kanban.getId());
-		KanbanInfoDto info = modelMapper.map(sequence, KanbanInfoDto.class);
-		return info;
+		KanbanSequence kanbanSequence = getKanbanSequenceByKanbanId(kanban.getId());
+		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
+		return kanbanDetail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void updateKanbanInfo(Long projectId, Long sequenceId, UpdateKanbanDto updateKanbanDto) {
+	public void updateKanban(Long projectId, Long sequenceId, UpdateKanbanParam updateKanbanParam) {
 		Kanban kanban = getKanbanBySequenceId(projectId, sequenceId);
-		kanban.updateKanbanInfo(updateKanbanDto);
+		kanban.updateKanban(updateKanbanParam);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
