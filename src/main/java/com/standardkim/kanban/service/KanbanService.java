@@ -11,7 +11,6 @@ import com.standardkim.kanban.entity.KanbanSequence;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
-import com.standardkim.kanban.repository.KanbanSequenceRepository;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -25,47 +24,29 @@ import lombok.RequiredArgsConstructor;
 public class KanbanService {
 	private final KanbanRepository kanbanRepository;
 
-	private final KanbanSequenceRepository kanbanSequenceRepository;
+	private final KanbanSequenceService kanbanSequenceService;
 
 	private final ProjectService projectService;
 
 	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	public KanbanSequence getKanbanSequenceByKanbanId(Long kanbanId) {
-		Optional<KanbanSequence> kanbanSequence = kanbanSequenceRepository.findById(kanbanId);
-		return kanbanSequence.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
-	}
-
-	@Transactional(readOnly = true)
-	public KanbanSequence getKanbanSequenceBySequenceId(Long projectId, Long sequenceId) {
-		Optional<KanbanSequence> kanbanSequence = kanbanSequenceRepository.findByProjectIdAndSequenceId(projectId, sequenceId);
-		return kanbanSequence.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
-	}
-
-	@Transactional(readOnly = true)
-	public List<KanbanSequence> getKanbanSequencesByProjectId(Long projectId) {
-		Optional<List<KanbanSequence>> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
-		return kanbanSequences.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
-	}
-
-	@Transactional(readOnly = true)
 	public List<KanbanDetail> getKanbanDetailsByProjectId(Long projectId) {
-		List<KanbanSequence> kanbanSequences = getKanbanSequencesByProjectId(projectId);
+		List<KanbanSequence> kanbanSequences = kanbanSequenceService.findByProjectIdAndNotDeleted(projectId);
 		List<KanbanDetail> kanbanDetails = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanDetail>>(){}.getType());
 		return kanbanDetails;
 	}
 
 	@Transactional(readOnly = true)
 	public KanbanDetail getKanbanDetailBySequenceId(Long projectId, Long sequenceId) {
-		KanbanSequence kanbanSequence = getKanbanSequenceBySequenceId(projectId, sequenceId);
+		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
 
 	@Transactional(readOnly = true)
 	public Kanban getKanbanBySequenceId(Long projectId, Long sequenceId) {
-		KanbanSequence kanbanSequence = getKanbanSequenceBySequenceId(projectId, sequenceId);
+		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		Optional<Kanban> kanban = kanbanRepository.findById(kanbanSequence.getId());
 		return kanban.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
 	}
@@ -80,7 +61,7 @@ public class KanbanService {
 			.build();
 		kanbanRepository.save(kanban);
 
-		KanbanSequence kanbanSequence = getKanbanSequenceByKanbanId(kanban.getId());
+		KanbanSequence kanbanSequence = kanbanSequenceService.findById(kanban.getId());
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
