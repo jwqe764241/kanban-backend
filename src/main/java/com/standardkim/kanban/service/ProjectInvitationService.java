@@ -74,12 +74,12 @@ public class ProjectInvitationService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public InvitedUserDetail inviteUser(Long projectId, Long invitedUserId) {
-		User invitedUser = userService.getUserById(invitedUserId);
+		User invitedUser = userService.findById(invitedUserId);
 		if(isInvitationExists(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 
-		User user = userService.getAuthenticatedUser();
+		User user = userService.findBySecurityUser();
 		Project project = projectService.getProjectById(projectId);
 		ProjectInvitation projectInvitation = addProjectInvitation(project, invitedUser, user);
 
@@ -112,7 +112,7 @@ public class ProjectInvitationService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void acceptInvite(Long projectId) {
-		User user = userService.getAuthenticatedUser();
+		User user = userService.findBySecurityUser();
 		if(!isInvitationExists(projectId, user.getId())) {
 			throw new UserNotInvitedException("user not invited");
 		}

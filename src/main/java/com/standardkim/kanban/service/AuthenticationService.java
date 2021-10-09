@@ -43,7 +43,7 @@ public class AuthenticationService implements UserDetailsService {
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
-			User user = userService.getUserByLogin(username);
+			User user = userService.findByLogin(username);
 			SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
 			return securityUser;
 		} catch (UserNotFoundException e) {
@@ -62,7 +62,7 @@ public class AuthenticationService implements UserDetailsService {
 		User user = null;
 
 		try {
-			user = userService.getUserByLogin(loginParameter.getLogin());
+			user = userService.findByLogin(loginParameter.getLogin());
 		}
 		catch (UserNotFoundException e) {
 			throw new LoginFailedException("user not found");
@@ -91,7 +91,7 @@ public class AuthenticationService implements UserDetailsService {
 		}
 		
 		String login = jwtTokenProvider.getLogin(refreshToken);
-		User user = userService.getUserByLogin(login);
+		User user = userService.findByLogin(login);
 		RefreshToken token = findRefreshTokenByUserId(user.getId());
 		String userRefreshToken = token.getToken();
 
@@ -110,7 +110,7 @@ public class AuthenticationService implements UserDetailsService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public RefreshToken createRefreshToken(Long userId, String token) {
-		User user = userService.getUserById(userId);
+		User user = userService.findById(userId);
 		RefreshToken refreshToken = RefreshToken.builder()
 			.user(user)
 			.token(token)
@@ -142,7 +142,7 @@ public class AuthenticationService implements UserDetailsService {
 	public void deleteRefreshToken(String refreshToken) {
 		String login = jwtTokenProvider.getLogin(refreshToken);
 		try {
-			User user = userService.getUserByLogin(login);
+			User user = userService.findByLogin(login);
 			refreshTokenRepository.deleteByUserId(user.getId());
 		} catch (UserNotFoundException e) {
 			return;

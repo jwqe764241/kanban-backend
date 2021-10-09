@@ -35,31 +35,31 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public User getUserById(Long id) {
+	public User findById(Long id) {
 		Optional<User> user = userRepository.findById(id);
 		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
-	public User getUserByLogin(String login) {
+	public User findByLogin(String login) {
 		Optional<User> user = userRepository.findByLogin(login);
 		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
-	public User getAuthenticatedUser() {
+	public User findBySecurityUser() {
 		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		return getUserById(securityUser.getId());
+		return findById(securityUser.getId());
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public UserDetail addUser(CreateUserParameter createUserParameter) {
+	public UserDetail create(CreateUserParameter createUserParameter) {
 		if(isLoginExists(createUserParameter.getLogin())) {
 			throw new LoginAlreadyInUseException("login already in use");
 		}
-		User newUser = createUserParameter.toEntity(passwordEncoder);
-		newUser = userRepository.save(newUser);
-		return modelMapper.map(newUser, UserDetail.class);
+		User user = createUserParameter.toEntity(passwordEncoder);
+		user = userRepository.save(user);
+		return modelMapper.map(user, UserDetail.class);
 	}
 
 	public void update() {

@@ -45,7 +45,7 @@ public class ProjectService {
 
 	@Transactional(readOnly = true)
 	public List<ProjectDetail> getMyProjectDetails() {
-		User user = userService.getAuthenticatedUser();
+		User user = userService.findBySecurityUser();
 		Set<ProjectMember> projectMembers = user.getProjects();
 		ArrayList<ProjectDetail> projectDetails = modelMapper.map(projectMembers, new TypeToken<List<ProjectDetail>>(){}.getType());
 		return projectDetails;
@@ -74,7 +74,7 @@ public class ProjectService {
 		if(isProjectNameExists(createProjectParam.getName())) {
 			throw new ProjectAlreadyExistException("project already exist.");
 		}
-		User user = userService.getAuthenticatedUser();
+		User user = userService.findBySecurityUser();
 		Project project = createProject(createProjectParam, user);
 		projectMemberService.addProjectMemeber(project.getId(), user.getId(), true);
 		return project;
