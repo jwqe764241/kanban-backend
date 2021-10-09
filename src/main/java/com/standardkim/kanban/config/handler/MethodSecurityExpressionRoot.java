@@ -30,7 +30,7 @@ public class MethodSecurityExpressionRoot extends SecurityExpressionRoot impleme
 
 	public boolean isProjectMember(Long projectId) {
 		SecurityUser user = getSecurityUser();
-		return projectMemberService.isMemberExists(projectId, user.getId());
+		return projectMemberService.isExists(projectId, user.getId());
 	}
 
 	@Override

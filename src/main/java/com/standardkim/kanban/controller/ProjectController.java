@@ -59,14 +59,14 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public List<ProjectMemberDetail> getProjectMember(@PathVariable Long projectId) {
-		return projectMemberService.getProjectMembersById(projectId);
+		return projectMemberService.findProjectMemberDetailByProjectId(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public List<SuggestionUserDetail> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
-		return projectMemberService.getUserSuggestions(projectId, query);
+		return projectMemberService.findSuggestionUserDetailByProjectId(projectId, query);
 	}
 
 	@PostMapping("/projects/{projectId}/members")
@@ -80,7 +80,7 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectMemberService.deleteProjectMember(projectId, userId);
+		projectMemberService.delete(projectId, userId);
 	}
 
 	@PostMapping("/projects/{projectId}/invitation")

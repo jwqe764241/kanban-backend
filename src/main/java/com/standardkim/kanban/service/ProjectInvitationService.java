@@ -116,7 +116,7 @@ public class ProjectInvitationService {
 		if(!isInvitationExists(projectId, user.getId())) {
 			throw new UserNotInvitedException("user not invited");
 		}
-		projectMemberService.addProjectMemeber(projectId, user.getId(), false);
+		projectMemberService.create(projectId, user.getId(), false);
 		deleteInvitation(projectId, user.getId());
 	}
 }

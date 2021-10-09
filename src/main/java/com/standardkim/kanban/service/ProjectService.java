@@ -88,7 +88,7 @@ public class ProjectService {
 		}
 		User user = userService.findBySecurityUser();
 		Project project = create(createProjectParam, user);
-		projectMemberService.addProjectMemeber(project.getId(), user.getId(), true);
+		projectMemberService.create(project.getId(), user.getId(), true);
 		return project;
 	}
 }
