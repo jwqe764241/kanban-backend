@@ -35,9 +35,7 @@ public class AuthenticationController {
 	@ResponseStatus(HttpStatus.OK)
 	public String login(@RequestBody @Valid LoginParameter loginParameter, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = authenticationService.getAuthenticationToken(
-			loginParameter.getLogin(), 
-			loginParameter.getPassword());
+		AuthenticationToken authenticationToken = authenticationService.issueAuthenticationToken(loginParameter);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain("localhost")
@@ -59,7 +57,7 @@ public class AuthenticationController {
 		if(refreshToken == null)
 			return;
 
-		authenticationService.removeRefreshToken(refreshToken);
+		authenticationService.deleteRefreshToken(refreshToken);
 
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
 			.domain("localhost")
