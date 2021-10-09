@@ -53,7 +53,7 @@ public class KanbanService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public KanbanDetail createKanban(Long projectId, CreateKanbanParam createKanbanParam) {
-		Project project = projectService.getProjectById(projectId);
+		Project project = projectService.findById(projectId);
 		Kanban kanban = Kanban.builder()
 			.name(createKanbanParam.getName())
 			.description(createKanbanParam.getDescription())

@@ -80,7 +80,7 @@ public class ProjectInvitationService {
 		}
 
 		User user = userService.findBySecurityUser();
-		Project project = projectService.getProjectById(projectId);
+		Project project = projectService.findById(projectId);
 		ProjectInvitation projectInvitation = addProjectInvitation(project, invitedUser, user);
 
 		InviteProjectMailParam inviteProjectParam = InviteProjectMailParam.builder()

@@ -39,20 +39,20 @@ public class ProjectController {
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
-		projectService.createProject(createProjectParam);
+		projectService.create(createProjectParam);
 	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
-		return projectService.getMyProjectDetails();
+		return projectService.findProjectDetailBySecurityUser();
 	}
 
 	@GetMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public ProjectDetail getProject(@PathVariable Long projectId) {
-		return projectService.getProjectDetailById(projectId);
+		return projectService.findProjectDetailById(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/members")
