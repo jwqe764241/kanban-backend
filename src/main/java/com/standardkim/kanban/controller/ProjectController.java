@@ -73,7 +73,7 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, @RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
-		return projectInvitationService.inviteUser(projectId, inviteProjectMemeberParam.getUserId());
+		return projectInvitationService.invite(projectId, inviteProjectMemeberParam.getUserId());
 	}
 
 	@DeleteMapping("/projects/{projectId}/members/{userId}")
@@ -86,20 +86,20 @@ public class ProjectController {
 	@PostMapping("/projects/{projectId}/invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
-		projectInvitationService.acceptInvite(projectId);
+		projectInvitationService.accept(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public List<InvitedUserDetail> getInvitations(@PathVariable Long projectId) {
-		return projectInvitationService.getInvitedUsers(projectId);
+		return projectInvitationService.findInvitedUserDetailByProjectId(projectId);
 	}
 
 	@DeleteMapping("/projects/{projectId}/invitations/{userId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public void removeInvitation(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectInvitationService.deleteInvitation(projectId, userId);
+		projectInvitationService.delete(projectId, userId);
 	}
 }
