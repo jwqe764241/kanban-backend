@@ -110,7 +110,7 @@ public class ProjectInvitationService {
 			.inviteeLogin(invitedUser.getLogin())
 			.inviterLogin(user.getLogin())
 			.build();
-		mailService.sendProjectInvitationMessage(inviteProjectParam);
+		mailService.sendInviteProjectMail(inviteProjectParam);
 
 		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
 		return invitedUserDetail;
