@@ -31,34 +31,34 @@ public class KanbanController {
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.CREATED)
 	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
-		return kanbanService.createKanban(projectId, createKanbanParam);
+		return kanbanService.create(projectId, createKanbanParam);
 	}
 
 	@GetMapping("/projects/{projectId}/kanbans")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public List<KanbanDetail> getKanbans(@PathVariable Long projectId) {
-		return kanbanService.getKanbanDetailsByProjectId(projectId);
+		return kanbanService.findKanbanDetailByProjectId(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public KanbanDetail getKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		return kanbanService.getKanbanDetailBySequenceId(projectId, sequenceId);
+		return kanbanService.findKanbanDetailByProjectIdAndSequenceId(projectId, sequenceId);
 	}
 
 	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public void updateKanban(@PathVariable Long projectId, @PathVariable Long sequenceId, @RequestBody @Valid UpdateKanbanParam updateKanbanParam) {
-		kanbanService.updateKanban(projectId, sequenceId, updateKanbanParam);
+		kanbanService.update(projectId, sequenceId, updateKanbanParam);
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		kanbanService.deleteKanban(projectId, sequenceId);
+		kanbanService.delete(projectId, sequenceId);
 	}
 }

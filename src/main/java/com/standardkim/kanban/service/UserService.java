@@ -9,9 +9,10 @@ import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.exception.UserNotFoundException;
 import com.standardkim.kanban.repository.UserRepository;
-import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,14 @@ public class UserService {
 
 	private final ModelMapper modelMapper;
 
-	private final AuthenticationFacade authenticationFacade;
+	private Authentication getAuthentication() {
+		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+	private SecurityUser getSecurityUser() {
+		Authentication authentication = getAuthentication();
+		return (SecurityUser) authentication.getPrincipal();
+	}
 
 	@Transactional(readOnly = true)
 	public boolean isLoginExists(String login) {
@@ -35,36 +43,30 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public User getUserById(Long id) {
+	public User findById(Long id) {
 		Optional<User> user = userRepository.findById(id);
 		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
-	public User getUserByLogin(String login) {
+	public User findByLogin(String login) {
 		Optional<User> user = userRepository.findByLogin(login);
 		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
-	public User getAuthenticatedUser() {
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
-		return getUserById(securityUser.getId());
+	public User findBySecurityUser() {
+		SecurityUser securityUser = getSecurityUser();
+		return findById(securityUser.getId());
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public UserDetail addUser(CreateUserParameter createUserParameter) {
+	public UserDetail create(CreateUserParameter createUserParameter) {
 		if(isLoginExists(createUserParameter.getLogin())) {
 			throw new LoginAlreadyInUseException("login already in use");
 		}
-		User newUser = createUserParameter.toEntity(passwordEncoder);
-		newUser = userRepository.save(newUser);
-		return modelMapper.map(newUser, UserDetail.class);
-	}
-
-	public void update() {
-	}
-
-	public void remove() {
+		User user = createUserParameter.toEntity(passwordEncoder);
+		user = userRepository.save(user);
+		return modelMapper.map(user, UserDetail.class);
 	}
 }

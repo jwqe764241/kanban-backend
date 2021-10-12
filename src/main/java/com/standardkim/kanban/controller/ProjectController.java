@@ -39,67 +39,67 @@ public class ProjectController {
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
-		projectService.createProject(createProjectParam);
+		projectService.create(createProjectParam);
 	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
-		return projectService.getMyProjectDetails();
+		return projectService.findProjectDetailBySecurityUser();
 	}
 
 	@GetMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public ProjectDetail getProject(@PathVariable Long projectId) {
-		return projectService.getProjectDetailById(projectId);
+		return projectService.findProjectDetailById(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public List<ProjectMemberDetail> getProjectMember(@PathVariable Long projectId) {
-		return projectMemberService.getProjectMembersById(projectId);
+		return projectMemberService.findProjectMemberDetailByProjectId(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public List<SuggestionUserDetail> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
-		return projectMemberService.getUserSuggestions(projectId, query);
+		return projectMemberService.findSuggestionUserDetailByProjectId(projectId, query);
 	}
 
 	@PostMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, @RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
-		return projectInvitationService.inviteUser(projectId, inviteProjectMemeberParam.getUserId());
+		return projectInvitationService.invite(projectId, inviteProjectMemeberParam.getUserId());
 	}
 
 	@DeleteMapping("/projects/{projectId}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectMemberService.deleteProjectMember(projectId, userId);
+		projectMemberService.delete(projectId, userId);
 	}
 
 	@PostMapping("/projects/{projectId}/invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
-		projectInvitationService.acceptInvite(projectId);
+		projectInvitationService.accept(projectId);
 	}
 
 	@GetMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public List<InvitedUserDetail> getInvitations(@PathVariable Long projectId) {
-		return projectInvitationService.getInvitedUsers(projectId);
+		return projectInvitationService.findInvitedUserDetailByProjectId(projectId);
 	}
 
 	@DeleteMapping("/projects/{projectId}/invitations/{userId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public void removeInvitation(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectInvitationService.deleteInvitation(projectId, userId);
+		projectInvitationService.delete(projectId, userId);
 	}
 }

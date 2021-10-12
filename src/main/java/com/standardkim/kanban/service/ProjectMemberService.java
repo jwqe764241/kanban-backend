@@ -30,18 +30,18 @@ public class ProjectMemberService {
 	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	public boolean isMemberExists(Long projectId, Long userId){
-		ProjectMemberKey id = ProjectMemberKey.builder()
+	public boolean isExists(Long projectId, Long userId){
+		ProjectMemberKey key = ProjectMemberKey.builder()
 			.projectId(projectId)
 			.userId(userId)
 			.build();
-		return projectMemberRepository.existsById(id);
+		return projectMemberRepository.existsById(key);
 	}
 
 	@Transactional(readOnly = true)
 	public boolean isProjectOwner(Long projectId, Long userId) {
 		try {
-			ProjectMember projectMember = getProjectMemberById(projectId, userId);
+			ProjectMember projectMember = findById(projectId, userId);
 			return projectMember.isRegister();
 		}
 		catch (ResourceNotFoundException e) {
@@ -50,33 +50,38 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public ProjectMember getProjectMemberById(Long projectId, Long userId) {
-		ProjectMemberKey key = ProjectMemberKey.builder()
-			.projectId(projectId)
-			.userId(userId)
-			.build();
-		Optional<ProjectMember> projectMember = projectMemberRepository.findById(key);
+	public ProjectMember findById(ProjectMemberKey projectMemberKey) {
+		Optional<ProjectMember> projectMember = projectMemberRepository.findById(projectMemberKey);
 		return projectMember.orElseThrow(() -> new ResourceNotFoundException("project member not found"));
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectMemberDetail> getProjectMembersById(Long projectId) {
+	public ProjectMember findById(Long projectId, Long userId) {
+		ProjectMemberKey key = ProjectMemberKey.builder()
+			.projectId(projectId)
+			.userId(userId)
+			.build();
+		return findById(key);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ProjectMemberDetail> findProjectMemberDetailByProjectId(Long projectId) {
 		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
 		List<ProjectMemberDetail> result = modelMapper.map(members, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
 		return result;
 	}
 
 	@Transactional(readOnly = true)
-	public List<SuggestionUserDetail> getUserSuggestions(Long projectId, String query) {
-		List<User> users = userRepository.findUserSuggestions(projectId, query);
+	public List<SuggestionUserDetail> findSuggestionUserDetailByProjectId(Long projectId, String query) {
+		List<User> users = userRepository.findSuggestionUserByProjectId(projectId, query);
 		List<SuggestionUserDetail> result = modelMapper.map(users, new TypeToken<List<SuggestionUserDetail>>(){}.getType());
 		return result;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public ProjectMember addProjectMemeber(Long projectId, Long userId, boolean isRegister) {
+	public ProjectMember create(ProjectMemberKey projectMemberKey, boolean isRegister) {
 		ProjectMember projectMember = ProjectMember.builder()
-			.id(new ProjectMemberKey(projectId, userId))
+			.id(projectMemberKey)
 			.isRegister(isRegister)
 			.build();
 		projectMember = projectMemberRepository.save(projectMember);
@@ -84,10 +89,20 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteProjectMember(Long projectId, Long userId) {
+	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
+		ProjectMemberKey projectMemberKey = ProjectMemberKey.builder()
+			.projectId(projectId)
+			.userId(userId)
+			.build();
+		return create(projectMemberKey, isRegister);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void delete(Long projectId, Long userId) {
 		ProjectMember member = null;
+
 		try {
-			member = getProjectMemberById(projectId, userId);
+			member = findById(projectId, userId);
 		} catch (ResourceNotFoundException e) {
 			return;
 		}

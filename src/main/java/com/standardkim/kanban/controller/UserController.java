@@ -21,6 +21,6 @@ public class UserController {
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void join(@RequestBody @Valid CreateUserParameter createUserParameter) {
-		userService.addUser(createUserParameter);
+		userService.create(createUserParameter);
 	}
 }

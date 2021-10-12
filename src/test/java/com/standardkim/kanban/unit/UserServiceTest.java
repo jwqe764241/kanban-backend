@@ -65,7 +65,7 @@ public class UserServiceTest {
 		given(userRepository.save(any(User.class))).willReturn(fakeUser);
 
 		//when
-		UserDetail addedUserDetail = userService.addUser(createUserParameter);
+		UserDetail addedUserDetail = userService.create(createUserParameter);
 
 		//then
 		User addedUser = userRepository.findById(addedUserDetail.getId()).get();
@@ -87,7 +87,7 @@ public class UserServiceTest {
 
 		//when, then
 		assertThrows(LoginAlreadyInUseException.class, () -> {
-			userService.addUser(createUserParameter);
+			userService.create(createUserParameter);
 		});
 	}
 
