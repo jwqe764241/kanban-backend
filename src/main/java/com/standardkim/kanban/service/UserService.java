@@ -9,9 +9,10 @@ import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.exception.UserNotFoundException;
 import com.standardkim.kanban.repository.UserRepository;
-import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,14 @@ public class UserService {
 
 	private final ModelMapper modelMapper;
 
-	private final AuthenticationFacade authenticationFacade;
+	private Authentication getAuthentication() {
+		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+	private SecurityUser getSecurityUser() {
+		Authentication authentication = getAuthentication();
+		return (SecurityUser) authentication.getPrincipal();
+	}
 
 	@Transactional(readOnly = true)
 	public boolean isLoginExists(String login) {
@@ -48,7 +56,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public User findBySecurityUser() {
-		SecurityUser securityUser = authenticationFacade.getSecurityUser();
+		SecurityUser securityUser = getSecurityUser();
 		return findById(securityUser.getId());
 	}
 
@@ -60,11 +68,5 @@ public class UserService {
 		User user = createUserParameter.toEntity(passwordEncoder);
 		user = userRepository.save(user);
 		return modelMapper.map(user, UserDetail.class);
-	}
-
-	public void update() {
-	}
-
-	public void remove() {
 	}
 }
