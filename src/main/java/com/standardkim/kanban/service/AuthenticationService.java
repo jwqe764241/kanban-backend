@@ -2,6 +2,8 @@ package com.standardkim.kanban.service;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginParameter;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
@@ -14,6 +16,7 @@ import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
 import com.standardkim.kanban.exception.TokenNotProvidedException;
 import com.standardkim.kanban.exception.UserNotFoundException;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
+import com.standardkim.kanban.util.CookieUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.modelmapper.ModelMapper;
@@ -85,7 +88,7 @@ public class AuthenticationService implements UserDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String refreshAccessToken(String refreshToken) throws Exception{
+	public String getAccessToken(String refreshToken) throws RefreshTokenNotMatchedException, ExpiredRefreshTokenException{
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new TokenNotProvidedException("token must not be null");
 		}
@@ -106,6 +109,13 @@ public class AuthenticationService implements UserDetailsService {
  
 		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
 		return "Bearer " + newAccessToken;
+	}
+
+	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
+	public String getAccessTokenByHttpServletRequest(HttpServletRequest request, String refreshTokenName) {
+		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String accessToken = getAccessToken(refreshToken);
+		return accessToken;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
