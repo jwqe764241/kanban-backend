@@ -31,7 +31,7 @@ public class KanbanSequenceService {
 
 	@Transactional(readOnly = true)
 	public List<KanbanSequence> findByProjectIdAndNotDeleted(Long projectId) {
-		final Optional<List<KanbanSequence>> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
-		return kanbanSequences.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+		final List<KanbanSequence> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
+		return kanbanSequences;
 	}
 }
