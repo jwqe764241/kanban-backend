@@ -3,7 +3,7 @@ package com.standardkim.kanban.service;
 import java.util.Optional;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.dto.UserDto.CreateUserParameter;
+import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
@@ -61,11 +61,11 @@ public class UserService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public UserDetail create(CreateUserParameter createUserParameter) {
-		if(isLoginExists(createUserParameter.getLogin())) {
+	public UserDetail create(CreateUserParam createUserParam) {
+		if(isLoginExists(createUserParam.getLogin())) {
 			throw new LoginAlreadyInUseException("login already in use");
 		}
-		User user = createUserParameter.toEntity(passwordEncoder);
+		User user = createUserParam.toEntity(passwordEncoder);
 		user = userRepository.save(user);
 		return modelMapper.map(user, UserDetail.class);
 	}

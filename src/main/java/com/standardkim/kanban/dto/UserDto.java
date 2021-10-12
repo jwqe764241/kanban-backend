@@ -20,7 +20,7 @@ public class UserDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@Builder
 	@AllArgsConstructor
-	public static class CreateUserParameter {
+	public static class CreateUserParam {
 		@NotBlank
 		@Size(min = 5, max = 20)
 		private String login;

@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.dto.AuthenticationDto.LoginParameter;
+import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
@@ -61,17 +61,17 @@ public class AuthenticationService implements UserDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public AuthenticationToken issueAuthenticationToken(LoginParameter loginParameter) {
+	public AuthenticationToken issueAuthenticationToken(LoginParam loginParam) {
 		User user = null;
 
 		try {
-			user = userService.findByLogin(loginParameter.getLogin());
+			user = userService.findByLogin(loginParam.getLogin());
 		}
 		catch (UserNotFoundException e) {
 			throw new LoginFailedException("user not found");
 		}
 
-		if(!passwordEncoder.matches(loginParameter.getPassword(), user.getPassword())) {
+		if(!passwordEncoder.matches(loginParam.getPassword(), user.getPassword())) {
 			throw new LoginFailedException("password not matched");
 		}
 

@@ -2,7 +2,7 @@ package com.standardkim.kanban.controller;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.dto.UserDto.CreateUserParameter;
+import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.service.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class UserController {
 
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void join(@RequestBody @Valid CreateUserParameter createUserParameter) {
-		userService.create(createUserParameter);
+	public void join(@RequestBody @Valid CreateUserParam createUserParam) {
+		userService.create(createUserParam);
 	}
 }

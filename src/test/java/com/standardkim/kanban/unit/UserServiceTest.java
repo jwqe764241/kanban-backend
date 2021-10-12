@@ -3,7 +3,7 @@ package com.standardkim.kanban.unit;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import com.standardkim.kanban.dto.UserDto.CreateUserParameter;
+import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
@@ -56,23 +56,23 @@ public class UserServiceTest {
 	@Test
 	public void when_AddUserSuccessfully_expect_ReturnAddedUserDetail() {
 		//given
-		final CreateUserParameter createUserParameter = modelMapper.map(getCreateUserParameter(), CreateUserParameter.class);
-		final User fakeUser = new User(1L, createUserParameter.getLogin(), 
-			passwordEncoder.encode(createUserParameter.getPassword()), createUserParameter.getName(), createUserParameter.getEmail(), LocalDateTime.now(), null);
+		final CreateUserParam createUserParam = modelMapper.map(getCreateUserParam(), CreateUserParam.class);
+		final User fakeUser = new User(1L, createUserParam.getLogin(), 
+			passwordEncoder.encode(createUserParam.getPassword()), createUserParam.getName(), createUserParam.getEmail(), LocalDateTime.now(), null);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.findById(anyLong())).willReturn(Optional.of(fakeUser));
 		given(userRepository.save(any(User.class))).willReturn(fakeUser);
 
 		//when
-		UserDetail addedUserDetail = userService.create(createUserParameter);
+		UserDetail addedUserDetail = userService.create(createUserParam);
 
 		//then
 		User addedUser = userRepository.findById(addedUserDetail.getId()).get();
 
 		assertEquals(fakeUser.getId(), addedUser.getId());
 		assertEquals(fakeUser.getLogin(), addedUser.getLogin());
-		assertEquals(true, passwordEncoder.matches(createUserParameter.getPassword(), addedUser.getPassword()));
+		assertEquals(true, passwordEncoder.matches(createUserParam.getPassword(), addedUser.getPassword()));
 		assertEquals(fakeUser.getName(), addedUser.getName());
 		assertEquals(fakeUser.getRegisterDate(), addedUser.getRegisterDate());
 	}
@@ -81,18 +81,18 @@ public class UserServiceTest {
 	@Test
 	public void when_LoginAlreadyInUse_expect_ExceptionThrown() {
 		//given
-		CreateUserParameter createUserParameter = modelMapper.map(getCreateUserParameter(), CreateUserParameter.class);
+		CreateUserParam createUserParam = modelMapper.map(getCreateUserParam(), CreateUserParam.class);
 
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
 		//when, then
 		assertThrows(LoginAlreadyInUseException.class, () -> {
-			userService.create(createUserParameter);
+			userService.create(createUserParam);
 		});
 	}
 
-	private CreateUserParameter getCreateUserParameter() {
-		CreateUserParameter result = new CreateUserParameter("test", "1234", "test", "aaa@example.com");
+	private CreateUserParam getCreateUserParam() {
+		CreateUserParam result = new CreateUserParam("test", "1234", "test", "aaa@example.com");
 		return result;
 	}
 }
