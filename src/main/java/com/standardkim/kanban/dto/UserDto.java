@@ -2,6 +2,7 @@ package com.standardkim.kanban.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -34,7 +35,7 @@ public class UserDto {
 		private String name;
 
 		@NotBlank
-		@Size(min = 5, max = 320)
+		@Email(regexp = ".+@.+\\..+")
 		private String email;
 
 		public User toEntity(PasswordEncoder passwordEncoder) {
