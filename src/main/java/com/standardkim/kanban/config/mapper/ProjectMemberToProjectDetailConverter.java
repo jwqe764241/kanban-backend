@@ -1,6 +1,6 @@
 package com.standardkim.kanban.config.mapper;
 
-import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 
@@ -9,21 +9,21 @@ import org.springframework.stereotype.Component;
 import org.modelmapper.AbstractConverter;
 
 @Component
-public class ProjectMemberToProjectInfoConverter extends ModelMapperConverter<ProjectMember, ProjectInfo>{
+public class ProjectMemberToProjectDetailConverter extends ModelMapperConverter<ProjectMember, ProjectDetail>{
 	@Override
-	protected Converter<ProjectMember, ProjectInfo> converter() {
-		return new AbstractConverter<ProjectMember, ProjectInfo>() {
+	protected Converter<ProjectMember, ProjectDetail> converter() {
+		return new AbstractConverter<ProjectMember, ProjectDetail>() {
 			@Override
-			public ProjectInfo convert(ProjectMember projectMember) {
+			public ProjectDetail convert(ProjectMember projectMember) {
 				Project project = projectMember.getProject();
-				ProjectInfo projectInfo = ProjectInfo.builder()
+				ProjectDetail projectDetail = ProjectDetail.builder()
 					.id(project.getId())
 					.name(project.getName())
 					.description(project.getDescription())
 					.registerDate(project.getRegisterDate())
 					.registerUsername(project.getRegisterUser().getName())
 					.build();
-				return projectInfo;
+				return projectDetail;
 			}
 		};
 	}

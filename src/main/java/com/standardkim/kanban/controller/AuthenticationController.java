@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.dto.AuthenticationDto.LoginUserRequest;
+import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
 import com.standardkim.kanban.service.AuthenticationService;
-import com.standardkim.kanban.util.AuthenticationUtil;
+import com.standardkim.kanban.util.CookieUtil;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,11 +33,9 @@ public class AuthenticationController {
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
-	public String login(@RequestBody @Valid LoginUserRequest loginUserRequest, HttpServletResponse response) throws Exception {
+	public String login(@RequestBody @Valid LoginParam loginParam, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = authenticationService.getAuthenticationToken(
-			loginUserRequest.getLogin(), 
-			loginUserRequest.getPassword());
+		AuthenticationToken authenticationToken = authenticationService.issueAuthenticationToken(loginParam);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain("localhost")
@@ -55,11 +53,11 @@ public class AuthenticationController {
 	@PostMapping("/auth/logout")
 	@ResponseStatus(HttpStatus.OK)
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = AuthenticationUtil.getRefreshToken(request, refreshTokenName);
+		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
 		if(refreshToken == null)
 			return;
 
-		authenticationService.removeRefreshToken(refreshToken);
+		authenticationService.deleteRefreshToken(refreshToken);
 
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
 			.domain("localhost")
@@ -74,9 +72,8 @@ public class AuthenticationController {
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public String refreshAccessToken(HttpServletRequest request) throws Exception {
-		String refreshToken = AuthenticationUtil.getRefreshToken(request, refreshTokenName);
-		String newAccessToken = authenticationService.refreshAccessToken(refreshToken);
-		return newAccessToken;
+		String accessToken = authenticationService.getAccessTokenByHttpServletRequest(request, refreshTokenName);
+		return accessToken;
 	}
 
 	@GetMapping("/auth/check-token")

@@ -1,14 +1,15 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import com.standardkim.kanban.dto.MailDto.ProjectInvitationMailInfo;
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserInfo;
+import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
+import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.PermissionException;
+import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.exception.UserNotInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
@@ -36,7 +37,7 @@ public class ProjectInvitationService {
 	private final MailService mailService;
 
 	@Transactional(readOnly = true)
-	public boolean isInvitationExists(Long projectId, Long invitedUserId) {
+	public boolean isExists(Long projectId, Long invitedUserId) {
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
 			.projectId(projectId)
 			.invitedUserId(invitedUserId)
@@ -45,69 +46,44 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectInvitation> getInvitationsByProjectId(Long projectId) {
+	public ProjectInvitation findById(ProjectInvitationKey projectInvitationKey) {
+		Optional<ProjectInvitation> projectInvitation = projectInvitationRepository.findById(projectInvitationKey);
+		return projectInvitation.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public List<ProjectInvitation> findByProjectId(Long projectId) {
 		return projectInvitationRepository.findByProjectId(projectId);
 	}
 
 	@Transactional(readOnly = true)
-	public List<InvitedUserInfo> getInvitedUsers(Long projectId) {
-		User user = userService.getAuthenticatedUser();
-		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
-
-		List<ProjectInvitation> invitations = getInvitationsByProjectId(projectId);
-		List<InvitedUserInfo> invitedUsers = modelMapper.map(invitations, new TypeToken<List<InvitedUserInfo>>(){}.getType());
-		return invitedUsers;
+	public List<InvitedUserDetail> findInvitedUserDetailByProjectId(Long projectId) {
+		List<ProjectInvitation> invitations = findByProjectId(projectId);
+		List<InvitedUserDetail> invitedUserDetails = modelMapper.map(invitations, new TypeToken<List<InvitedUserDetail>>(){}.getType());
+		return invitedUserDetails;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	private ProjectInvitation addProjectInvite(Long projectId, Long invitedUserId, User registerUser) {
+	private ProjectInvitation create(Project project, User invitedUser, User registerUser) {
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(projectId)
-			.invitedUserId(invitedUserId)
+			.projectId(project.getId())
+			.invitedUserId(invitedUser.getId())
 			.build();
 		ProjectInvitation invitation = ProjectInvitation.builder()
 			.id(key)
+			.project(project)
+			.invitedUser(invitedUser)
 			.registerUser(registerUser)
 			.build();
-		invitation = projectInvitationRepository.save(invitation);
-		return invitation;
+		ProjectInvitation newInvitation = projectInvitationRepository.saveAndFlush(invitation);
+		return newInvitation;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void inviteUser(Long projectId, Long invitedUserId) {
-		User user = userService.getAuthenticatedUser();
-		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
-
-		User invitedUser = userService.getUserById(invitedUserId);
-		if(isInvitationExists(projectId, invitedUser.getId())) {
-			throw new UserAlreadyInvitedException("user already invited");
-		}
-
-		Project project = projectService.getProjectById(projectId);
-
-		addProjectInvite(projectId, invitedUser.getId(), user);
-
-		ProjectInvitationMailInfo info = ProjectInvitationMailInfo.builder()
-			.inviteeMailAddress(invitedUser.getEmail())
-			.projectId(project.getId())
-			.projectName(project.getName())
-			.inviteeLogin(invitedUser.getLogin())
-			.inviterLogin(user.getLogin())
-			.build();
-		
-		mailService.sendProjectInvitationMessage(info);
-	}
-
-	@Transactional(rollbackFor = Exception.class)
-	public void deleteInvitation(Long projectId, Long invitedUserId) {
-		if(!isInvitationExists(projectId, invitedUserId)) {
+	public void delete(Long projectId, Long invitedUserId) {
+		if(!isExists(projectId, invitedUserId)) {
 			return;
 		}
-
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
 			.projectId(projectId)
 			.invitedUserId(invitedUserId)
@@ -116,21 +92,37 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void acceptInvite(Long projectId) {
-		User user = userService.getAuthenticatedUser();
-		if(!isInvitationExists(projectId, user.getId())) {
-			throw new UserNotInvitedException("user not invited");
+	public InvitedUserDetail invite(Long projectId, Long invitedUserId) {
+		User invitedUser = userService.findById(invitedUserId);
+		if(isExists(projectId, invitedUser.getId())) {
+			throw new UserAlreadyInvitedException("user already invited");
 		}
-		projectMemberService.addProjectMemeber(projectId, user.getId(), false);
-		deleteInvitation(projectId, user.getId());
+
+		User user = userService.findBySecurityUser();
+		Project project = projectService.findById(projectId);
+		ProjectInvitation projectInvitation = create(project, invitedUser, user);
+
+		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
+		InviteProjectMailParam inviteProjectParam = InviteProjectMailParam.builder()
+			.inviteeMailAddress(invitedUser.getEmail())
+			.projectId(project.getId())
+			.projectName(project.getName())
+			.inviteeLogin(invitedUser.getLogin())
+			.inviterLogin(user.getLogin())
+			.build();
+		mailService.sendInviteProjectMail(inviteProjectParam);
+
+		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
+		return invitedUserDetail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void cancelInvitation(Long projectId, Long invitedUserId) {
-		User user = userService.getAuthenticatedUser();
-		if(!projectMemberService.isProjectOwner(projectId, user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
+	public void accept(Long projectId) {
+		User user = userService.findBySecurityUser();
+		if(!isExists(projectId, user.getId())) {
+			throw new UserNotInvitedException("user not invited");
 		}
-		deleteInvitation(projectId, user.getId());
+		projectMemberService.create(projectId, user.getId(), false);
+		delete(projectId, user.getId());
 	}
 }

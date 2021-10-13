@@ -11,16 +11,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class ProjectDto {
+public class KanbanDto {
 	@Getter
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class CreateProjectParam {
+	public static class CreateKanbanParam {
 		@NotBlank
 		@Size(min = 2, max = 50)
 		private String name;
-
+		
 		@Size(max = 200)
 		private String description;
 	}
@@ -29,11 +29,24 @@ public class ProjectDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
-	public static class ProjectDetail {
-		private Long id;
+	public static class UpdateKanbanParam {
+		@NotBlank
+		@Size(min = 2, max = 50)
+		private String name;
+		
+		@Size(max = 200)
+		private String description;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class KanbanDetail {
+		private Long projectId;
+		private Long sequenceId;
 		private String name;
 		private String description;
-		private String registerUsername;
 		private LocalDateTime registerDate;
 	}
 }

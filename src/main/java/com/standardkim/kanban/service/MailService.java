@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
 
-import com.standardkim.kanban.dto.MailDto.ProjectInvitationMailInfo;
+import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -31,35 +31,38 @@ public class MailService {
 	@Value("${config.invitation.acceptInvitationUrl}")
 	private String acceptInvitationUrl;
 
-	public String getProjectInvitationMessage(ProjectInvitationMailInfo info) throws IOException, TemplateException {
+	private String getInviteProjectMailTitle(InviteProjectMailParam inviteProjectMailParam) {
+		String title = String.format("[Kanban] @%s has invited you to join the \"%s\" project", 
+			inviteProjectMailParam.getInviterLogin(), inviteProjectMailParam.getProjectName());
+		return title;
+	}
+
+	private String getInviteProjectMailBody(InviteProjectMailParam inviteProjectMailParam) {
 		Map<String, Object> model = new HashMap<>();
-		model.put("inviterLogin", info.getInviterLogin());
-		model.put("projectName", info.getProjectName());
-		model.put("url", String.format(acceptInvitationUrl, info.getProjectId()));
+		model.put("inviterLogin", inviteProjectMailParam.getInviterLogin());
+		model.put("projectName", inviteProjectMailParam.getProjectName());
+		model.put("url", String.format(acceptInvitationUrl, inviteProjectMailParam.getProjectId()));
 
 		StringWriter writer = new StringWriter();
-		configuration.getTemplate("mail/test.ftlh").process(model, writer);
+		try {
+			configuration.getTemplate("mail/test.ftlh").process(model, writer);
+		} catch (IOException | TemplateException e) {
+			return "";
+		}
 
 		return writer.getBuffer().toString();
 	}
 
-	public void sendProjectInvitationMessage(ProjectInvitationMailInfo info) {
-		String title = String.format("[Kanban] @%s has invited you to join the \"%s\" project", 
-			info.getInviterLogin(), info.getProjectName());
-
-		String text;
-		try {
-			text = getProjectInvitationMessage(info);
-		} catch (Exception e) {
-			text = "";
-		}
+	public void sendInviteProjectMail(InviteProjectMailParam inviteProjectMailParam) {
+		String title = getInviteProjectMailTitle(inviteProjectMailParam);
+		String body = getInviteProjectMailBody(inviteProjectMailParam);
 
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 				helper.setSubject(title);
-				helper.setTo(info.getInviteeMailAddress());
-				helper.setText(text, true);
+				helper.setTo(inviteProjectMailParam.getInviteeMailAddress());
+				helper.setText(body, true);
 			mailSender.send(message);
 		} catch (Exception e) {
 			e.printStackTrace();

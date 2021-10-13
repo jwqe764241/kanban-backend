@@ -1,20 +1,17 @@
 package com.standardkim.kanban.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.dto.ProjectDto.ProjectInfo;
+import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.PermissionException;
 import com.standardkim.kanban.exception.ProjectAlreadyExistException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.repository.ProjectRepository;
-import com.standardkim.kanban.util.AuthenticationFacade;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -34,43 +31,50 @@ public class ProjectService {
 
 	private final ModelMapper modelMapper;
 
-	private final AuthenticationFacade authenticationFacade;
-
 	@Transactional(readOnly = true)
 	public boolean isProjectNameExists(String name) {
 		return projectRepository.existsByName(name);
 	}
 
 	@Transactional(readOnly = true)
-	public Project getProjectById(Long projectId) {
-		Optional<Project> project = projectRepository.findById(projectId);
+	public Project findById(Long id) {
+		Optional<Project> project = projectRepository.findById(id);
 		return project.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
 	}	
 
 	@Transactional(readOnly = true)
-	public ArrayList<ProjectInfo> getMyProjects() {
-		User user = userService.getAuthenticatedUser();
+	public List<Project> findByUserId(Long id) {
+		User user = userService.findById(id);
 		Set<ProjectMember> projectMembers = user.getProjects();
-		ArrayList<ProjectInfo> projects = modelMapper.map(projectMembers, new TypeToken<List<ProjectInfo>>(){}.getType());
+		List<Project> projects = modelMapper.map(projectMembers, new TypeToken<List<Project>>(){}.getType());
 		return projects;
 	}
 
 	@Transactional(readOnly = true)
-	public ProjectInfo getProjectInfoById(Long projectId) {
-		SecurityUser user = authenticationFacade.getSecurityUser();
-		Project project = getProjectById(projectId);
-		if(!projectMemberService.isMemberExists(project.getId(), user.getId())) {
-			throw new PermissionException("no permission to access project [" + projectId + "]");
-		}
-		ProjectInfo info = modelMapper.map(project, ProjectInfo.class);
-		return info;
+	public List<Project> findBySecurityUser() {
+		User user = userService.findBySecurityUser();
+		return findByUserId(user.getId());
+	}
+
+	@Transactional(readOnly = true)
+	public List<ProjectDetail> findProjectDetailBySecurityUser() {
+		List<Project> projects = findBySecurityUser();
+		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
+		return projectDetails;
+	}
+
+	@Transactional(readOnly = true)
+	public ProjectDetail findProjectDetailById(Long id) {
+		Project project = findById(id);
+		ProjectDetail detail = modelMapper.map(project, ProjectDetail.class);
+		return detail;
 	}
 
 	@Transactional(rollbackFor = Exception.class) 
-	public Project createProject(String name, String description, User registerUser) {
+	public Project create(CreateProjectParam createProjectParam, User registerUser) {
 		Project project = Project.builder()
-			.name(name)
-			.description(description)
+			.name(createProjectParam.getName())
+			.description(createProjectParam.getDescription())
 			.registerUser(registerUser)
 			.build();
 		project = projectRepository.save(project);
@@ -78,13 +82,13 @@ public class ProjectService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Project createProject(String name, String description) {
-		if(isProjectNameExists(name)) {
+	public Project create(CreateProjectParam createProjectParam) {
+		if(isProjectNameExists(createProjectParam.getName())) {
 			throw new ProjectAlreadyExistException("project already exist.");
 		}
-		User user = userService.getAuthenticatedUser();
-		Project project = createProject(name, description, user);
-		projectMemberService.addProjectMemeber(project.getId(), user.getId(), true);
+		User user = userService.findBySecurityUser();
+		Project project = create(createProjectParam, user);
+		projectMemberService.create(project.getId(), user.getId(), true);
 		return project;
 	}
 }
