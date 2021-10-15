@@ -24,6 +24,7 @@
 		</RollingFile>
 		<RollingFile name="error" fileName="${log_path}/error.log" filePattern="${log_path}/backup/error.%d{yyyy-MM-dd} %i.log.gz">
 			<PatternLayout pattern="${log_pattern}" />
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
 				<SizeBasedTriggeringPolicy size="100MB" />
@@ -38,12 +39,15 @@
 	</Appenders>
 
 	<Loggers>
-		<Root level="info">
+		<Root level="INFO">
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="log" />
 		</Root>
-		<Logger name="com.standardkim.kanban" level="error" additivity="false">
+		<Logger name="com.standardkim.kanban" level="INFO">
 			<AppenderRef ref="error" />
+		</Logger>
+		<Logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
+			<AppenderRef ref="stdout" />
 		</Logger>
 	</Loggers>
 </Configuration>
