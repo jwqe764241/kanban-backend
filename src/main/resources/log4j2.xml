@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+	<Properties>
+		<Property name="log_path">./logs</Property>
+		<Property name="log_pattern">[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n</Property>
+	</Properties>
+
+	<Appenders>
+		<Console name="stdout">
+			<PatternLayout pattern="${log_pattern}" />
+		</Console>
+		<RollingFile name="log" fileName="${log_path}/log.log" filePattern="${log_path}/backup/log.%d{yyyy-MM-dd} %i.log.gz">
+			<PatternLayout pattern="${log_pattern}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="nomax">
+				<Delete basePath="${log_path}/backup/" maxDepth="1">
+					<IfFileName glob="log.*.log.gz" />
+					<IfLastModified age="90d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+		<RollingFile name="error" fileName="${log_path}/error.log" filePattern="${log_path}/backup/error.%d{yyyy-MM-dd} %i.log.gz">
+			<PatternLayout pattern="${log_pattern}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+				<SizeBasedTriggeringPolicy size="100MB" />
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="nomax">
+				<Delete basePath="${log_path}/backup/" maxDepth="1">
+					<IfFileName glob="error.*.log.gz" />
+					<IfLastModified age="90d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="stdout" />
+			<AppenderRef ref="log" />
+		</Root>
+		<Logger name="com.standardkim.kanban" level="error" additivity="false">
+			<AppenderRef ref="error" />
+		</Logger>
+	</Loggers>
+</Configuration>
