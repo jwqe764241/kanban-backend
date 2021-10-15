@@ -13,6 +13,8 @@ import com.standardkim.kanban.util.AlphanumericGenerator;
 import org.apache.logging.log4j.CloseableThreadContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 @Component
 public class LogTraceIdFilter extends OncePerRequestFilter {
@@ -21,8 +23,14 @@ public class LogTraceIdFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+		ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
+
 		try(CloseableThreadContext.Instance ctc = CloseableThreadContext.put("traceId", generator.generate(10))){
-			filterChain.doFilter(request, response);
-		} 
+			filterChain.doFilter(wrappedRequest, wrappedResponse);
+		}
+
+		//Must to call this!
+		wrappedResponse.copyBodyToResponse();
 	}
 }
