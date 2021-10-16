@@ -1,4 +1,4 @@
-package com.standardkim.kanban.exception;
+package com.standardkim.kanban.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -7,6 +7,19 @@ import java.util.HashMap;
 import javax.annotation.PostConstruct;
 
 import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
+import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.LoginAlreadyInUseException;
+import com.standardkim.kanban.exception.LoginFailedException;
+import com.standardkim.kanban.exception.ProjectAlreadyExistException;
+import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
+import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
+import com.standardkim.kanban.exception.ResourceNotFoundException;
+import com.standardkim.kanban.exception.TokenNotProvidedException;
+import com.standardkim.kanban.exception.UserAlreadyInvitedException;
+import com.standardkim.kanban.exception.UserNotFoundException;
+import com.standardkim.kanban.exception.UserNotInvitedException;
+import com.standardkim.kanban.exception.ValidationError;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +30,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class ErrorResponseController {
 	private HttpHeaders defaultHeaders;
 
 	@PostConstruct
