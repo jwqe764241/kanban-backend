@@ -8,16 +8,16 @@ import javax.annotation.PostConstruct;
 
 import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
 import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
-import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
-import com.standardkim.kanban.exception.LoginFailedException;
 import com.standardkim.kanban.exception.ProjectAlreadyExistException;
-import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
-import com.standardkim.kanban.exception.TokenNotProvidedException;
 import com.standardkim.kanban.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.exception.UserNotInvitedException;
 import com.standardkim.kanban.exception.ValidationError;
+import com.standardkim.kanban.exception.auth.CannotLoginException;
+import com.standardkim.kanban.exception.auth.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.auth.InvalidRefreshTokenException;
+import com.standardkim.kanban.exception.auth.UnknownRefreshTokenException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,42 +37,27 @@ public class ErrorResponseController {
 		defaultHeaders.add("Content-Type", "application/json; charset=UTF-8");
 	}
 
-	@ExceptionHandler(ExpiredRefreshTokenException.class)
-	public ResponseEntity<ErrorMessage> expiredRefreshToken(ExpiredRefreshTokenException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("invalid refresh token")
-			.detail("given refresh token is expired. please login")
-			.build();
-
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
-	}
-
-	@ExceptionHandler(RefreshTokenNotMatchedException.class)
-	public ResponseEntity<ErrorMessage> refreshTokenNotMatched(RefreshTokenNotMatchedException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("invalid refresh token")
-			.build();
-
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
-	}
-
-	@ExceptionHandler(TokenNotProvidedException.class)
-	public ResponseEntity<ErrorMessage> tokenNotProvided(TokenNotProvidedException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("invalid reqeust parameter")
-			.detail("token for refresh not provided, check parameter")
-			.build();
-
+	@ExceptionHandler(InvalidRefreshTokenException.class)
+	public ResponseEntity<ErrorMessage> invalidRefreshToken(InvalidRefreshTokenException e) {
+		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(LoginFailedException.class)
-	public ResponseEntity<ErrorMessage> loginFailed(LoginFailedException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("login error")
-			.detail("login failed. check username of password")
-			.build();
+	@ExceptionHandler(UnknownRefreshTokenException.class)
+	public ResponseEntity<ErrorMessage> unknownRefreshToken(UnknownRefreshTokenException e) {
+		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	}
 
+	@ExceptionHandler(ExpiredRefreshTokenException.class)
+	public ResponseEntity<ErrorMessage> expireRefreshToken(ExpiredRefreshTokenException e) {
+		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
+		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(CannotLoginException.class)
+	public ResponseEntity<ErrorMessage> cannotLogin(CannotLoginException e) {
+		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
 	}
 

@@ -9,11 +9,12 @@ import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
-import com.standardkim.kanban.exception.LoginFailedException;
-import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
+import com.standardkim.kanban.exception.ErrorCode;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
-import com.standardkim.kanban.exception.TokenNotProvidedException;
+import com.standardkim.kanban.exception.auth.CannotLoginException;
+import com.standardkim.kanban.exception.auth.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.auth.InvalidRefreshTokenException;
+import com.standardkim.kanban.exception.auth.UnknownRefreshTokenException;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.util.CookieUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -62,21 +63,20 @@ public class AuthenticationService implements UserDetailsService {
 	@Transactional(rollbackFor = Exception.class)
 	public AuthenticationToken issueAuthenticationToken(LoginParam loginParam) {
 		User user = null;
-
 		try {
 			user = userService.findByLogin(loginParam.getLogin());
 		}
 		catch (ResourceNotFoundException e) {
-			throw new LoginFailedException("user not found");
+			throw new CannotLoginException(ErrorCode.AUTH_INCORRECT_USERNAME_OR_PASSWORD);
 		}
 
 		if(!passwordEncoder.matches(loginParam.getPassword(), user.getPassword())) {
-			throw new LoginFailedException("password not matched");
+			throw new CannotLoginException(ErrorCode.AUTH_INCORRECT_USERNAME_OR_PASSWORD);
 		}
 
 		String refreshToken = jwtTokenProvider.buildRefreshToken(user.getLogin(), user.getName());
 		String accessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
-
+		
 		//DB에 refershToken 등록 이미 있으면 교체
 		saveRefreshToken(user.getId(), refreshToken);
 
@@ -87,23 +87,30 @@ public class AuthenticationService implements UserDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String getAccessToken(String refreshToken) throws RefreshTokenNotMatchedException, ExpiredRefreshTokenException{
+	public String getAccessToken(String refreshToken) {
 		if(refreshToken == null || refreshToken.isBlank()) {
-			throw new TokenNotProvidedException("token must not be null");
+			throw new InvalidRefreshTokenException(ErrorCode.AUTH_REFRESH_TOKEN_NOT_PROVIDED);
+		}
+
+		User user = null;
+		RefreshToken token = null;
+		try {
+			String login = jwtTokenProvider.getLogin(refreshToken);
+			user = userService.findByLogin(login);
+			token = findRefreshTokenByUserId(user.getId());
+		} catch (ResourceNotFoundException e) {
+			throw new InvalidRefreshTokenException(ErrorCode.AUTH_INVALID_REFRESH_TOKEN);
 		}
 		
-		String login = jwtTokenProvider.getLogin(refreshToken);
-		User user = userService.findByLogin(login);
-		RefreshToken token = findRefreshTokenByUserId(user.getId());
 		String userRefreshToken = token.getToken();
 
 		if(!userRefreshToken.equals(refreshToken)) {
-			throw new RefreshTokenNotMatchedException("refresh token not matched");
+			throw new UnknownRefreshTokenException(ErrorCode.AUTH_UNKNOWN_REFRESH_TOKEN);
 		}
 
 		if(jwtTokenProvider.isTokenExpired(userRefreshToken)) {
 			refreshTokenRepository.delete(token);
-			throw new ExpiredRefreshTokenException("refresh token is expired");
+			throw new ExpiredRefreshTokenException(ErrorCode.AUTH_EXPIRED_REFRESH_TOKEN);
 		}
  
 		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());

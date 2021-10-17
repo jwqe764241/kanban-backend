@@ -14,7 +14,7 @@ public class ErrorMessageDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
 	public static class ErrorMessage {
-		private Integer code;
+		private String code;
 		private String message;
 		private String detail;
 		@Builder.Default
