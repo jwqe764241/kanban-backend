@@ -12,7 +12,6 @@ import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.exception.LoginFailedException;
 import com.standardkim.kanban.exception.ProjectAlreadyExistException;
-import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.exception.TokenNotProvidedException;
@@ -65,16 +64,6 @@ public class ErrorResponseController {
 			.build();
 
 		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(RefreshTokenNotFoundException.class)
-	public ResponseEntity<ErrorMessage> refreshTokenNotFound(RefreshTokenNotFoundException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("token error")
-			.detail("can't find user's refresh token. please login")
-			.build();
-		
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(LoginFailedException.class)

@@ -11,7 +11,6 @@ import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.exception.LoginFailedException;
-import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
 import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.exception.TokenNotProvidedException;
@@ -57,7 +56,7 @@ public class AuthenticationService implements UserDetailsService {
 	@Transactional(readOnly = true)
 	public RefreshToken findRefreshTokenByUserId(Long userId) {
 		final Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUserId(userId);
-		return refreshToken.orElseThrow(() -> new RefreshTokenNotFoundException("refresh token not found"));
+		return refreshToken.orElseThrow(() -> new ResourceNotFoundException("refresh token not found"));
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -143,7 +142,7 @@ public class AuthenticationService implements UserDetailsService {
 		try{
 			RefreshToken refreshToken = findRefreshTokenByUserId(userId);
 			updatRefreshToken(refreshToken, token);
-		} catch (RefreshTokenNotFoundException e) {
+		} catch (ResourceNotFoundException e) {
 			createRefreshToken(userId, token);
 		}
 	}
