@@ -7,7 +7,7 @@ import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
-import com.standardkim.kanban.exception.UserNotFoundException;
+import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
@@ -45,13 +45,13 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public User findById(Long id) {
 		Optional<User> user = userRepository.findById(id);
-		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
+		return user.orElseThrow(() -> new ResourceNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
 	public User findByLogin(String login) {
 		Optional<User> user = userRepository.findByLogin(login);
-		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
+		return user.orElseThrow(() -> new ResourceNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)

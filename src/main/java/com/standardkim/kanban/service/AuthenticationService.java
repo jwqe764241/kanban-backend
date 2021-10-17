@@ -13,8 +13,8 @@ import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.exception.LoginFailedException;
 import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
+import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.exception.TokenNotProvidedException;
-import com.standardkim.kanban.exception.UserNotFoundException;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.util.CookieUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -49,8 +49,8 @@ public class AuthenticationService implements UserDetailsService {
 			User user = userService.findByLogin(username);
 			SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
 			return securityUser;
-		} catch (UserNotFoundException e) {
-			throw new UsernameNotFoundException("cannot find user");
+		} catch (ResourceNotFoundException e) {
+			throw new UsernameNotFoundException("cannot find user", e);
 		}
 	}
 
@@ -67,7 +67,7 @@ public class AuthenticationService implements UserDetailsService {
 		try {
 			user = userService.findByLogin(loginParam.getLogin());
 		}
-		catch (UserNotFoundException e) {
+		catch (ResourceNotFoundException e) {
 			throw new LoginFailedException("user not found");
 		}
 
@@ -154,7 +154,7 @@ public class AuthenticationService implements UserDetailsService {
 		try {
 			User user = userService.findByLogin(login);
 			refreshTokenRepository.deleteByUserId(user.getId());
-		} catch (UserNotFoundException e) {
+		} catch (ResourceNotFoundException e) {
 			return;
 		}
 	}
