@@ -60,6 +60,13 @@ public class UserService {
 		return findById(securityUser.getId());
 	}
 
+	@Transactional(readOnly = true)
+	public SecurityUser findSecurityUserByLogin(String login) {
+		User user = findByLogin(login);
+		SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
+		return securityUser;
+	}
+
 	@Transactional(rollbackFor = Exception.class)
 	public UserDetail create(CreateUserParam createUserParam) {
 		if(isLoginExists(createUserParam.getLogin())) {

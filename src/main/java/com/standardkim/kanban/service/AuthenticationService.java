@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.ErrorCode;
@@ -19,10 +18,6 @@ import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.util.CookieUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService implements UserDetailsService {
+public class AuthenticationService {
 	private final UserService userService;
 	
 	private final RefreshTokenRepository refreshTokenRepository;
@@ -39,20 +34,6 @@ public class AuthenticationService implements UserDetailsService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final PasswordEncoder passwordEncoder;
-
-	private final ModelMapper modelMapper;
-
-	@Override
-	@Transactional(readOnly = true)
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		try {
-			User user = userService.findByLogin(username);
-			SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
-			return securityUser;
-		} catch (ResourceNotFoundException e) {
-			throw new UsernameNotFoundException("cannot find user", e);
-		}
-	}
 
 	@Transactional(readOnly = true)
 	public RefreshToken findRefreshTokenByUserId(Long userId) {
