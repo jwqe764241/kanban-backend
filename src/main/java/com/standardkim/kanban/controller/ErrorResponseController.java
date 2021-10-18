@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 
-import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
+import com.standardkim.kanban.dto.ErrorResponseDto.ErrorResponse;
 import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
 import com.standardkim.kanban.exception.LoginAlreadyInUseException;
 import com.standardkim.kanban.exception.ProjectAlreadyExistException;
@@ -38,97 +38,86 @@ public class ErrorResponseController {
 	}
 
 	@ExceptionHandler(InvalidRefreshTokenException.class)
-	public ResponseEntity<ErrorMessage> invalidRefreshToken(InvalidRefreshTokenException e) {
-		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+	public ResponseEntity<ErrorResponse> invalidRefreshToken(InvalidRefreshTokenException e) {
+		return ErrorResponse.toResponseEntity(e.getErrorCode());
 	}
 
 	@ExceptionHandler(UnknownRefreshTokenException.class)
-	public ResponseEntity<ErrorMessage> unknownRefreshToken(UnknownRefreshTokenException e) {
-		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	public ResponseEntity<ErrorResponse> unknownRefreshToken(UnknownRefreshTokenException e) {
+		return ErrorResponse.toResponseEntity(e.getErrorCode());
 	}
 
 	@ExceptionHandler(ExpiredRefreshTokenException.class)
-	public ResponseEntity<ErrorMessage> expireRefreshToken(ExpiredRefreshTokenException e) {
-		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	public ResponseEntity<ErrorResponse> expireRefreshToken(ExpiredRefreshTokenException e) {
+		return ErrorResponse.toResponseEntity(e.getErrorCode());
 	}
 
 	@ExceptionHandler(CannotLoginException.class)
-	public ResponseEntity<ErrorMessage> cannotLogin(CannotLoginException e) {
-		ErrorMessage errorMessage = e.getErrorCode().toErrorMessage();
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.UNAUTHORIZED);
+	public ResponseEntity<ErrorResponse> cannotLogin(CannotLoginException e) {
+		return ErrorResponse.toResponseEntity(e.getErrorCode());
 	}
 
 	@ExceptionHandler(LoginAlreadyInUseException.class)
-	public ResponseEntity<ErrorMessage> loginAlreadyInUse(LoginAlreadyInUseException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("join error")
+	public ResponseEntity<ErrorResponse> loginAlreadyInUse(LoginAlreadyInUseException e) {
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("login is already in use, use another login")
 			.build();
 
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(ProjectAlreadyExistException.class)
-	public ResponseEntity<ErrorMessage> projectAlreadyExist(ProjectAlreadyExistException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("create error")
+	public ResponseEntity<ErrorResponse> projectAlreadyExist(ProjectAlreadyExistException e) {
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("project name already exist, please use another project name")
 			.build();
 
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<ErrorMessage> resourceNotFound(ResourceNotFoundException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("resource error")
+	public ResponseEntity<ErrorResponse> resourceNotFound(ResourceNotFoundException e) {
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("resource not found")
 			.build();
 
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(CannotDeleteProjectOwnerException.class)
-	public ResponseEntity<ErrorMessage> cannotDeleteProjectOwnerException(CannotDeleteProjectOwnerException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("request error")
+	public ResponseEntity<ErrorResponse> cannotDeleteProjectOwnerException(CannotDeleteProjectOwnerException e) {
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("can't remove project owner")
 			.build();
 
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(UserAlreadyInvitedException.class)
-	public ResponseEntity<ErrorMessage> userAlreadyInvitedException(UserAlreadyInvitedException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("invite error")
+	public ResponseEntity<ErrorResponse> userAlreadyInvitedException(UserAlreadyInvitedException e) {
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("user already invited")
 			.build();
 
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(UserNotInvitedException.class)
-	public ResponseEntity<ErrorMessage> userNotInvitedException(UserNotInvitedException e) {
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("invite error")
+	public ResponseEntity<ErrorResponse> userNotInvitedException(UserNotInvitedException e) {
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("you are not invited")
 			.build();
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
 		Map<String, Object> errors = toValidationError(e);
-		ErrorMessage errorMessage = ErrorMessage.builder()
-			.message("validation error")
+		ErrorResponse errorMessage = ErrorResponse.builder()
 			.detail("validation failed")
 			.data(errors)
 			.build();
-		return new ResponseEntity<ErrorMessage>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
 	}
 
 	private Map<String, Object> toValidationError(MethodArgumentNotValidException e) {
