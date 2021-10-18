@@ -38,6 +38,12 @@ public class KanbanService {
 	}
 
 	@Transactional(readOnly = true)
+	public Kanban findKanbanByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
+		Optional<Kanban> kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId);
+		return kanban.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	}
+
+	@Transactional(readOnly = true)
 	public KanbanDetail findKanbanDetailByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
 		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
@@ -45,24 +51,19 @@ public class KanbanService {
 	}
 
 	@Transactional(readOnly = true)
-	public Kanban findKanbanByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
-		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
-		Optional<Kanban> kanban = kanbanRepository.findById(kanbanSequence.getId());
-		return kanban.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+	public KanbanDetail findKanbanDetailById(Long id) {
+		KanbanSequence kanbanSequence = kanbanSequenceService.findById(id);
+		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
+		return kanbanDetail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public KanbanDetail create(Long projectId, CreateKanbanParam createKanbanParam) {
 		Project project = projectService.findById(projectId);
-		Kanban kanban = Kanban.builder()
-			.name(createKanbanParam.getName())
-			.description(createKanbanParam.getDescription())
-			.project(project)
-			.build();
+		Kanban kanban = createKanbanParam.toEntity(project);
 		kanbanRepository.save(kanban);
 
-		KanbanSequence kanbanSequence = kanbanSequenceService.findById(kanban.getId());
-		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
+		KanbanDetail kanbanDetail = findKanbanDetailById(kanban.getId());
 		return kanbanDetail;
 	}
 
