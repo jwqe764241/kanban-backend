@@ -1,7 +1,6 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
 import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
@@ -9,9 +8,8 @@ import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.ResourceNotFoundException;
-import com.standardkim.kanban.exception.UserAlreadyInvitedException;
-import com.standardkim.kanban.exception.UserNotInvitedException;
+import com.standardkim.kanban.exception.project.InvitationNotFoundException;
+import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
 import org.modelmapper.ModelMapper;
@@ -46,19 +44,8 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(readOnly = true)
-	public ProjectInvitation findById(ProjectInvitationKey projectInvitationKey) {
-		Optional<ProjectInvitation> projectInvitation = projectInvitationRepository.findById(projectInvitationKey);
-		return projectInvitation.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
-	}
-
-	@Transactional(readOnly = true)
-	public List<ProjectInvitation> findByProjectId(Long projectId) {
-		return projectInvitationRepository.findByProjectId(projectId);
-	}
-
-	@Transactional(readOnly = true)
 	public List<InvitedUserDetail> findInvitedUserDetailByProjectId(Long projectId) {
-		List<ProjectInvitation> invitations = findByProjectId(projectId);
+		List<ProjectInvitation> invitations = projectInvitationRepository.findByProjectId(projectId);
 		List<InvitedUserDetail> invitedUserDetails = modelMapper.map(invitations, new TypeToken<List<InvitedUserDetail>>(){}.getType());
 		return invitedUserDetails;
 	}
@@ -120,7 +107,7 @@ public class ProjectInvitationService {
 	public void accept(Long projectId) {
 		User user = userService.findBySecurityUser();
 		if(!isExists(projectId, user.getId())) {
-			throw new UserNotInvitedException("user not invited");
+			throw new InvitationNotFoundException("user not invited");
 		}
 		projectMemberService.create(projectId, user.getId(), false);
 		delete(projectId, user.getId());

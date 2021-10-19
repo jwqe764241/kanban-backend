@@ -1,7 +1,7 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
 import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
@@ -9,8 +9,9 @@ import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
 import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.exception.ResourceNotFoundException;
+import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
+import com.standardkim.kanban.repository.KanbanSequenceRepository;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class KanbanService {
 	private final KanbanRepository kanbanRepository;
 
-	private final KanbanSequenceService kanbanSequenceService;
+	private final KanbanSequenceRepository kanbanSequenceRepository;
 
 	private final ProjectService projectService;
 
@@ -32,53 +33,45 @@ public class KanbanService {
 
 	@Transactional(readOnly = true)
 	public List<KanbanDetail> findKanbanDetailByProjectId(Long projectId) {
-		List<KanbanSequence> kanbanSequences = kanbanSequenceService.findByProjectIdAndNotDeleted(projectId);
+		List<KanbanSequence> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
 		List<KanbanDetail> kanbanDetails = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanDetail>>(){}.getType());
 		return kanbanDetails;
 	}
 
 	@Transactional(readOnly = true)
 	public KanbanDetail findKanbanDetailByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
-		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
+		KanbanSequence kanbanSequence = kanbanSequenceRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
-	}
-
-	@Transactional(readOnly = true)
-	public Kanban findKanbanByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
-		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
-		Optional<Kanban> kanban = kanbanRepository.findById(kanbanSequence.getId());
-		return kanban.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public KanbanDetail create(Long projectId, CreateKanbanParam createKanbanParam) {
 		Project project = projectService.findById(projectId);
-		Kanban kanban = Kanban.builder()
-			.name(createKanbanParam.getName())
-			.description(createKanbanParam.getDescription())
-			.project(project)
-			.build();
+		Kanban kanban = createKanbanParam.toEntity(project);
 		kanbanRepository.save(kanban);
 
-		KanbanSequence kanbanSequence = kanbanSequenceService.findById(kanban.getId());
+		KanbanSequence kanbanSequence = kanbanSequenceRepository.findById(kanban.getId())
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void update(Long projectId, Long sequenceId, UpdateKanbanParam updateKanbanParam) {
-		Kanban kanban = findKanbanByProjectIdAndSequenceId(projectId, sequenceId);
+		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		kanban.updateKanban(updateKanbanParam);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long sequenceId) {
 		try {
-			Kanban kanban = findKanbanByProjectIdAndSequenceId(projectId, sequenceId);
+			Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId).get();
 			kanban.updateToDeleted();
 		}
-		catch (ResourceNotFoundException e) {
+		catch (NoSuchElementException e) {
 			return;
 		}
 	}

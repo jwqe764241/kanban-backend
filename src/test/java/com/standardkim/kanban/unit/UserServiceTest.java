@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.LoginAlreadyInUseException;
+import com.standardkim.kanban.exception.user.UsernameAlreadyExistsException;
 import com.standardkim.kanban.repository.UserRepository;
 import com.standardkim.kanban.service.UserService;
 
@@ -86,7 +86,7 @@ public class UserServiceTest {
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
 		//when, then
-		assertThrows(LoginAlreadyInUseException.class, () -> {
+		assertThrows(UsernameAlreadyExistsException.class, () -> {
 			userService.create(createUserParam);
 		});
 	}

@@ -1,13 +1,11 @@
 package com.standardkim.kanban.service;
 
-import java.util.Optional;
-
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.LoginAlreadyInUseException;
-import com.standardkim.kanban.exception.UserNotFoundException;
+import com.standardkim.kanban.exception.user.UserNotFoundException;
+import com.standardkim.kanban.exception.user.UsernameAlreadyExistsException;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
@@ -44,26 +42,36 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public User findById(Long id) {
-		Optional<User> user = userRepository.findById(id);
-		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
+		return userRepository.findById(id)
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
 	public User findByLogin(String login) {
-		Optional<User> user = userRepository.findByLogin(login);
-		return user.orElseThrow(() -> new UserNotFoundException("user not found"));
+		return userRepository.findByLogin(login)
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 
 	@Transactional(readOnly = true)
 	public User findBySecurityUser() {
 		SecurityUser securityUser = getSecurityUser();
-		return findById(securityUser.getId());
+		User user = userRepository.findById(securityUser.getId())
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
+		return user;
+	}
+
+	@Transactional(readOnly = true)
+	public SecurityUser findSecurityUserByLogin(String login) {
+		User user = userRepository.findByLogin(login)
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
+		SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
+		return securityUser;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public UserDetail create(CreateUserParam createUserParam) {
 		if(isLoginExists(createUserParam.getLogin())) {
-			throw new LoginAlreadyInUseException("login already in use");
+			throw new UsernameAlreadyExistsException("username already exists");
 		}
 		User user = createUserParam.toEntity(passwordEncoder);
 		user = userRepository.save(user);

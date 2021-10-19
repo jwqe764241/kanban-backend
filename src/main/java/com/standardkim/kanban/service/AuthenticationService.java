@@ -6,23 +6,19 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.ExpiredRefreshTokenException;
-import com.standardkim.kanban.exception.LoginFailedException;
-import com.standardkim.kanban.exception.RefreshTokenNotFoundException;
-import com.standardkim.kanban.exception.RefreshTokenNotMatchedException;
-import com.standardkim.kanban.exception.TokenNotProvidedException;
-import com.standardkim.kanban.exception.UserNotFoundException;
+import com.standardkim.kanban.exception.auth.CannotLoginException;
+import com.standardkim.kanban.exception.auth.EmptyRefreshTokenException;
+import com.standardkim.kanban.exception.auth.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.auth.InvalidRefreshTokenException;
+import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
+import com.standardkim.kanban.exception.auth.UnknownRefreshTokenException;
+import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.util.CookieUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService implements UserDetailsService {
+public class AuthenticationService {
 	private final UserService userService;
 	
 	private final RefreshTokenRepository refreshTokenRepository;
@@ -39,20 +35,6 @@ public class AuthenticationService implements UserDetailsService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final PasswordEncoder passwordEncoder;
-
-	private final ModelMapper modelMapper;
-
-	@Override
-	@Transactional(readOnly = true)
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		try {
-			User user = userService.findByLogin(username);
-			SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
-			return securityUser;
-		} catch (UserNotFoundException e) {
-			throw new UsernameNotFoundException("cannot find user");
-		}
-	}
 
 	@Transactional(readOnly = true)
 	public RefreshToken findRefreshTokenByUserId(Long userId) {
@@ -63,21 +45,20 @@ public class AuthenticationService implements UserDetailsService {
 	@Transactional(rollbackFor = Exception.class)
 	public AuthenticationToken issueAuthenticationToken(LoginParam loginParam) {
 		User user = null;
-
 		try {
 			user = userService.findByLogin(loginParam.getLogin());
 		}
 		catch (UserNotFoundException e) {
-			throw new LoginFailedException("user not found");
+			throw new CannotLoginException("incorrect username or password");
 		}
 
 		if(!passwordEncoder.matches(loginParam.getPassword(), user.getPassword())) {
-			throw new LoginFailedException("password not matched");
+			throw new CannotLoginException("incorrect username or password");
 		}
 
 		String refreshToken = jwtTokenProvider.buildRefreshToken(user.getLogin(), user.getName());
 		String accessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
-
+		
 		//DB에 refershToken 등록 이미 있으면 교체
 		saveRefreshToken(user.getId(), refreshToken);
 
@@ -88,23 +69,26 @@ public class AuthenticationService implements UserDetailsService {
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String getAccessToken(String refreshToken) throws RefreshTokenNotMatchedException, ExpiredRefreshTokenException{
-		if(refreshToken == null || refreshToken.isBlank()) {
-			throw new TokenNotProvidedException("token must not be null");
+	public String getAccessToken(String refreshToken) {
+		User user = null;
+		RefreshToken token = null;
+		try {
+			//TODO: refactor to find refresh token by login
+			user = userService.findByLogin(jwtTokenProvider.getLogin(refreshToken));
+			token = findRefreshTokenByUserId(user.getId());
+		} catch (UserNotFoundException | RefreshTokenNotFoundException e) {
+			throw new InvalidRefreshTokenException("refresh token was invalid", e);
 		}
 		
-		String login = jwtTokenProvider.getLogin(refreshToken);
-		User user = userService.findByLogin(login);
-		RefreshToken token = findRefreshTokenByUserId(user.getId());
 		String userRefreshToken = token.getToken();
 
 		if(!userRefreshToken.equals(refreshToken)) {
-			throw new RefreshTokenNotMatchedException("refresh token not matched");
+			throw new UnknownRefreshTokenException("unknown refresh token");
 		}
 
 		if(jwtTokenProvider.isTokenExpired(userRefreshToken)) {
 			refreshTokenRepository.delete(token);
-			throw new ExpiredRefreshTokenException("refresh token is expired");
+			throw new ExpiredRefreshTokenException("refresh token was expired");
 		}
  
 		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
@@ -114,6 +98,9 @@ public class AuthenticationService implements UserDetailsService {
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
 	public String getAccessTokenByHttpServletRequest(HttpServletRequest request, String refreshTokenName) {
 		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		if(refreshToken == null || refreshToken.isBlank()) {
+			throw new EmptyRefreshTokenException("refresh token was empty");
+		}
 		String accessToken = getAccessToken(refreshToken);
 		return accessToken;
 	}
