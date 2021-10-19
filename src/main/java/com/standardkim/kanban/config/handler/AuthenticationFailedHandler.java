@@ -51,7 +51,7 @@ public class AuthenticationFailedHandler implements AuthenticationEntryPoint{
 	private String buildResponse()
 	{
 		ErrorResponse response = ErrorResponse.builder()
-			.detail("access token is invalid. check your authentication")
+			.message("access token is invalid. check your authentication")
 			.build();
 
 		try

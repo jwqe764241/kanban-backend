@@ -1,15 +1,14 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.CannotDeleteProjectOwnerException;
-import com.standardkim.kanban.exception.ResourceNotFoundException;
+import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.UserRepository;
 
@@ -44,15 +43,9 @@ public class ProjectMemberService {
 			ProjectMember projectMember = findById(projectId, userId);
 			return projectMember.isRegister();
 		}
-		catch (ResourceNotFoundException e) {
+		catch (ProjectMemberNotFoundException e) {
 			return false;
 		}
-	}
-
-	@Transactional(readOnly = true)
-	public ProjectMember findById(ProjectMemberKey projectMemberKey) {
-		Optional<ProjectMember> projectMember = projectMemberRepository.findById(projectMemberKey);
-		return projectMember.orElseThrow(() -> new ResourceNotFoundException("project member not found"));
 	}
 
 	@Transactional(readOnly = true)
@@ -61,7 +54,8 @@ public class ProjectMemberService {
 			.projectId(projectId)
 			.userId(userId)
 			.build();
-		return findById(key);
+		return projectMemberRepository.findById(key)
+			.orElseThrow(() -> new ProjectMemberNotFoundException("project member not found"));
 	}
 
 	@Transactional(readOnly = true)
@@ -103,12 +97,12 @@ public class ProjectMemberService {
 
 		try {
 			member = findById(projectId, userId);
-		} catch (ResourceNotFoundException e) {
+		} catch (ProjectMemberNotFoundException e) {
 			return;
 		}
 
 		if(member.isRegister()) {
-			throw new CannotDeleteProjectOwnerException();
+			throw new CannotDeleteProjectOwnerException("can't delete project owner");
 		}
 
 		projectMemberRepository.delete(member);

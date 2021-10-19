@@ -9,8 +9,7 @@ import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
 import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.exception.ErrorCode;
-import com.standardkim.kanban.exception.ResourceNotFoundException;
+import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.KanbanSequenceRepository;
 
@@ -42,7 +41,7 @@ public class KanbanService {
 	@Transactional(readOnly = true)
 	public KanbanDetail findKanbanDetailByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
 		KanbanSequence kanbanSequence = kanbanSequenceRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
-			.orElseThrow(() -> new ResourceNotFoundException("kanban not found", ErrorCode.COMMON_RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
@@ -54,7 +53,7 @@ public class KanbanService {
 		kanbanRepository.save(kanban);
 
 		KanbanSequence kanbanSequence = kanbanSequenceRepository.findById(kanban.getId())
-			.orElseThrow(() -> new ResourceNotFoundException("kanban not found", ErrorCode.COMMON_RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
@@ -62,7 +61,7 @@ public class KanbanService {
 	@Transactional(rollbackFor = Exception.class)
 	public void update(Long projectId, Long sequenceId, UpdateKanbanParam updateKanbanParam) {
 		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
-			.orElseThrow(() -> new ResourceNotFoundException("kanban not found", ErrorCode.COMMON_RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		kanban.updateKanban(updateKanbanParam);
 	}
 

@@ -8,12 +8,13 @@ import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.ErrorCode;
-import com.standardkim.kanban.exception.ResourceNotFoundException;
 import com.standardkim.kanban.exception.auth.CannotLoginException;
+import com.standardkim.kanban.exception.auth.EmptyRefreshTokenException;
 import com.standardkim.kanban.exception.auth.ExpiredRefreshTokenException;
 import com.standardkim.kanban.exception.auth.InvalidRefreshTokenException;
+import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.auth.UnknownRefreshTokenException;
+import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.util.CookieUtil;
 import com.standardkim.kanban.util.JwtTokenProvider;
@@ -38,7 +39,7 @@ public class AuthenticationService {
 	@Transactional(readOnly = true)
 	public RefreshToken findRefreshTokenByUserId(Long userId) {
 		final Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUserId(userId);
-		return refreshToken.orElseThrow(() -> new ResourceNotFoundException("refresh token not found"));
+		return refreshToken.orElseThrow(() -> new RefreshTokenNotFoundException("refresh token not found"));
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -47,12 +48,12 @@ public class AuthenticationService {
 		try {
 			user = userService.findByLogin(loginParam.getLogin());
 		}
-		catch (ResourceNotFoundException e) {
-			throw new CannotLoginException(ErrorCode.AUTH_INCORRECT_USERNAME_OR_PASSWORD);
+		catch (UserNotFoundException e) {
+			throw new CannotLoginException("incorrect username or password");
 		}
 
 		if(!passwordEncoder.matches(loginParam.getPassword(), user.getPassword())) {
-			throw new CannotLoginException(ErrorCode.AUTH_INCORRECT_USERNAME_OR_PASSWORD);
+			throw new CannotLoginException("incorrect username or password");
 		}
 
 		String refreshToken = jwtTokenProvider.buildRefreshToken(user.getLogin(), user.getName());
@@ -69,29 +70,25 @@ public class AuthenticationService {
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
 	public String getAccessToken(String refreshToken) {
-		if(refreshToken == null || refreshToken.isBlank()) {
-			throw new InvalidRefreshTokenException(ErrorCode.AUTH_REFRESH_TOKEN_NOT_PROVIDED);
-		}
-
 		User user = null;
 		RefreshToken token = null;
 		try {
-			String login = jwtTokenProvider.getLogin(refreshToken);
-			user = userService.findByLogin(login);
+			//TODO: refactor to find refresh token by login
+			user = userService.findByLogin(jwtTokenProvider.getLogin(refreshToken));
 			token = findRefreshTokenByUserId(user.getId());
-		} catch (ResourceNotFoundException e) {
-			throw new InvalidRefreshTokenException(ErrorCode.AUTH_INVALID_REFRESH_TOKEN);
+		} catch (UserNotFoundException | RefreshTokenNotFoundException e) {
+			throw new InvalidRefreshTokenException("refresh token was invalid", e);
 		}
 		
 		String userRefreshToken = token.getToken();
 
 		if(!userRefreshToken.equals(refreshToken)) {
-			throw new UnknownRefreshTokenException(ErrorCode.AUTH_UNKNOWN_REFRESH_TOKEN);
+			throw new UnknownRefreshTokenException("unknown refresh token");
 		}
 
 		if(jwtTokenProvider.isTokenExpired(userRefreshToken)) {
 			refreshTokenRepository.delete(token);
-			throw new ExpiredRefreshTokenException(ErrorCode.AUTH_EXPIRED_REFRESH_TOKEN);
+			throw new ExpiredRefreshTokenException("refresh token was expired");
 		}
  
 		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
@@ -101,6 +98,9 @@ public class AuthenticationService {
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
 	public String getAccessTokenByHttpServletRequest(HttpServletRequest request, String refreshTokenName) {
 		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		if(refreshToken == null || refreshToken.isBlank()) {
+			throw new EmptyRefreshTokenException("refresh token was empty");
+		}
 		String accessToken = getAccessToken(refreshToken);
 		return accessToken;
 	}
@@ -130,7 +130,7 @@ public class AuthenticationService {
 		try{
 			RefreshToken refreshToken = findRefreshTokenByUserId(userId);
 			updatRefreshToken(refreshToken, token);
-		} catch (ResourceNotFoundException e) {
+		} catch (RefreshTokenNotFoundException e) {
 			createRefreshToken(userId, token);
 		}
 	}
@@ -141,7 +141,7 @@ public class AuthenticationService {
 		try {
 			User user = userService.findByLogin(login);
 			refreshTokenRepository.deleteByUserId(user.getId());
-		} catch (ResourceNotFoundException e) {
+		} catch (UserNotFoundException e) {
 			return;
 		}
 	}

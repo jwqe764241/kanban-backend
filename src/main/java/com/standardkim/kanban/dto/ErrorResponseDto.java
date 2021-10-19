@@ -19,8 +19,8 @@ public class ErrorResponseDto {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
 	public static class ErrorResponse {
-		private String error;
-		private String detail;
+		private String code;
+		private String message;
 		@Builder.Default
 		private LocalDateTime timestamp = LocalDateTime.now();
 		@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,8 +29,8 @@ public class ErrorResponseDto {
 		public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
 			return ResponseEntity.status(errorCode.getHttpStatus())
 				.body(ErrorResponse.builder()
-						.error(errorCode.getCode())
-						.detail(errorCode.getDetail())
+						.code(errorCode.getCode())
+						.message(errorCode.getMessage())
 						.build()
 				);
 		}
@@ -38,11 +38,20 @@ public class ErrorResponseDto {
 		public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode, Object data) {
 			return ResponseEntity.status(errorCode.getHttpStatus())
 				.body(ErrorResponse.builder()
-						.error(errorCode.getCode())
-						.detail(errorCode.getDetail())
+						.code(errorCode.getCode())
+						.message(errorCode.getMessage())
 						.data(data)
 						.build()
 				);
 		}
+	}
+
+	@Getter
+	@Builder
+	@AllArgsConstructor
+	public static class FieldValidationError {
+		private String fieldName;
+		private Object rejectedValue;
+		private String message;
 	}
 }

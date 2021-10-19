@@ -3,33 +3,48 @@ package com.standardkim.kanban.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-	AUTH_EXPIRED_REFRESH_TOKEN("AUTH-001", HttpStatus.UNAUTHORIZED, "refresh token was expired"),
-	AUTH_UNKNOWN_REFRESH_TOKEN("AUTH-002", HttpStatus.UNAUTHORIZED, "refresh token was unknown"),
-	AUTH_REFRESH_TOKEN_NOT_PROVIDED("AUTH-003", HttpStatus.BAD_REQUEST, "refresh token must be provided"),
-	AUTH_INVALID_REFRESH_TOKEN("AUTH-004", HttpStatus.BAD_REQUEST, " refresh token was invalid"),
-	AUTH_INCORRECT_USERNAME_OR_PASSWORD("AUTH-005", HttpStatus.UNAUTHORIZED, "login failed. check username of password"),
+	//auth
+	EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH-001", "refresh token is expired"),
+	UNKNOWN_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH-002", "refresh token is unknown"),
+	EMPTY_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH-003", "refresh token is empty"),
+	INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH-004", " refresh token is invalid"),
+	INCORRECT_USERNAME_OR_PASSWORD(HttpStatus.UNAUTHORIZED, "AUTH-005", "username or password is incorrect."),
+	//user
+	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "user not found"),
+	USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER-002", "username already exists"),
+	//kanban
+	KANBAN_NOT_FOUND(HttpStatus.NOT_FOUND, "KANBAN-001", "kanban not found"),
+	//project
+	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT-001", "project not found"),
+	PROJECT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT-002", "project member not found"),
+	INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT-003", "user not invited"),
+	USER_ALREADY_INVITED(HttpStatus.CONFLICT, "PROJECT-004", "user already invited"),
+	PROJECT_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "PROJECT-006", "project name already exists"),
+	CANNOT_DELETE_PROJECT_OWNER(HttpStatus.BAD_REQUEST, "PROJECT-005", "can't delete project owner"),
+	//common
+	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-001", "entity not found"),
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON-002", "input value is invalid"),
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error");
 
-	COMMON_RESOURCE_NOT_FOUND("COMMON-001", HttpStatus.NOT_FOUND, "resource not found");
-
-	private final String code;
 	private final HttpStatus httpStatus;
-	private final String detail;
+	private final String code;
+	private final String message;
 
-	ErrorCode(String code, HttpStatus httpStatus, String detail) {
-		this.code = code;
+	ErrorCode(HttpStatus httpStatus, String code, String message) {
 		this.httpStatus = httpStatus;
-		this.detail = detail;
+		this.code = code;
+		this.message = message;
+	}
+
+	public HttpStatus getHttpStatus() {
+		return httpStatus;
 	}
 
 	public String getCode() {
 		return code;
 	}
-	
-	public HttpStatus getHttpStatus() {
-		return httpStatus;
-	}
 
-	public String getDetail() {
-		return detail;
+	public String getMessage() {
+		return message;
 	}
 }
