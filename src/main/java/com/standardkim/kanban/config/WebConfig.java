@@ -1,13 +1,21 @@
 package com.standardkim.kanban.config;
 
+import com.standardkim.kanban.config.interceptor.HttpLoggingInterceptor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer{
+	private final HttpLoggingInterceptor httpLoggingInterceptor;
+
 	@Value("${config.allowed-origins}")
 	String[] allowedOrigins;
 
@@ -23,5 +31,10 @@ public class WebConfig implements WebMvcConfigurer{
 				HttpMethod.OPTIONS.name())
 			.maxAge(3000)
 			.allowCredentials(true);
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(httpLoggingInterceptor).addPathPatterns("/**");
 	}
 }

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.standardkim.kanban.dto.ErrorMessageDto.ErrorMessage;
+import com.standardkim.kanban.dto.ErrorResponseDto.ErrorResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
@@ -50,14 +50,13 @@ public class AuthenticationFailedHandler implements AuthenticationEntryPoint{
 	
 	private String buildResponse()
 	{
-		ErrorMessage message = ErrorMessage.builder()
-			.message("invalid token")
-			.detail("access token is invalid. check your authentication")
+		ErrorResponse response = ErrorResponse.builder()
+			.message("access token is invalid. check your authentication")
 			.build();
 
 		try
 		{
-			return objectMapper.writeValueAsString(message);
+			return objectMapper.writeValueAsString(response);
 		}
 		catch (JsonProcessingException e)
 		{

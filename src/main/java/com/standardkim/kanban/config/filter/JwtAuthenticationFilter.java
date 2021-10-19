@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthorizationHeader;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.service.AuthenticationService;
+import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private JwtTokenProvider jwtTokenProvider;
 
 	@Autowired
-	private AuthenticationService authenticationService;
+	private UserService userService;
 
 	@Value("${config.allowed-origins}")
 	String[] allowedOrigins;
@@ -88,7 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				if(token != null && !token.isBlank() && jwtTokenProvider.validateToken(token)) {
 					try {
 						String login = jwtTokenProvider.getLogin(token);
-						SecurityUser securityUser = (SecurityUser) authenticationService.loadUserByUsername(login);
+						SecurityUser securityUser = userService.findSecurityUserByLogin(login);
 						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
 		
 						if(securityUser.isEnabled()) {

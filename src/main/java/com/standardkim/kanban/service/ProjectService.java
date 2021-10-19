@@ -1,7 +1,6 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
@@ -9,8 +8,8 @@ import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.ProjectAlreadyExistException;
-import com.standardkim.kanban.exception.ResourceNotFoundException;
+import com.standardkim.kanban.exception.project.ProjectNameAlreadyExistsException;
+import com.standardkim.kanban.exception.project.ProjectNotFoundException;
 import com.standardkim.kanban.repository.ProjectRepository;
 
 import org.modelmapper.ModelMapper;
@@ -38,8 +37,8 @@ public class ProjectService {
 
 	@Transactional(readOnly = true)
 	public Project findById(Long id) {
-		Optional<Project> project = projectRepository.findById(id);
-		return project.orElseThrow(() -> new ResourceNotFoundException("resource not found"));
+		return projectRepository.findById(id)
+			.orElseThrow(() -> new ProjectNotFoundException("resource not found"));
 	}	
 
 	@Transactional(readOnly = true)
@@ -72,19 +71,14 @@ public class ProjectService {
 
 	@Transactional(rollbackFor = Exception.class) 
 	public Project create(CreateProjectParam createProjectParam, User registerUser) {
-		Project project = Project.builder()
-			.name(createProjectParam.getName())
-			.description(createProjectParam.getDescription())
-			.registerUser(registerUser)
-			.build();
-		project = projectRepository.save(project);
-		return project;
+		Project project = createProjectParam.toEntity(registerUser);
+		return projectRepository.save(project);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public Project create(CreateProjectParam createProjectParam) {
 		if(isProjectNameExists(createProjectParam.getName())) {
-			throw new ProjectAlreadyExistException("project already exist.");
+			throw new ProjectNameAlreadyExistsException("project name already exist");
 		}
 		User user = userService.findBySecurityUser();
 		Project project = create(createProjectParam, user);
