@@ -67,6 +67,8 @@ public class AuthenticationDto {
 
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
 	public static class LoginParam {
 		@NotBlank
 		@Size(min = 5, max = 20)

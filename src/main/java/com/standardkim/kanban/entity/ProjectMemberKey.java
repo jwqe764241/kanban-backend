@@ -22,4 +22,19 @@ public class ProjectMemberKey implements Serializable {
 
 	@Column(name = "user_id")
 	private Long userId;
+
+	@Override
+	public boolean equals(Object o) {
+		if(this == o)
+			return true;
+
+		if (o == null || this.getClass() != o.getClass()) {
+			return false;
+		}
+
+		ProjectMemberKey key = (ProjectMemberKey) o;
+
+		return projectId.equals(key.getProjectId())
+			&& userId.equals(key.getUserId());
+	}
 }
