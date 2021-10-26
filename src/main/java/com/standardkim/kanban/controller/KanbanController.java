@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
 import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.service.KanbanService;
 
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,8 @@ public class KanbanController {
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.CREATED)
 	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
-		return kanbanService.create(projectId, createKanbanParam);
+		Kanban kanban = kanbanService.create(projectId, createKanbanParam);
+		return kanbanService.findKanbanDetailById(kanban.getId());
 	}
 
 	@GetMapping("/projects/{projectId}/kanbans")
