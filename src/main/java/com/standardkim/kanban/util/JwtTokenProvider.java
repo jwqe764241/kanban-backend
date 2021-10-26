@@ -8,6 +8,8 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +41,20 @@ public class JwtTokenProvider {
 	public void init() {
 		signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
 		jwtParser = Jwts.parserBuilder().setSigningKey(signKey).build();
+	}
+
+	public AuthenticationToken buildAuthenticationToken(String login, String name) {
+		Claims claims = Jwts.claims();
+		claims.put("login", login);
+		claims.put("name", name);
+
+		String accessToken = buildToken(claims, accessTokenTTL);
+		String refreshToken = buildToken(claims, refreshTokenTTL);
+
+		return AuthenticationToken.builder()
+			.accessToken("Bearer " + accessToken)
+			.refreshToken(refreshToken)
+			.build();
 	}
 
 	public String buildAccessToken(String login, String name) {

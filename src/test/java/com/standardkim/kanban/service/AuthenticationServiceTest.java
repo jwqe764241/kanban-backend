@@ -1,14 +1,15 @@
 package com.standardkim.kanban.service;
 
-import java.util.Optional;
-
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
+import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.auth.CannotLoginException;
+import com.standardkim.kanban.exception.auth.ExpiredRefreshTokenException;
+import com.standardkim.kanban.exception.auth.InvalidRefreshTokenException;
 import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
+import com.standardkim.kanban.exception.auth.UnknownRefreshTokenException;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.repository.RefreshTokenRepository;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.junit.jupiter.api.Test;
@@ -29,9 +30,9 @@ public class AuthenticationServiceTest {
 	UserService userService;
 
 	@Mock
-	RefreshTokenRepository refreshTokenRepository;
+	RefreshTokenService refreshTokenService;
 
-	@Spy
+	@Mock
 	JwtTokenProvider jwtTokenProvider;
 
 	@Spy
@@ -41,41 +42,86 @@ public class AuthenticationServiceTest {
 	AuthenticationService authenticationService;
 
 	@Test
-	void findRefreshTokenByUserId_RefreshTokenIsNotExist_ThrowRefreshTokenNotFoundException() {
-		given(refreshTokenRepository.findByUserId(1L)).willReturn(Optional.empty());
-
-		assertThatThrownBy(() -> {
-			authenticationService.findRefreshTokenByUserId(1L);
-		}).isInstanceOf(RefreshTokenNotFoundException.class);
-	}
-
-	@Test
-	void issueAuthenticationToken_UserIsExistAndPasswordMatched_AuthenticationToken() {
+	void login_UserIsExistAndPasswordMatched_AuthenticationToken() {
 		given(userService.findByLogin("example")).willReturn(getUser("example"));
-		given(jwtTokenProvider.buildRefreshToken("example", "example")).willReturn("11111");
-		given(jwtTokenProvider.buildAccessToken("example", "example")).willReturn("11111");
+		given(jwtTokenProvider.buildAuthenticationToken("example", "example")).willReturn(getAuthenticationToken());
+		given(refreshTokenService.save(1L, "example")).willReturn(getRefreshToken("example"));
 
-		AuthenticationToken token = authenticationService.issueAuthenticationToken(getLoginParam());
+		AuthenticationToken token = authenticationService.login(getLoginParam());
 
 		assertThat(token).isNotNull();
 	}
 
 	@Test
-	void issueAuthenticationToken_UserIsNotExist_ThrowCannotLoginException() {
+	void login_UserIsNotExist_ThrowCannotLoginException() {
 		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
-			authenticationService.issueAuthenticationToken(getLoginParam());
+			authenticationService.login(getLoginParam());
 		}).isInstanceOf(CannotLoginException.class);
 	}
 
 	@Test
-	void issueAuthenticationToken_PasswordNotMatched_ThrowCannotLoginException() {
+	void login_PasswordNotMatched_ThrowCannotLoginException() {
 		given(userService.findByLogin("example")).willReturn(getUser("example1"));
 
 		assertThatThrownBy(() -> {
-			authenticationService.issueAuthenticationToken(getLoginParam());
+			authenticationService.login(getLoginParam());
 		}).isInstanceOf(CannotLoginException.class);
+	}
+
+	@Test
+	void logout_UserIsNotExist_DoesNotThrowAnyException() {
+		given(jwtTokenProvider.getLogin(anyString())).willReturn("example");
+		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+
+		assertThatCode(() -> {
+			authenticationService.logout("aaa");
+		}).doesNotThrowAnyException();
+	}
+
+	@Test
+	void getAccessToken_UserIsNotExist_ThrowInvalidRefreshTokenException() {
+		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+
+		assertThatThrownBy(() -> {
+			authenticationService.getAccessToken("example");
+		}).isInstanceOf(InvalidRefreshTokenException.class);
+	}
+
+	@Test
+	void getAccessToken_RefreshTokenIsNotExist_ThrowInvalidRefreshTokenException() {
+		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(userService.findByLogin("example")).willReturn(getUser(""));
+		given(refreshTokenService.findById(1L)).willThrow(new RefreshTokenNotFoundException(""));
+
+		assertThatThrownBy(() -> {
+			authenticationService.getAccessToken("example");
+		}).isInstanceOf(InvalidRefreshTokenException.class);
+	}
+
+	@Test
+	void getAccessToken_RefreshTokenNotMatched_ThrowUnknownRefreshTokenException() {
+		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(userService.findByLogin("example")).willReturn(getUser(""));
+		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("example1"));
+
+		assertThatThrownBy(() -> {
+			authenticationService.getAccessToken("example");
+		}).isInstanceOf(UnknownRefreshTokenException.class);
+	}
+
+	@Test
+	void getAccessToken_RefreshTokenIsExpired_ThrowExpiredRefreshTokenException() {
+		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(userService.findByLogin("example")).willReturn(getUser(""));
+		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("example"));
+		given(jwtTokenProvider.isTokenExpired("example")).willReturn(true);
+
+		assertThatThrownBy(() -> {
+			authenticationService.getAccessToken("example");
+		}).isInstanceOf(ExpiredRefreshTokenException.class);
 	}
 
 	private LoginParam getLoginParam() {
@@ -92,6 +138,20 @@ public class AuthenticationServiceTest {
 			.login("example")
 			.name("example")
 			.password(encoder.encode(rawPassword))
+			.build();
+	}
+
+	private RefreshToken getRefreshToken(String token) {
+		return RefreshToken.builder()
+			.userId(1L)
+			.token(token)
+			.build();
+	}
+
+	private AuthenticationToken getAuthenticationToken() {
+		return AuthenticationToken.builder()
+			.accessToken("example")
+			.refreshToken("example")
 			.build();
 	}
 }

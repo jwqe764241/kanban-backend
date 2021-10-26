@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
 import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
+import com.standardkim.kanban.exception.auth.EmptyRefreshTokenException;
 import com.standardkim.kanban.service.AuthenticationService;
 import com.standardkim.kanban.util.CookieUtil;
 
@@ -35,7 +36,7 @@ public class AuthenticationController {
 	@ResponseStatus(HttpStatus.OK)
 	public String login(@RequestBody @Valid LoginParam loginParam, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = authenticationService.issueAuthenticationToken(loginParam);
+		AuthenticationToken authenticationToken = authenticationService.login(loginParam);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain("localhost")
@@ -57,7 +58,7 @@ public class AuthenticationController {
 		if(refreshToken == null)
 			return;
 
-		authenticationService.deleteRefreshToken(refreshToken);
+		authenticationService.logout(refreshToken);
 
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
 			.domain("localhost")
@@ -72,7 +73,11 @@ public class AuthenticationController {
 	@PostMapping("/auth/refresh-access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public String refreshAccessToken(HttpServletRequest request) throws Exception {
-		String accessToken = authenticationService.getAccessTokenByHttpServletRequest(request, refreshTokenName);
+		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		if(refreshToken == null || refreshToken.isBlank()) {
+			throw new EmptyRefreshTokenException("refresh token was empty");
+		}
+		String accessToken = authenticationService.getAccessToken(refreshToken);
 		return accessToken;
 	}
 
