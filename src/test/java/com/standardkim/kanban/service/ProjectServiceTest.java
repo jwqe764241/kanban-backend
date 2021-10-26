@@ -9,7 +9,7 @@ import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.ProjectNameAlreadyExistsException;
+import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
 import com.standardkim.kanban.exception.project.ProjectNotFoundException;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.repository.ProjectRepository;
@@ -190,12 +190,12 @@ public class ProjectServiceTest {
 	}
 
 	@Test
-	void create_ProjectNameIsExist_ThrownProjectNameAlreadyExistsException() {
+	void create_ProjectNameIsExist_ThrownDuplicateProjectNameException() {
 		given(projectRepository.existsByName(anyString())).willReturn(true);
 
 		assertThatThrownBy(() -> {
 			projectService.create(getCreateProjectParam());
-		}).isInstanceOf(ProjectNameAlreadyExistsException.class);
+		}).isInstanceOf(DuplicateProjectNameException.class);
 	}
 
 	private User getUser() {
