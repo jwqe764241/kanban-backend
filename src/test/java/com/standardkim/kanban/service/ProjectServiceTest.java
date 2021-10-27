@@ -68,19 +68,19 @@ public class ProjectServiceTest {
 	}
 
 	@Test
-	void isProjectNameExists_ProjectNameIsExist_True() {
+	void isProjectNameExist_ProjectNameIsExist_True() {
 		given(projectRepository.existsByName(anyString())).willReturn(true);
 
-		boolean isExist = projectService.isProjectNameExists("");
+		boolean isExist = projectService.isProjectNameExist("");
 
 		assertThat(isExist).isTrue();
 	} 
 
 	@Test
-	void isProjectNameExists_ProjectNameIsNotExist_False() {
+	void isProjectNameExist_ProjectNameIsNotExist_False() {
 		given(projectRepository.existsByName(anyString())).willReturn(false);
 
-		boolean isExist = projectService.isProjectNameExists("");
+		boolean isExist = projectService.isProjectNameExist("");
 
 		assertThat(isExist).isFalse();
 	}

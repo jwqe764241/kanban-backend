@@ -24,14 +24,12 @@ import lombok.RequiredArgsConstructor;
 public class ProjectService {
 	private final ProjectRepository projectRepository;
 
-	private final ProjectMemberService projectMemberService;
-
 	private final UserService userService;
 
 	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	public boolean isProjectNameExists(String name) {
+	public boolean isProjectNameExist(String name) {
 		return projectRepository.existsByName(name);
 	}
 
@@ -69,20 +67,16 @@ public class ProjectService {
 		return detail;
 	}
 
-	@Transactional(rollbackFor = Exception.class) 
-	public Project create(CreateProjectParam createProjectParam, User registerUser) {
-		Project project = createProjectParam.toEntity(registerUser);
-		return projectRepository.save(project);
-	}
-
 	@Transactional(rollbackFor = Exception.class)
 	public Project create(CreateProjectParam createProjectParam) {
-		if(isProjectNameExists(createProjectParam.getName())) {
+		if(isProjectNameExist(createProjectParam.getName())) {
 			throw new DuplicateProjectNameException("duplicate project name");
 		}
+
 		User user = userService.findBySecurityUser();
-		Project project = create(createProjectParam, user);
-		projectMemberService.create(project.getId(), user.getId(), true);
+		Project project = createProjectParam.toEntity(user);
+		projectRepository.save(project);
+		project.addMember(user, true);
 		return project;
 	}
 }

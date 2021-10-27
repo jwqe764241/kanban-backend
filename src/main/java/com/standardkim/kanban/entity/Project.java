@@ -1,12 +1,12 @@
 package com.standardkim.kanban.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,9 +47,20 @@ public class Project {
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-	private Set<ProjectMember> members;
+	@Builder.Default
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private Set<ProjectMember> members = new HashSet<>();
 
+	@Builder.Default
 	@OneToMany(mappedBy = "project", orphanRemoval = true)
-	private Set<Kanban> kanbans;
+	private Set<Kanban> kanbans = new HashSet<>();
+
+	public void addMember(User user, boolean isRegister) {
+		ProjectMemberKey memberId = ProjectMemberKey.from(id, user.getId());
+		ProjectMember member = ProjectMember.builder()
+			.id(memberId)
+			.isRegister(isRegister)
+			.build();
+		members.add(member);
+	}
 }
