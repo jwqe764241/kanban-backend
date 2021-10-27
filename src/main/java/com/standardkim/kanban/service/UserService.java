@@ -5,7 +5,7 @@ import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.exception.user.UsernameAlreadyExistsException;
+import com.standardkim.kanban.exception.user.DuplicateUserNameException;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
@@ -26,12 +26,8 @@ public class UserService {
 
 	private final ModelMapper modelMapper;
 
-	private Authentication getAuthentication() {
-		return SecurityContextHolder.getContext().getAuthentication();
-	}
-
 	private SecurityUser getSecurityUser() {
-		Authentication authentication = getAuthentication();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return (SecurityUser) authentication.getPrincipal();
 	}
 
@@ -71,7 +67,7 @@ public class UserService {
 	@Transactional(rollbackFor = Exception.class)
 	public UserDetail create(CreateUserParam createUserParam) {
 		if(isLoginExists(createUserParam.getLogin())) {
-			throw new UsernameAlreadyExistsException("username already exists");
+			throw new DuplicateUserNameException("duplicate user name");
 		}
 		User user = createUserParam.toEntity(passwordEncoder);
 		user = userRepository.save(user);

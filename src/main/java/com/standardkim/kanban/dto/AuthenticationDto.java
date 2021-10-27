@@ -67,6 +67,8 @@ public class AuthenticationDto {
 
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
 	public static class LoginParam {
 		@NotBlank
 		@Size(min = 5, max = 20)
@@ -93,5 +95,19 @@ public class AuthenticationDto {
 	public static class AuthorizationHeader { 
 		private String type;
 		private String credentials;
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
+	public static class AccessToken {
+		private String token;
+
+		public static AccessToken from(String token) {
+			return AccessToken.builder()
+				.token(token)
+				.build();
+		}
 	}
 }

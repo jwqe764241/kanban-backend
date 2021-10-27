@@ -29,31 +29,20 @@ public class ProjectMemberService {
 	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	public boolean isExists(Long projectId, Long userId){
-		ProjectMemberKey key = ProjectMemberKey.builder()
-			.projectId(projectId)
-			.userId(userId)
-			.build();
+	public boolean isExist(Long projectId, Long userId){
+		ProjectMemberKey key = ProjectMemberKey.from(projectId, userId);
 		return projectMemberRepository.existsById(key);
 	}
 
 	@Transactional(readOnly = true)
 	public boolean isProjectOwner(Long projectId, Long userId) {
-		try {
-			ProjectMember projectMember = findById(projectId, userId);
-			return projectMember.isRegister();
-		}
-		catch (ProjectMemberNotFoundException e) {
-			return false;
-		}
+		ProjectMember projectMember = findById(projectId, userId);
+		return projectMember.isRegister();
 	}
 
 	@Transactional(readOnly = true)
 	public ProjectMember findById(Long projectId, Long userId) {
-		ProjectMemberKey key = ProjectMemberKey.builder()
-			.projectId(projectId)
-			.userId(userId)
-			.build();
+		ProjectMemberKey key = ProjectMemberKey.from(projectId, userId);
 		return projectMemberRepository.findById(key)
 			.orElseThrow(() -> new ProjectMemberNotFoundException("project member not found"));
 	}
@@ -73,22 +62,10 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public ProjectMember create(ProjectMemberKey projectMemberKey, boolean isRegister) {
-		ProjectMember projectMember = ProjectMember.builder()
-			.id(projectMemberKey)
-			.isRegister(isRegister)
-			.build();
-		projectMember = projectMemberRepository.save(projectMember);
-		return projectMember;
-	}
-
-	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
-		ProjectMemberKey projectMemberKey = ProjectMemberKey.builder()
-			.projectId(projectId)
-			.userId(userId)
-			.build();
-		return create(projectMemberKey, isRegister);
+		ProjectMemberKey id = ProjectMemberKey.from(projectId, userId);
+		ProjectMember projectMember = ProjectMember.from(id, isRegister);
+		return projectMemberRepository.save(projectMember);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
