@@ -56,19 +56,19 @@ public class ProjectInvitationServiceTest {
 	}
 
 	@Test
-	void isExists_ProjectInvitationIsExist_True() {
+	void isExist_ProjectInvitationIsExist_True() {
 		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(true);
 
-		boolean isExist = projectInvitationService.isExists(1L, 1L);
+		boolean isExist = projectInvitationService.isExist(1L, 1L);
 
 		assertThat(isExist).isTrue();
 	}
 
 	@Test
-	void isExists_ProjectInvitationIsNotExist_False() {
+	void isExist_ProjectInvitationIsNotExist_False() {
 		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(false);
 
-		boolean isExist = projectInvitationService.isExists(1L, 1L);
+		boolean isExist = projectInvitationService.isExist(1L, 1L);
 
 		assertThat(isExist).isFalse();
 	}
@@ -127,10 +127,7 @@ public class ProjectInvitationServiceTest {
 	}
 
 	private ProjectInvitationKey getProjectInvitationKey(Long projectId, Long invitedUserId) {
-		return ProjectInvitationKey.builder()
-			.projectId(projectId)
-			.invitedUserId(invitedUserId)
-			.build();
+		return ProjectInvitationKey.from(projectId, invitedUserId);
 	}
 
 	private ProjectInvitation getProjectInvitation(Long projectId, Long invitedUserId) {

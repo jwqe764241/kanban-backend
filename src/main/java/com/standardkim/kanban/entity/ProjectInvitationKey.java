@@ -23,6 +23,13 @@ public class ProjectInvitationKey implements Serializable {
 	@Column(name = "invited_user_id")
 	private Long invitedUserId;
 
+	public static ProjectInvitationKey from(Long projectId, Long invitedUserId) {
+		return ProjectInvitationKey.builder()
+			.projectId(projectId)
+			.invitedUserId(invitedUserId)
+			.build();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if(this == o)

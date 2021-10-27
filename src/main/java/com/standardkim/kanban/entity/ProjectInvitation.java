@@ -44,4 +44,17 @@ public class ProjectInvitation {
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
+
+	public static ProjectInvitation from(Project project, User inviteeUser, User inviterUser) {
+		ProjectInvitationKey key = ProjectInvitationKey.builder()
+			.projectId(project.getId())
+			.invitedUserId(inviteeUser.getId())
+			.build();
+		return ProjectInvitation.builder()
+			.id(key)
+			.project(project)
+			.invitedUser(inviteeUser)
+			.registerUser(inviterUser)
+			.build();
+	}
 }

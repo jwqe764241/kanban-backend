@@ -35,11 +35,8 @@ public class ProjectInvitationService {
 	private final MailService mailService;
 
 	@Transactional(readOnly = true)
-	public boolean isExists(Long projectId, Long invitedUserId) {
-		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(projectId)
-			.invitedUserId(invitedUserId)
-			.build();
+	public boolean isExist(Long projectId, Long invitedUserId) {
+		ProjectInvitationKey key = ProjectInvitationKey.from(projectId, invitedUserId);
 		return projectInvitationRepository.existsById(key);
 	}
 
@@ -51,37 +48,23 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	private ProjectInvitation create(Project project, User invitedUser, User registerUser) {
-		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(project.getId())
-			.invitedUserId(invitedUser.getId())
-			.build();
-		ProjectInvitation invitation = ProjectInvitation.builder()
-			.id(key)
-			.project(project)
-			.invitedUser(invitedUser)
-			.registerUser(registerUser)
-			.build();
-		ProjectInvitation newInvitation = projectInvitationRepository.saveAndFlush(invitation);
-		return newInvitation;
+	private ProjectInvitation create(Project project, User inviteeUser, User inviterUser) {
+		ProjectInvitation invitation = ProjectInvitation.from(project, inviteeUser, inviterUser);
+		return projectInvitationRepository.saveAndFlush(invitation);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long invitedUserId) {
-		if(!isExists(projectId, invitedUserId)) {
-			return;
+		if(isExist(projectId, invitedUserId)) {
+			ProjectInvitationKey key = ProjectInvitationKey.from(projectId, invitedUserId);
+			projectInvitationRepository.deleteById(key);
 		}
-		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(projectId)
-			.invitedUserId(invitedUserId)
-			.build();
-		projectInvitationRepository.deleteById(key);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public InvitedUserDetail invite(Long projectId, Long invitedUserId) {
 		User invitedUser = userService.findById(invitedUserId);
-		if(isExists(projectId, invitedUser.getId())) {
+		if(isExist(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 
@@ -106,10 +89,12 @@ public class ProjectInvitationService {
 	@Transactional(rollbackFor = Exception.class)
 	public void accept(Long projectId) {
 		User user = userService.findBySecurityUser();
-		if(!isExists(projectId, user.getId())) {
+		if(isExist(projectId, user.getId())) {
+			projectMemberService.create(projectId, user.getId(), false);
+			delete(projectId, user.getId());
+		}
+		else {
 			throw new InvitationNotFoundException("user not invited");
 		}
-		projectMemberService.create(projectId, user.getId(), false);
-		delete(projectId, user.getId());
 	}
 }
