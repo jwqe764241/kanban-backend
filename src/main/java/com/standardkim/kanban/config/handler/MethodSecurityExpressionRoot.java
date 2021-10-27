@@ -1,6 +1,7 @@
 package com.standardkim.kanban.config.handler;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
 import com.standardkim.kanban.service.ProjectMemberService;
 
 import org.springframework.security.access.expression.SecurityExpressionRoot;
@@ -25,12 +26,16 @@ public class MethodSecurityExpressionRoot extends SecurityExpressionRoot impleme
 
 	public boolean isProjectOwner(Long projectId) {
 		SecurityUser user = getSecurityUser();
-		return projectMemberService.isProjectOwner(projectId, user.getId());
+		try {
+			return projectMemberService.isProjectOwner(projectId, user.getId());
+		} catch (ProjectMemberNotFoundException e) {
+			return false;
+		}
 	}
 
 	public boolean isProjectMember(Long projectId) {
 		SecurityUser user = getSecurityUser();
-		return projectMemberService.isExists(projectId, user.getId());
+		return projectMemberService.isExist(projectId, user.getId());
 	}
 
 	@Override

@@ -46,4 +46,11 @@ public class ProjectMember {
 	@CreationTimestamp
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
+
+	public static ProjectMember from(ProjectMemberKey id, boolean isRegister) {
+		return ProjectMember.builder()
+			.id(id)
+			.isRegister(isRegister)
+			.build();
+	}
 }

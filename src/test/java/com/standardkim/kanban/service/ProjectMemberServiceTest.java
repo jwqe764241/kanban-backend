@@ -12,7 +12,6 @@ import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -67,19 +66,19 @@ public class ProjectMemberServiceTest {
 	}
 
 	@Test
-	void isExists_ProjectMemberIsExist_True() {
+	void isExist_ProjectMemberIsExist_True() {
 		given(projectMemberRepository.existsById(eq(getProjectMemberKey(1L, 1L)))).willReturn(true);
 
-		boolean isExist = projectMemberService.isExists(1L, 1L);
+		boolean isExist = projectMemberService.isExist(1L, 1L);
 		
 		assertThat(isExist).isTrue();
 	}
 
 	@Test
-	void isExists_ProjectMemberIsNotExist_False() {
+	void isExist_ProjectMemberIsNotExist_False() {
 		given(projectMemberRepository.existsById(eq(getProjectMemberKey(1L, 1L)))).willReturn(false);
 
-		boolean isExist = projectMemberService.isExists(1L, 1L);
+		boolean isExist = projectMemberService.isExist(1L, 1L);
 
 		assertThat(isExist).isFalse();
 	}
@@ -103,12 +102,12 @@ public class ProjectMemberServiceTest {
 	}
 
 	@Test
-	void isProjectOwner_ProjectMemberIsNotExist_False() {
+	void isProjectOwner_ProjectMemberIsNotExist_ThrowProjectMemberNotFoundException() {
 		given(projectMemberRepository.findById(getProjectMemberKey(1L, 1L))).willReturn(Optional.empty());
 	
-		boolean isProjectOwner = projectMemberService.isProjectOwner(1L, 1L);
-
-		assertThat(isProjectOwner).isFalse();
+		assertThatThrownBy(() -> {
+			projectMemberService.isProjectOwner(1L, 1L);
+		}).isInstanceOf(ProjectMemberNotFoundException.class);
 	}
 
 	@Test
@@ -163,21 +162,6 @@ public class ProjectMemberServiceTest {
 		List<SuggestionUserDetail> list = projectMemberService.findSuggestionUserDetailByProjectId(1L, "a");
 
 		assertThat(list).isEmpty();
-	}
-
-	@Test
-	void create_ProjectMemberIsNotExist_() {
-		given(projectMemberRepository.save(any(ProjectMember.class))).willReturn(getProjectMember(1L, 1L, true));
-
-		ProjectMember projectMember = projectMemberService.create(1L, 1L, true);
-
-		assertThat(projectMember).isNotNull();
-	}
-	
-	@Disabled("disabled until implement this feature")
-	@Test
-	void create_ProjectMemberIsExist_ThrowProjectMemberDuplicateException() {
-		
 	}
 
 	@Test
