@@ -11,7 +11,7 @@ public enum ErrorCode {
 	INCORRECT_USERNAME_OR_PASSWORD(HttpStatus.UNAUTHORIZED, "AUTH-005", "username or password is incorrect."),
 	//user
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "user not found"),
-	USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER-002", "username already exists"),
+	DUPLICATE_USER_NAME(HttpStatus.CONFLICT, "USER-002", "duplicate user name"),
 	//kanban
 	KANBAN_NOT_FOUND(HttpStatus.NOT_FOUND, "KANBAN-001", "kanban not found"),
 	//project
@@ -19,7 +19,7 @@ public enum ErrorCode {
 	PROJECT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT-002", "project member not found"),
 	INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT-003", "user not invited"),
 	USER_ALREADY_INVITED(HttpStatus.CONFLICT, "PROJECT-004", "user already invited"),
-	PROJECT_NAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "PROJECT-006", "project name already exists"),
+	DUPLICATE_PROJECT_NAME(HttpStatus.CONFLICT, "PROJECT-006", "duplicate project name"),
 	CANNOT_DELETE_PROJECT_OWNER(HttpStatus.BAD_REQUEST, "PROJECT-005", "can't delete project owner"),
 	//common
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-001", "entity not found"),

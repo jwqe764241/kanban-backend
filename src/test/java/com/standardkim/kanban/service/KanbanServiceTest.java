@@ -7,7 +7,9 @@ import java.util.Optional;
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
 import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
+import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.KanbanSequenceRepository;
@@ -86,12 +88,30 @@ public class KanbanServiceTest {
 	}
 
 	@Test
-	void create_KanabanSequenceIsNotExist_ThrowKanbanNotFoundException() {
-		given(kanbanSequenceRepository.findById(any())).willReturn(Optional.empty());
+	void findKanbanDetailById_KanbanSequenceIsExist_KanbanDetail() {
+		given(kanbanSequenceRepository.findById(1L)).willReturn(Optional.of(getKanbanSequence(1L, 1L, 1L)));
+
+		KanbanDetail kanbanDetail = kanbanService.findKanbanDetailById(1L);
+
+		assertThat(kanbanDetail).isNotNull();
+	}
+
+	@Test
+	void findKanbanDetailById_KanbanSequenceIsNotExist_ThrowKanbanNotFoundException() {
+		given(kanbanSequenceRepository.findById(1L)).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> {
-			kanbanService.create(1L, getCreateKanbanParam());
+			kanbanService.findKanbanDetailById(1L);
 		}).isInstanceOf(KanbanNotFoundException.class);
+	}
+
+	@Test
+	void create_KanabanSequenceIsNotExist_Save() {
+		given(projectService.findById(1L)).willReturn(getProject(1L));
+
+		kanbanService.create(1L, getCreateKanbanParam());
+
+		verify(kanbanRepository).save(any(Kanban.class));
 	}
 
 	@Test
@@ -131,6 +151,12 @@ public class KanbanServiceTest {
 			.id(kanbanId)
 			.sequenceId(sequenceId)
 			.projectId(projectId)
+			.build();
+	}
+
+	private Project getProject(Long projectId) {
+		return Project.builder()
+			.id(projectId)
 			.build();
 	}
 

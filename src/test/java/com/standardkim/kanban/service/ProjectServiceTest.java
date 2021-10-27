@@ -9,7 +9,7 @@ import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.ProjectNameAlreadyExistsException;
+import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
 import com.standardkim.kanban.exception.project.ProjectNotFoundException;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.repository.ProjectRepository;
@@ -68,19 +68,19 @@ public class ProjectServiceTest {
 	}
 
 	@Test
-	void isProjectNameExists_ProjectNameIsExist_True() {
+	void isProjectNameExist_ProjectNameIsExist_True() {
 		given(projectRepository.existsByName(anyString())).willReturn(true);
 
-		boolean isExist = projectService.isProjectNameExists("");
+		boolean isExist = projectService.isProjectNameExist("");
 
 		assertThat(isExist).isTrue();
 	} 
 
 	@Test
-	void isProjectNameExists_ProjectNameIsNotExist_False() {
+	void isProjectNameExist_ProjectNameIsNotExist_False() {
 		given(projectRepository.existsByName(anyString())).willReturn(false);
 
-		boolean isExist = projectService.isProjectNameExists("");
+		boolean isExist = projectService.isProjectNameExist("");
 
 		assertThat(isExist).isFalse();
 	}
@@ -190,12 +190,12 @@ public class ProjectServiceTest {
 	}
 
 	@Test
-	void create_ProjectNameIsExist_ThrownProjectNameAlreadyExistsException() {
+	void create_ProjectNameIsExist_ThrownDuplicateProjectNameException() {
 		given(projectRepository.existsByName(anyString())).willReturn(true);
 
 		assertThatThrownBy(() -> {
 			projectService.create(getCreateProjectParam());
-		}).isInstanceOf(ProjectNameAlreadyExistsException.class);
+		}).isInstanceOf(DuplicateProjectNameException.class);
 	}
 
 	private User getUser() {

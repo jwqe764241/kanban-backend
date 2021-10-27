@@ -46,6 +46,7 @@ public class ErrorResponseController {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception e) {
+		e.printStackTrace();
 		return ErrorResponse.toResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);
 	}
 

@@ -32,4 +32,12 @@ public class RefreshToken {
 
 	@Column(nullable = false)
 	private String token;
+
+	public void updateToken(String token) {
+		this.token = token;
+	}
+
+	public boolean isTokenMatched(String token) {
+		return this.token.equals(token);
+	}
 }

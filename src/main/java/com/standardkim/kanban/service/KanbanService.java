@@ -46,23 +46,27 @@ public class KanbanService {
 		return kanbanDetail;
 	}
 
-	@Transactional(rollbackFor = Exception.class)
-	public KanbanDetail create(Long projectId, CreateKanbanParam createKanbanParam) {
-		Project project = projectService.findById(projectId);
-		Kanban kanban = createKanbanParam.toEntity(project);
-		kanbanRepository.save(kanban);
-
-		KanbanSequence kanbanSequence = kanbanSequenceRepository.findById(kanban.getId())
+	@Transactional(readOnly = true)
+	public KanbanDetail findKanbanDetailById(Long kanbanId) {
+		KanbanSequence kanbanSequence = kanbanSequenceRepository.findById(kanbanId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void update(Long projectId, Long sequenceId, UpdateKanbanParam updateKanbanParam) {
+	public Kanban create(Long projectId, CreateKanbanParam createKanbanParam) {
+		Project project = projectService.findById(projectId);
+		Kanban kanban = createKanbanParam.toEntity(project);
+		return kanbanRepository.save(kanban);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public Kanban update(Long projectId, Long sequenceId, UpdateKanbanParam updateKanbanParam) {
 		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 		kanban.updateKanban(updateKanbanParam);
+		return kanban;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

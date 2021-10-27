@@ -23,6 +23,13 @@ public class ProjectMemberKey implements Serializable {
 	@Column(name = "user_id")
 	private Long userId;
 
+	public static ProjectMemberKey from(Long projectId, Long userId) {
+		return ProjectMemberKey.builder()
+			.projectId(projectId)
+			.userId(userId)
+			.build();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if(this == o)

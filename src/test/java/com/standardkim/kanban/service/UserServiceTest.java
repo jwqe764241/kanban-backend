@@ -5,11 +5,10 @@ import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.exception.user.UsernameAlreadyExistsException;
+import com.standardkim.kanban.exception.user.DuplicateUserNameException;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -162,12 +161,12 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void create_LoginIsExist_ThrowUsernameAlreadyExistsException() {
+	public void create_LoginIsExist_ThrowDuplicateUserNameException() {
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
 		assertThatThrownBy(() -> {
 			userService.create(getCreateUserParam());
-		}).isInstanceOf(UsernameAlreadyExistsException.class);
+		}).isInstanceOf(DuplicateUserNameException.class);
 	}
 
 	@Test
