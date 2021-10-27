@@ -96,4 +96,18 @@ public class AuthenticationDto {
 		private String type;
 		private String credentials;
 	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	@AllArgsConstructor
+	public static class AccessToken {
+		private String token;
+
+		public static AccessToken from(String token) {
+			return AccessToken.builder()
+				.token(token)
+				.build();
+		}
+	}
 }
