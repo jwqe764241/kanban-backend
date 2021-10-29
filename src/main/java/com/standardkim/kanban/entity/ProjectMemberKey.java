@@ -44,4 +44,11 @@ public class ProjectMemberKey implements Serializable {
 		return projectId.equals(key.getProjectId())
 			&& userId.equals(key.getUserId());
 	}
+
+	@Override
+	public int hashCode() {
+		int result = projectId.hashCode();
+		result = 31 * result + userId.hashCode();
+		return result;
+	}
 }

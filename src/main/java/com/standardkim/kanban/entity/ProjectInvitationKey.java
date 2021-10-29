@@ -17,15 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ProjectInvitationKey implements Serializable {
-	@Column(name = "project_id")
-	private Long projectId;
+	private ProjectMemberKey projectMemberId;
 
 	@Column(name = "invited_user_id")
 	private Long invitedUserId;
 
-	public static ProjectInvitationKey from(Long projectId, Long invitedUserId) {
+	public static ProjectInvitationKey from(ProjectMemberKey projectMemberId, Long invitedUserId) {
 		return ProjectInvitationKey.builder()
-			.projectId(projectId)
+			.projectMemberId(projectMemberId)
 			.invitedUserId(invitedUserId)
 			.build();
 	}
@@ -41,7 +40,14 @@ public class ProjectInvitationKey implements Serializable {
 
 		ProjectInvitationKey key = (ProjectInvitationKey) o;
 
-		return projectId.equals(key.getProjectId())
+		return projectMemberId.equals(key.getProjectMemberId())
 			&& invitedUserId.equals(key.getInvitedUserId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = projectMemberId.hashCode();
+		result = 31 * result + invitedUserId.hashCode();
+		return result;
 	}
 }

@@ -1,7 +1,10 @@
 package com.standardkim.kanban.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.EmbeddedId;
@@ -9,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.util.BooleanToYNConverter;
 
@@ -30,12 +34,12 @@ public class ProjectMember {
 	ProjectMemberKey id;
 
 	@ManyToOne
-	@MapsId("project_id")
+	@MapsId("projectId")
 	@JoinColumn(name = "project_id", nullable = false, insertable = false, updatable = false)
 	private Project project;
 
 	@ManyToOne
-	@MapsId("user_id")
+	@MapsId("userId")
 	@JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
 	private User user;
 
@@ -47,9 +51,15 @@ public class ProjectMember {
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
-	public static ProjectMember from(ProjectMemberKey id, boolean isRegister) {
+	@OneToMany(mappedBy = "projectMember", cascade = { CascadeType.REMOVE })
+	private Set<ProjectInvitation> invitations = new HashSet<>();
+
+	public static ProjectMember from(Project project, User user, boolean isRegister) {
+		ProjectMemberKey id = ProjectMemberKey.from(project.getId(), user.getId());
 		return ProjectMember.builder()
 			.id(id)
+			.project(project)
+			.user(user)
 			.isRegister(isRegister)
 			.build();
 	}

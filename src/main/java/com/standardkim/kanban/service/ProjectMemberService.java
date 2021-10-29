@@ -4,12 +4,16 @@ import java.util.List;
 
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
+import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
 import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
+import com.standardkim.kanban.exception.project.ProjectNotFoundException;
+import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
+import com.standardkim.kanban.repository.ProjectRepository;
 import com.standardkim.kanban.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
@@ -23,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
+
+	private final ProjectRepository projectRepository;
 
 	private final UserRepository userRepository;
 
@@ -63,8 +69,11 @@ public class ProjectMemberService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
-		ProjectMemberKey id = ProjectMemberKey.from(projectId, userId);
-		ProjectMember projectMember = ProjectMember.from(id, isRegister);
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new ProjectNotFoundException("project not found"));
+		ProjectMember projectMember = ProjectMember.from(project, user, isRegister);
 		return projectMemberRepository.save(projectMember);
 	}
 
