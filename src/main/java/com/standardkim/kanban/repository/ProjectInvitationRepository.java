@@ -21,4 +21,9 @@ public interface ProjectInvitationRepository extends JpaRepository<ProjectInvita
 	@Modifying
 	@Query("delete from ProjectInvitation pi where pi.id.projectMemberId.projectId = ?1 and pi.id.invitedUserId = ?2")
 	void deleteByProjectIdAndInvitedUserId(Long projectId, Long invitedUserId);
+
+	@Transactional
+	@Modifying
+	@Query("delete from ProjectInvitation pi where pi.id.projectMemberId.projectId = ?1 and pi.id.projectMemberId.userId = ?2")
+	void deleteByProjectMemberId(Long projectId, Long userId);
 }

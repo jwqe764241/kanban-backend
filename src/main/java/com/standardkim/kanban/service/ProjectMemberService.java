@@ -12,6 +12,7 @@ import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerExceptio
 import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
 import com.standardkim.kanban.exception.project.ProjectNotFoundException;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
+import com.standardkim.kanban.repository.ProjectInvitationRepository;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.ProjectRepository;
 import com.standardkim.kanban.repository.UserRepository;
@@ -27,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
+
+	private final ProjectInvitationRepository projectInvitationRepository;
 
 	private final ProjectRepository projectRepository;
 
@@ -91,6 +94,7 @@ public class ProjectMemberService {
 			throw new CannotDeleteProjectOwnerException("can't delete project owner");
 		}
 
+		projectInvitationRepository.deleteByProjectMemberId(projectId, userId);
 		projectMemberRepository.delete(member);
 	}
 }

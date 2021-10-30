@@ -51,7 +51,7 @@ public class ProjectMember {
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
-	@OneToMany(mappedBy = "projectMember", cascade = { CascadeType.REMOVE })
+	@OneToMany(mappedBy = "projectMember")
 	private Set<ProjectInvitation> invitations = new HashSet<>();
 
 	public static ProjectMember from(Project project, User user, boolean isRegister) {
