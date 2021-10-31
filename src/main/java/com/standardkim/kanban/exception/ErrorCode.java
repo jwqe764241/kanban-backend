@@ -24,7 +24,9 @@ public enum ErrorCode {
 	//common
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-001", "entity not found"),
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON-002", "input value is invalid"),
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error");
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error"),
+	ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMON-004", "access denied"),
+	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "COMMON-005", "validation failed");
 
 	private final HttpStatus httpStatus;
 	private final String code;

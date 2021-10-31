@@ -3,6 +3,7 @@ package com.standardkim.kanban.service;
 import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
+import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
@@ -57,7 +58,7 @@ public class ProjectInvitationServiceTest {
 
 	@Test
 	void isExist_ProjectInvitationIsExist_True() {
-		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(true);
+		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(true);
 
 		boolean isExist = projectInvitationService.isExist(1L, 1L);
 
@@ -66,7 +67,7 @@ public class ProjectInvitationServiceTest {
 
 	@Test
 	void isExist_ProjectInvitationIsNotExist_False() {
-		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(false);
+		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(false);
 
 		boolean isExist = projectInvitationService.isExist(1L, 1L);
 
@@ -92,18 +93,9 @@ public class ProjectInvitationServiceTest {
 	}
 
 	@Test
-	void delete_ProjectInvitationIsExist_DoesNotThrowAnyException() {
-		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(true);
-
-		assertThatCode(() -> {
-			projectInvitationService.delete(1L, 1L);
-		}).doesNotThrowAnyException();
-	}
-
-	@Test
 	void invite_ProjectInvitationIsExist_ThrowUserAlreadyInvitedException() {
 		given(userService.findById(1L)).willReturn(getUser(1L));
-		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(true);
+		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(true);
 
 		assertThatThrownBy(() -> {
 			projectInvitationService.invite(1L, 1L);
@@ -113,7 +105,7 @@ public class ProjectInvitationServiceTest {
 	@Test
 	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
 		given(userService.findBySecurityUser()).willReturn(getUser(1L));
-		given(projectInvitationRepository.existsById(getProjectInvitationKey(1L, 1L))).willReturn(false);
+		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(false);
 
 		assertThatThrownBy(() -> {
 			projectInvitationService.accept(1L);
@@ -126,20 +118,21 @@ public class ProjectInvitationServiceTest {
 			.build();
 	}
 
-	private ProjectInvitationKey getProjectInvitationKey(Long projectId, Long invitedUserId) {
-		return ProjectInvitationKey.from(projectId, invitedUserId);
+	private ProjectInvitationKey getProjectInvitationKey(Long projectId, Long userId, Long invitedUserId) {
+		ProjectMemberKey id = ProjectMemberKey.from(projectId, userId);
+		return ProjectInvitationKey.from(id, invitedUserId);
 	}
 
-	private ProjectInvitation getProjectInvitation(Long projectId, Long invitedUserId) {
+	private ProjectInvitation getProjectInvitation(Long projectId, Long userId, Long invitedUserId) {
 		return ProjectInvitation.builder()
-			.id(getProjectInvitationKey(projectId, invitedUserId))
+			.id(getProjectInvitationKey(projectId, userId, invitedUserId))
 			.build();
 	}
 	
 	private List<ProjectInvitation> getProjectInvitationList(Long projectId, int size) {
 		ArrayList<ProjectInvitation> list = new ArrayList<>(size);
 		for(int i = 1; i <= size; ++i) {
-			list.add(getProjectInvitation(projectId, Long.valueOf(i)));
+			list.add(getProjectInvitation(projectId, 1L, Long.valueOf(i)));
 		}
 		return list;
 	}

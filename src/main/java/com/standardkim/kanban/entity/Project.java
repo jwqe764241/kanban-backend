@@ -59,6 +59,8 @@ public class Project {
 		ProjectMemberKey memberId = ProjectMemberKey.from(id, user.getId());
 		ProjectMember member = ProjectMember.builder()
 			.id(memberId)
+			.project(this)
+			.user(user)
 			.isRegister(isRegister)
 			.build();
 		members.add(member);

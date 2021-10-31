@@ -182,7 +182,6 @@ public class ProjectServiceTest {
 		given(projectRepository.existsByName(anyString())).willReturn(false);
 		given(userService.findBySecurityUser()).willReturn(testUser);
 		given(projectRepository.save(any(Project.class))).willReturn(testProject);
-		given(projectMemberService.create(anyLong(), anyLong(), eq(true))).willReturn(testProjectMember);
 
 		Project project = projectService.create(getCreateProjectParam());
 

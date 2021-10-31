@@ -2,13 +2,15 @@ package com.standardkim.kanban.entity;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -19,6 +21,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+	name = "project_invitation",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"project_id", "invited_user_id"})
+	}
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -28,33 +36,37 @@ public class ProjectInvitation {
 	private ProjectInvitationKey id;
 
 	@ManyToOne
-	@MapsId("project_id")
-	@JoinColumn(name = "project_id", nullable = false, insertable = false)
-	private Project project;
+	@MapsId("projectMemberId")
+	@JoinColumns({
+		@JoinColumn(name = "project_id", referencedColumnName = "project_id"),
+		@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+	})
+	private ProjectMember projectMember;
 
 	@ManyToOne
-	@MapsId("invited_user_id")
+	@MapsId("invitedUserId")
 	@JoinColumn(name = "invited_user_id", nullable = false, insertable = false)
 	private User invitedUser;
 
-	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
-	@JoinColumn(name = "register_user_id", referencedColumnName = "id", nullable = false, updatable = false)
-	private User registerUser;
-
 	@CreationTimestamp
-	@Column(name = "register_date", nullable = false)
-	private LocalDateTime registerDate;
+	@Column(name = "register_date", nullable = false, updatable = false)
+	@Builder.Default
+	private LocalDateTime registerDate = LocalDateTime.now();
 
 	public static ProjectInvitation from(Project project, User inviteeUser, User inviterUser) {
+		ProjectMemberKey projectMemberId = ProjectMemberKey.from(project.getId(), inviterUser.getId());
+		ProjectMember projectMember = ProjectMember.builder()
+			.id(projectMemberId)
+			.build();
+
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectId(project.getId())
+			.projectMemberId(projectMemberId)
 			.invitedUserId(inviteeUser.getId())
 			.build();
 		return ProjectInvitation.builder()
 			.id(key)
-			.project(project)
+			.projectMember(projectMember)
 			.invitedUser(inviteeUser)
-			.registerUser(inviterUser)
 			.build();
 	}
 }
