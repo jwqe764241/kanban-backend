@@ -52,7 +52,7 @@ public class Project {
 	private Set<ProjectMember> members = new HashSet<>();
 
 	@Builder.Default
-	@OneToMany(mappedBy = "project", orphanRemoval = true)
+	@OneToMany(mappedBy = "project")
 	private Set<Kanban> kanbans = new HashSet<>();
 
 	public void addMember(User user, boolean isRegister) {
