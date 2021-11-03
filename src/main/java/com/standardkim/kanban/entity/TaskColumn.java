@@ -11,6 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+import com.standardkim.kanban.dto.TaskColumnDto.CreateTaskColumnParam;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -21,6 +25,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"kanban_id", "prev_id"})
+	}
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -45,4 +54,22 @@ public class TaskColumn {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "prev_id", nullable = true)
 	private TaskColumn prevTaskColumn;
+
+	@Column(name = "prev_id", nullable = true, insertable = false, updatable = false)
+	private Long prevId;
+
+	public static TaskColumn from(CreateTaskColumnParam param, Kanban kanban) {
+		return TaskColumn.builder()
+			.name(param.getName())
+			.kanban(kanban)
+			.build();
+	}
+
+	public static TaskColumn from(CreateTaskColumnParam param, Kanban kanban, TaskColumn prevTaskColumn) {
+		return TaskColumn.builder()
+			.name(param.getName())
+			.kanban(kanban)
+			.prevTaskColumn(prevTaskColumn)
+			.build();
+	}
 }
