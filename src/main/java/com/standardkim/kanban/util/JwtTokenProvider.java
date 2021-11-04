@@ -6,13 +6,6 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
-
-import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -21,59 +14,24 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-@Component
 public class JwtTokenProvider {
+	private final Key signKey;
+	private final JwtParser jwtParser;
 
-	@Value("${config.authentication.secret-key}")
-	private String secret;
-
-	@Value("${config.authentication.access-token-ttl}")
-	private Long accessTokenTTL;
-
-	@Value("${config.authentication.refresh-token-ttl}")
-	private Long refreshTokenTTL;
-
-	private Key signKey;
-
-	private JwtParser jwtParser;
-
-	@PostConstruct
-	public void init() {
-		signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-		jwtParser = Jwts.parserBuilder().setSigningKey(signKey).build();
+	public JwtTokenProvider(String secret) {
+		this.signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+		this.jwtParser = Jwts.parserBuilder().setSigningKey(signKey).build();
 	}
 
-	public AuthenticationToken buildAuthenticationToken(String login, String name) {
+	public String build(String login, String name, Long ttl) {
 		Claims claims = Jwts.claims();
 		claims.put("login", login);
 		claims.put("name", name);
 
-		String accessToken = buildToken(claims, accessTokenTTL);
-		String refreshToken = buildToken(claims, refreshTokenTTL);
-
-		return AuthenticationToken.builder()
-			.accessToken("Bearer " + accessToken)
-			.refreshToken(refreshToken)
-			.build();
+		return build(claims, ttl);
 	}
 
-	public String buildAccessToken(String login, String name) {
-		Claims claims = Jwts.claims();
-		claims.put("login", login);
-		claims.put("name", name);
-
-		return buildToken(claims, accessTokenTTL);
-	}
-
-	public String buildRefreshToken(String login, String name) {
-		Claims claims = Jwts.claims();
-		claims.put("login", login);
-		claims.put("name", name);
-
-		return buildToken(claims, refreshTokenTTL);
-	}
-
-	public String buildToken(Claims claims, Long ttl) {
+	public String build(Claims claims, Long ttl) {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime expiredAt = now.plus(ttl, ChronoUnit.SECONDS);
 		
@@ -82,6 +40,25 @@ public class JwtTokenProvider {
 			.setExpiration(Date.from(expiredAt.atZone(ZoneId.systemDefault()).toInstant()))
 			.signWith(signKey)
 			.compact();
+	}
+
+	public boolean isExpired(String token) {
+		try {
+			jwtParser.parseClaimsJws(token);
+		} catch (ExpiredJwtException e) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isValid(String claimsJws) {
+		try {
+			jwtParser.parseClaimsJws(claimsJws);
+			return true;
+		} catch (JwtException e) {
+			return false;
+		}
 	}
 
 	public String getLogin(String token) {
@@ -96,24 +73,5 @@ public class JwtTokenProvider {
 		}
 
 		return login;
-	}
-
-	public boolean isTokenExpired(String token) {
-		try {
-			jwtParser.parseClaimsJws(token);
-		} catch (ExpiredJwtException e) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public boolean validateToken(String claimsJws) {
-		try {
-			jwtParser.parseClaimsJws(claimsJws);
-			return true;
-		} catch (JwtException e) {
-			return false;
-		}
 	}
 }

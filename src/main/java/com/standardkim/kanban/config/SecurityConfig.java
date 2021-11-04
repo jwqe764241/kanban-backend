@@ -2,7 +2,9 @@ package com.standardkim.kanban.config;
 
 import com.standardkim.kanban.config.filter.JwtAuthenticationFilter;
 import com.standardkim.kanban.config.handler.AuthenticationFailedHandler;
+import com.standardkim.kanban.util.JwtTokenProvider;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	@Value("${config.authentication.secret-key}")
+	private String secret;
+
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	private final AuthenticationFailedHandler authenticationFailedHandler;
@@ -27,7 +32,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 			.httpBasic().disable()
 			.csrf().disable()
-			.authorizeRequests().antMatchers(HttpMethod.POST, "/users", "/auth/login", "/auth/logout", "/auth/refresh-access-token").permitAll()
+			.authorizeRequests()
+				.antMatchers(HttpMethod.POST, "/users", "/auth/login", "/auth/logout").permitAll()
+				.antMatchers(HttpMethod.GET, "/auth/access-token").permitAll()
 				.anyRequest().authenticated()
 			.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -41,5 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public JwtTokenProvider jwtTokenProvider() {
+		return new JwtTokenProvider(secret);
 	}
 }
