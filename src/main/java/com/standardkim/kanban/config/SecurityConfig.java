@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf().disable()
 			.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/users", "/auth/login", "/auth/logout").permitAll()
-				.antMatchers(HttpMethod.GET, "/auth/access-token").permitAll()
+				.antMatchers(HttpMethod.GET, "/auth/access-token", "/auth/ws-token", "/kanban-event/**").permitAll()
 				.anyRequest().authenticated()
 			.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
