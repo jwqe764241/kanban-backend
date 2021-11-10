@@ -1,5 +1,7 @@
 package com.standardkim.kanban.dto;
 
+import java.time.LocalDateTime;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -18,5 +20,16 @@ public class TaskColumnDto {
 		@NotBlank
 		@Size(min = 2, max = 50)
 		private String name;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class TaskColumnDetail {
+		private Long id;
+		private Long prevId;
+		private String name;
+		private LocalDateTime registerDate;
 	}
 }

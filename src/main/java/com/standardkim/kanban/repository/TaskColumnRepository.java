@@ -8,4 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface TaskColumnRepository extends CrudRepository<TaskColumn, Long>{
 	List<TaskColumn> findByKanbanId(Long kanbanId);
+	
+	boolean existsByKanbanIdAndName(Long kanbanId, String name);
 }
