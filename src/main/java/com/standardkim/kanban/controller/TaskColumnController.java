@@ -4,10 +4,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.standardkim.kanban.dto.KanbanActionDto.CreateColumnAction;
 import com.standardkim.kanban.dto.TaskColumnDto.CreateTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
+import com.standardkim.kanban.entity.TaskColumn;
 import com.standardkim.kanban.service.TaskColumnService;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +30,8 @@ public class TaskColumnController {
 
 	private final SimpMessagingTemplate simpMessagingTemplate;
 
+	private final ModelMapper modelMapper;
+
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}/columns")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
@@ -38,9 +43,12 @@ public class TaskColumnController {
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void addColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, 
+	public TaskColumnDetail addColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@Valid @RequestBody CreateTaskColumnParam param) {
-		taskColumnService.create(projectId, sequenceId, param);
-		simpMessagingTemplate.convertAndSend("/topic/kanban/" + sequenceId, "aa");
+		TaskColumn taskColumn = taskColumnService.create(projectId, sequenceId, param);
+		TaskColumnDetail taskColumnDetail = modelMapper.map(taskColumn, TaskColumnDetail.class);
+		simpMessagingTemplate.convertAndSend("/topic/kanban/" + sequenceId,
+			CreateColumnAction.from(taskColumnDetail));
+		return taskColumnDetail;
 	}
 }

@@ -69,7 +69,7 @@ public class TaskColumnService {
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public void create(Long projectId, Long kanbanSequenceId, CreateTaskColumnParam param) {
+	public TaskColumn create(Long projectId, Long kanbanSequenceId, CreateTaskColumnParam param) {
 		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
 
@@ -89,6 +89,7 @@ public class TaskColumnService {
 		}
 
 		taskColumnRepository.save(taskColumn);
+		return taskColumn;
 	}
 
 	public void moveBefore() {

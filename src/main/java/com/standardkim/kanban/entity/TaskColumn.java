@@ -71,6 +71,7 @@ public class TaskColumn {
 			.name(param.getName())
 			.kanban(kanban)
 			.prevTaskColumn(prevTaskColumn)
+			.prevId(prevTaskColumn.getId())
 			.build();
 	}
 }
