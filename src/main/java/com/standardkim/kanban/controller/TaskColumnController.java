@@ -49,7 +49,7 @@ public class TaskColumnController {
 		@Valid @RequestBody CreateTaskColumnParam param) {
 		TaskColumn taskColumn = taskColumnService.create(projectId, sequenceId, param);
 		TaskColumnDetail taskColumnDetail = modelMapper.map(taskColumn, TaskColumnDetail.class);
-		simpMessagingTemplate.convertAndSend("/topic/kanban/" + sequenceId,
+		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId,
 			CreateColumnAction.from(taskColumnDetail));
 		return taskColumnDetail;
 	}
@@ -63,7 +63,7 @@ public class TaskColumnController {
 		if(updatedTaskColumn != null) {
 			updatedTaskColumnDetail = modelMapper.map(updatedTaskColumn, TaskColumnDetail.class);
 		}
-		simpMessagingTemplate.convertAndSend("/topic/kanban/" + sequenceId,
+		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId,
 			DeleteColumnAction.from(columnId, updatedTaskColumnDetail));
 		return updatedTaskColumnDetail;
 	}
