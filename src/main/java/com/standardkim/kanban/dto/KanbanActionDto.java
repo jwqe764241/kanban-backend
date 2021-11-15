@@ -1,5 +1,8 @@
 package com.standardkim.kanban.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
 
 import lombok.AccessLevel;
@@ -36,6 +39,25 @@ public class KanbanActionDto {
 
 		public static CreateColumnAction from(TaskColumnDetail payload) {
 			return CreateColumnAction.builder()
+				.payload(payload)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class DeleteColumnAction extends KanbanAction {
+		@Builder
+		public DeleteColumnAction(Object payload) {
+			super(ActionType.Delete, Target.Column, payload);
+		}
+
+		public static DeleteColumnAction from(Long deletedColumnId, TaskColumnDetail updatedColumn) {
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("deletedColumnId", deletedColumnId);
+			payload.put("updatedColumn", updatedColumn);
+
+			return DeleteColumnAction.builder()
 				.payload(payload)
 				.build();
 		}

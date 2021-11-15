@@ -74,4 +74,15 @@ public class TaskColumn {
 			.prevId(prevTaskColumn.getId())
 			.build();
 	}
+
+	public void updatePrevColumn(TaskColumn prevTaskColumn) {
+		if(prevTaskColumn == null) {
+			this.prevId = null;
+			this.prevTaskColumn = null;
+		}
+		else {
+			this.prevId = prevTaskColumn.getId();
+			this.prevTaskColumn = prevTaskColumn;
+		}
+	}
 }

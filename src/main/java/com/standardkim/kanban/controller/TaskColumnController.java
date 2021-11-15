@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.KanbanActionDto.CreateColumnAction;
+import com.standardkim.kanban.dto.KanbanActionDto.DeleteColumnAction;
 import com.standardkim.kanban.dto.TaskColumnDto.CreateTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
 import com.standardkim.kanban.entity.TaskColumn;
@@ -14,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +52,19 @@ public class TaskColumnController {
 		simpMessagingTemplate.convertAndSend("/topic/kanban/" + sequenceId,
 			CreateColumnAction.from(taskColumnDetail));
 		return taskColumnDetail;
+	}
+
+	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}")
+	@PreAuthorize("isProjectMember(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public TaskColumnDetail deleteColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId) {
+		TaskColumn updatedTaskColumn = taskColumnService.delete(columnId);
+		TaskColumnDetail updatedTaskColumnDetail = null;
+		if(updatedTaskColumn != null) {
+			updatedTaskColumnDetail = modelMapper.map(updatedTaskColumn, TaskColumnDetail.class);
+		}
+		simpMessagingTemplate.convertAndSend("/topic/kanban/" + sequenceId,
+			DeleteColumnAction.from(columnId, updatedTaskColumnDetail));
+		return updatedTaskColumnDetail;
 	}
 }

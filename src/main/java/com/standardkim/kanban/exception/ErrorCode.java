@@ -23,6 +23,7 @@ public enum ErrorCode {
 	CANNOT_DELETE_PROJECT_OWNER(HttpStatus.BAD_REQUEST, "PROJECT-005", "can't delete project owner"),
 	//TaskColumn
 	DUPLICATE_TASK_COLUMN_NAME(HttpStatus.CONFLICT, "TASKCOLUMN-001", "duplicate task column name"),
+	TASK_COLUMN_NOT_FOUND(HttpStatus.NOT_FOUND, "TASKCOLUMN-002", "task column not found"),
 	//common
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-001", "entity not found"),
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON-002", "input value is invalid"),

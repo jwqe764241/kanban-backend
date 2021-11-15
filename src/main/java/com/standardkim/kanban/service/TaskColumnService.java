@@ -10,6 +10,7 @@ import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.TaskColumn;
 import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
 import com.standardkim.kanban.exception.taskcolumn.DuplicateTaskColumnNameException;
+import com.standardkim.kanban.exception.taskcolumn.TaskColumnNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.TaskColumnRepository;
 
@@ -90,6 +91,35 @@ public class TaskColumnService {
 
 		taskColumnRepository.save(taskColumn);
 		return taskColumn;
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public TaskColumn delete(Long columnId) {
+		TaskColumn taskColumn = taskColumnRepository.findById(columnId)
+			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(taskColumn.getId());
+		
+		//task column is last column or there's no other column
+		if(nextTaskColumn == null) {
+			taskColumnRepository.delete(taskColumn);
+			return null;
+		}
+
+		//make next task column to first column
+		if(taskColumn.getPrevId() == null) {
+			nextTaskColumn.updatePrevColumn(null);
+			taskColumnRepository.delete(taskColumn);
+			return nextTaskColumn;
+		}
+		//update next columns's previous column to current column(column that will be deleted)'s previous column
+		else {
+			TaskColumn prevTaskColumn = taskColumn.getPrevTaskColumn();
+			nextTaskColumn.updatePrevColumn(null);
+			taskColumnRepository.delete(taskColumn);
+			taskColumnRepository.flush();
+			nextTaskColumn.updatePrevColumn(prevTaskColumn);
+			return nextTaskColumn;
+		}
 	}
 
 	public void moveBefore() {
