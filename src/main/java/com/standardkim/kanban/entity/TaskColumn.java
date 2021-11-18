@@ -85,4 +85,8 @@ public class TaskColumn {
 			this.prevTaskColumn = prevTaskColumn;
 		}
 	}
+
+	public void updateName(String name) {
+		this.name = name;
+	}
 }

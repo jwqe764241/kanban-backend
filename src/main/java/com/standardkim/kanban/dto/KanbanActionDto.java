@@ -38,9 +38,9 @@ public class KanbanActionDto {
 			super(ActionType.Insert, Target.Column, payload);
 		}
 
-		public static CreateColumnAction from(TaskColumnDetail payload) {
+		public static CreateColumnAction from(TaskColumnDetail taskColumnDetail) {
 			return CreateColumnAction.builder()
-				.payload(payload)
+				.payload(taskColumnDetail)
 				.build();
 		}
 	}
@@ -75,6 +75,21 @@ public class KanbanActionDto {
 		public static ReorderColumnAction from(List<TaskColumnDetail> updatedTaskColumnDetails) {
 			return ReorderColumnAction.builder()
 				.payload(updatedTaskColumnDetails)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class UpdateColumnAction extends KanbanAction {
+		@Builder
+		public UpdateColumnAction(Object payload) {
+			super(ActionType.Update, Target.Column, payload);
+		}
+
+		public static UpdateColumnAction from(TaskColumnDetail taskColumnDetail) {
+			return UpdateColumnAction.builder()
+				.payload(taskColumnDetail)
 				.build();
 		}
 	}

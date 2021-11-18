@@ -7,9 +7,11 @@ import javax.validation.Valid;
 import com.standardkim.kanban.dto.KanbanActionDto.CreateColumnAction;
 import com.standardkim.kanban.dto.KanbanActionDto.DeleteColumnAction;
 import com.standardkim.kanban.dto.KanbanActionDto.ReorderColumnAction;
+import com.standardkim.kanban.dto.KanbanActionDto.UpdateColumnAction;
 import com.standardkim.kanban.dto.TaskColumnDto.CreateTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.ReorderTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
+import com.standardkim.kanban.dto.TaskColumnDto.UpdateTaskColumnParam;
 import com.standardkim.kanban.entity.TaskColumn;
 import com.standardkim.kanban.service.TaskColumnService;
 
@@ -20,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,5 +84,17 @@ public class TaskColumnController {
 		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId,
 			DeleteColumnAction.from(columnId, updatedTaskColumnDetail));
 		return updatedTaskColumnDetail;
+	}
+
+	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}")
+	@PreAuthorize("isProjectMember(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public TaskColumnDetail updateColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId,
+		@Valid @RequestBody UpdateTaskColumnParam param) {
+		TaskColumn taskColumn = taskColumnService.update(projectId, sequenceId, columnId, param);
+		TaskColumnDetail taskColumnDetail = modelMapper.map(taskColumn, TaskColumnDetail.class);
+		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId,
+			UpdateColumnAction.from(taskColumnDetail));
+		return taskColumnDetail;
 	}
 }

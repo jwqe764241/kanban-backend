@@ -8,6 +8,7 @@ import java.util.Set;
 import com.standardkim.kanban.dto.TaskColumnDto.CreateTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.ReorderTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
+import com.standardkim.kanban.dto.TaskColumnDto.UpdateTaskColumnParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.TaskColumn;
 import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
@@ -171,5 +172,20 @@ public class TaskColumnService {
 		}
 
 		return updatedTaskColumns;
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public TaskColumn update(Long projectId, Long kanbanSequenceId, Long columnId, UpdateTaskColumnParam param) {
+		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
+
+		if(isNameExist(kanban.getId(), param.getName())) {
+			throw new DuplicateTaskColumnNameException("duplicate task column name");
+		}
+
+		TaskColumn taskColumn = taskColumnRepository.findById(columnId)
+			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		taskColumn.updateName(param.getName());
+		return taskColumn;
 	}
 }

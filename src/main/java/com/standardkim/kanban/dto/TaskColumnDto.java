@@ -37,6 +37,16 @@ public class TaskColumnDto {
 	@Builder
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
+	public static class UpdateTaskColumnParam {
+		@NotBlank
+		@Size(min = 2, max = 50)
+		private String name;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
 	public static class TaskColumnDetail {
 		private Long id;
 		private Long prevId;
