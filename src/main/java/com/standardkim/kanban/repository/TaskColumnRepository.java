@@ -10,6 +10,8 @@ public interface TaskColumnRepository extends JpaRepository<TaskColumn, Long>{
 	List<TaskColumn> findByKanbanId(Long kanbanId);
 
 	TaskColumn findByPrevId(Long prevId);
+
+	TaskColumn findByKanbanIdAndPrevId(Long kanbanId, Long prevId);
 	
 	boolean existsByKanbanIdAndName(Long kanbanId, String name);
 }

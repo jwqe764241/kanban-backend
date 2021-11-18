@@ -3,6 +3,7 @@ package com.standardkim.kanban.dto;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.AccessLevel;
@@ -20,6 +21,16 @@ public class TaskColumnDto {
 		@NotBlank
 		@Size(min = 2, max = 50)
 		private String name;
+	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class ReorderTaskColumnParam {
+		@NotNull
+		Long columnId;
+		Long prevColumnId;
 	}
 
 	@Getter

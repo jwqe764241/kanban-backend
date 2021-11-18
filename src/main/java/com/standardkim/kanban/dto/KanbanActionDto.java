@@ -1,6 +1,7 @@
 package com.standardkim.kanban.dto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
@@ -17,7 +18,7 @@ public class KanbanActionDto {
 	@AllArgsConstructor
 	public static abstract class KanbanAction {
 		public enum ActionType {
-			Insert, Update, Delete
+			Insert, Update, Delete, Reorder
 		}
 
 		public enum Target {
@@ -59,6 +60,21 @@ public class KanbanActionDto {
 
 			return DeleteColumnAction.builder()
 				.payload(payload)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class ReorderColumnAction extends KanbanAction {
+		@Builder
+		public ReorderColumnAction(Object payload) {
+			super(ActionType.Reorder, Target.Column, payload);
+		}
+
+		public static ReorderColumnAction from(List<TaskColumnDetail> updatedTaskColumnDetails) {
+			return ReorderColumnAction.builder()
+				.payload(updatedTaskColumnDetails)
 				.build();
 		}
 	}
