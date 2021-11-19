@@ -39,26 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		flattenAllowedOrigins = String.join(",", allowedOrigins);
 	}
 
-	private AuthorizationHeader parseAuthorizationHeader(HttpServletRequest request) {
-		String raw = request.getHeader("Authorization");
-		if(raw == null) {
-			throw new NullPointerException("Authorization is null");
-		}
-
-		String[] tokenized = raw.split(" ");
-
-		if(tokenized.length != 2) {
-			throw new IllegalArgumentException("invalid header data");
-		}
-
-		AuthorizationHeader header = AuthorizationHeader.builder()
-			.type(tokenized[0])
-			.credentials(tokenized[1])
-			.build();
-
-		return header;
-	}
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -85,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String token = authorizationHeader.getCredentials();
 
 			if(type.equals("Bearer")){
-				if(token != null && !token.isBlank() && jwtTokenProvider.validateToken(token)) {
+				if(token != null && !token.isBlank() && jwtTokenProvider.isValid(token)) {
 					try {
 						String login = jwtTokenProvider.getLogin(token);
 						SecurityUser securityUser = userService.findSecurityUserByLogin(login);
@@ -103,5 +83,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		
 		filterChain.doFilter(request, response);
+	}
+
+	private AuthorizationHeader parseAuthorizationHeader(HttpServletRequest request) {
+		String raw = request.getHeader("Authorization");
+		if(raw == null) {
+			throw new NullPointerException("Authorization is null");
+		}
+
+		String[] tokenized = raw.split(" ");
+
+		if(tokenized.length != 2) {
+			throw new IllegalArgumentException("invalid header data");
+		}
+
+		AuthorizationHeader header = AuthorizationHeader.builder()
+			.type(tokenized[0])
+			.credentials(tokenized[1])
+			.build();
+
+		return header;
 	}
 }

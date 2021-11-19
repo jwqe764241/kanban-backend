@@ -1,6 +1,8 @@
 package com.standardkim.kanban.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -11,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.util.BooleanToYNConverter;
@@ -51,6 +54,10 @@ public class Kanban {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id", nullable = false)
 	private Project project;
+
+	@Builder.Default
+	@OneToMany(mappedBy = "kanban")
+	private Set<TaskColumn> taskColumns = new HashSet<>();
 
 	public void updateToDeleted() {
 		isDeleted = true;

@@ -27,17 +27,23 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
-	@Value("${config.authentication.refresh-token-ttl}")
-	private int refreshTokenTTL;
-
 	@Value("${config.refresh-token-name}")
 	private String refreshTokenName;
+
+	@Value("${config.authentication.refresh-token-ttl}")
+	private Long refreshTokenTTL;
+
+	@Value("${config.authentication.access-token-ttl}")
+	private Long accessTokenTTL;
+
+	@Value("${config.authentication.ws-token-ttl}")
+	private Long wsTokenTTL;
 
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken login(@RequestBody @Valid LoginParam loginParam, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = authenticationService.login(loginParam);
+		AuthenticationToken authenticationToken = authenticationService.login(loginParam, refreshTokenTTL, accessTokenTTL);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain("localhost")
@@ -70,14 +76,25 @@ public class AuthenticationController {
 		response.setHeader("Set-Cookie", cookie.toString());
 	}
 
-	@PostMapping("/auth/refresh-access-token")
+	@GetMapping("/auth/access-token")
 	@ResponseStatus(HttpStatus.OK)
-	public AccessToken refreshAccessToken(HttpServletRequest request) throws Exception {
+	public AccessToken getAccessToken(HttpServletRequest request) throws Exception {
 		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
-		String accessToken = authenticationService.getAccessToken(refreshToken);
+		String accessToken = authenticationService.getAccessToken(refreshToken, accessTokenTTL);
+		return AccessToken.from(accessToken);
+	}
+
+	@GetMapping("/auth/ws-token")
+	@ResponseStatus(HttpStatus.OK)
+	public AccessToken getWebsocketToken(HttpServletRequest request) throws Exception {
+		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		if(refreshToken == null || refreshToken.isBlank()) {
+			throw new EmptyRefreshTokenException("refresh token was empty");
+		}
+		String accessToken = authenticationService.getAccessToken(refreshToken, wsTokenTTL);
 		return AccessToken.from(accessToken);
 	}
 
