@@ -38,7 +38,7 @@ public class Task {
 	@Column(updatable = false, nullable = false)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length=2048)
 	private String text;
 
 	@CreationTimestamp
@@ -48,6 +48,9 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "task_column_id", nullable = false)
 	private TaskColumn taskColumn;
+
+	@Column(name = "task_column_id", nullable = true, insertable = false, updatable = false)
+	private Long taskColumnId;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "prev_id", nullable = true)
