@@ -14,6 +14,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.standardkim.kanban.dto.TaskDto.CreateTaskParam;
+
 import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AccessLevel;
@@ -58,4 +60,23 @@ public class Task {
 
 	@Column(name = "prev_id", nullable = true, insertable = false, updatable = false)
 	private Long prevId;
+
+	public static Task from(CreateTaskParam param, TaskColumn taskColumn) {
+		return Task.builder()
+			.text(param.getText())
+			.taskColumn(taskColumn)
+			.taskColumnId(taskColumn.getId())
+			.build();
+	}
+	
+	public void updatePrevTask(Task prevTask) {
+		if(prevTask == null) {
+			this.prevTask = null;
+			this.prevId = null;
+		}
+		else {
+			this.prevTask = prevTask;
+			this.prevId = prevTask.getId();
+		}
+	}
 }

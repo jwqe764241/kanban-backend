@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByTaskColumnId(Long taskColumnId);
+
+	Task findByTaskColumnIdAndPrevId(Long taskColumnId, Long prevId);
 }

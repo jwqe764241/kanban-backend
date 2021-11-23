@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
+import com.standardkim.kanban.dto.TaskDto.TaskDetail;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -90,6 +91,21 @@ public class KanbanActionDto {
 		public static UpdateColumnAction from(TaskColumnDetail taskColumnDetail) {
 			return UpdateColumnAction.builder()
 				.payload(taskColumnDetail)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class CreateTaskAction extends KanbanAction {
+		@Builder
+		public CreateTaskAction(Object payload) {
+			super(ActionType.Insert, Target.Task, payload);
+		}
+
+		public static CreateTaskAction from(List<TaskDetail> updatedTaskDetails) {
+			return CreateTaskAction.builder()
+				.payload(updatedTaskDetails)
 				.build();
 		}
 	}
