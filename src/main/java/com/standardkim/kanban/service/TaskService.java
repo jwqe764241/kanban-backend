@@ -59,7 +59,7 @@ public class TaskService {
 		TaskColumn taskColumn = taskColumnRepository.findByIdAndKanbanId(columnId, kanban.getId())
 			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
 
-		Task firstTask = taskRepository.findByTaskColumnIdAndPrevId(taskColumn.getId(), null);
+		Task firstTask = taskRepository.findByPrevIdAndTaskColumnId(null, taskColumn.getId());
 		Task task = Task.from(param, taskColumn);
 		taskRepository.save(task);
 
@@ -74,5 +74,37 @@ public class TaskService {
 		}
 
 		return updatedTasks;
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public Task delete(Long projectId, Long kanbanSequenceId, Long columnId, Long taskId) {
+		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found exception"));
+		TaskColumn taskColumn = taskColumnRepository.findByIdAndKanbanId(columnId, kanban.getId())
+			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		Task task = taskRepository.findByIdAndTaskColumnId(taskId, taskColumn.getId());
+		Task nextTask = taskRepository.findByPrevIdAndTaskColumnId(task.getId(), taskColumn.getId());
+
+		//task is last task or there's no other task
+		if(nextTask == null) {
+			taskRepository.delete(task);
+			return null;
+		}
+		
+		//update next task to be first task
+		if(task.getPrevId() == null) {
+			nextTask.updatePrevTask(null);
+			taskRepository.delete(task);
+			return nextTask;
+		}
+		//update next task's previous task to current task(task that will be deleted)'s previous task
+		else {
+			Task prevTask = task.getPrevTask();
+			nextTask.updatePrevTask(null);
+			taskRepository.delete(task);
+			taskRepository.flush();
+			nextTask.updatePrevTask(prevTask);
+			return nextTask;
+		}
 	}
 }

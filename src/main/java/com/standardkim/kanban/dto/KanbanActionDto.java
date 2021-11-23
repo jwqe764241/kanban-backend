@@ -109,4 +109,24 @@ public class KanbanActionDto {
 				.build();
 		}
 	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class DeleteTaskAction extends KanbanAction {
+		@Builder
+		public DeleteTaskAction(Object payload) {
+			super(ActionType.Delete, Target.Task, payload);
+		}
+
+		public static DeleteTaskAction from(Long columnId, Long deletedTaskId, TaskDetail updatedTaskDetail) {
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("columnId", columnId);
+			payload.put("deletedTaskId", deletedTaskId);
+			payload.put("updatedTask", updatedTaskDetail);
+
+			return DeleteTaskAction.builder()
+				.payload(payload)
+				.build();
+		}
+	}
 }
