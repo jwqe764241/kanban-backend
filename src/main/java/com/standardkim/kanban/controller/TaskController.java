@@ -41,9 +41,10 @@ public class TaskController {
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/tasks")
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
-	public Map<Long, List<TaskDetail>> getTasks(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		Map<Long, List<TaskDetail>> tasks = taskService.findTasksByKanbanSequence(projectId, sequenceId);
-		return tasks;
+	public List<TaskDetail> getTasks(@PathVariable Long projectId, @PathVariable Long sequenceId) {
+		List<Task> tasks = taskService.findTasksByKanbanSequence(projectId, sequenceId);
+		List<TaskDetail> taskDetails = modelMapper.map(tasks, new TypeToken<List<TaskDetail>>(){}.getType());
+		return taskDetails;
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks")

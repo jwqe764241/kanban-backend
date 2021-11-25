@@ -36,22 +36,19 @@ public class TaskService {
 		
 	private final KanbanRepository kanbanRepository;
 
-	private final ModelMapper modelMapper;
-
 	@Transactional(readOnly = true)
-	public Map<Long, List<TaskDetail>> findTasksByKanbanSequence(Long projectId, Long kanbanSequenceId) {
+	public List<Task> findTasksByKanbanSequence(Long projectId, Long kanbanSequenceId) {
 		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found exception"));
 		Set<TaskColumn> taskColumns = kanban.getTaskColumns();
 
-		Map<Long, List<TaskDetail>> result = new HashMap<>();
+		List<Task> results = new ArrayList<>();
 		for (TaskColumn taskColumn : taskColumns) {
 			List<Task> tasks = taskRepository.findByTaskColumnId(taskColumn.getId());
-			List<TaskDetail> taskDetails = modelMapper.map(tasks, new TypeToken<List<TaskDetail>>(){}.getType());
-			result.put(taskColumn.getId(), taskDetails);
+			results.addAll(tasks);
 		}
 
-		return result;
+		return results;
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
