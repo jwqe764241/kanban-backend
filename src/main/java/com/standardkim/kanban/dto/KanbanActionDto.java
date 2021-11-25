@@ -129,4 +129,19 @@ public class KanbanActionDto {
 				.build();
 		}
 	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class ReorderTaskAction extends KanbanAction {
+		@Builder
+		public ReorderTaskAction(Object payload) {
+			super(ActionType.Reorder, Target.Task, payload);
+		}
+
+		public static ReorderTaskAction from(List<TaskDetail> updatedTaskDetails) {
+			return ReorderTaskAction.builder()
+				.payload(updatedTaskDetails)
+				.build();
+		}
+	}
 }

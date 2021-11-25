@@ -7,7 +7,9 @@ import javax.validation.Valid;
 
 import com.standardkim.kanban.dto.KanbanActionDto.CreateTaskAction;
 import com.standardkim.kanban.dto.KanbanActionDto.DeleteTaskAction;
+import com.standardkim.kanban.dto.KanbanActionDto.ReorderTaskAction;
 import com.standardkim.kanban.dto.TaskDto.CreateTaskParam;
+import com.standardkim.kanban.dto.TaskDto.ReorderTaskParam;
 import com.standardkim.kanban.dto.TaskDto.TaskDetail;
 import com.standardkim.kanban.entity.Task;
 import com.standardkim.kanban.service.TaskService;
@@ -69,5 +71,17 @@ public class TaskController {
 		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
 			DeleteTaskAction.from(columnId, taskId, updatedTaskDetail));
 		return updatedTaskDetail;
+	}
+
+	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/reorder")
+	@PreAuthorize("isProjectMember(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public List<TaskDetail> reorderTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
+		@PathVariable Long columnId, @RequestBody ReorderTaskParam param) {
+		List<Task> updatedTasks = taskService.reorder(projectId, sequenceId, columnId, param);
+		List<TaskDetail> updatedTaskDetails = modelMapper.map(updatedTasks, new TypeToken<List<TaskDetail>>(){}.getType());
+		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
+			ReorderTaskAction.from(updatedTaskDetails));
+		return updatedTaskDetails;
 	}
 }

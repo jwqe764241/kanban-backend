@@ -30,4 +30,13 @@ public class TaskDto {
 		@Size(min = 2, max = 2048)
 		private String text;
 	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class ReorderTaskParam {
+		private Long taskId;
+		private Long prevTaskId;
+	}
 }
