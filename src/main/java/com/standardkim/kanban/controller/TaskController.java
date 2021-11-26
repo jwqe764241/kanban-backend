@@ -1,7 +1,6 @@
 package com.standardkim.kanban.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -70,7 +69,7 @@ public class TaskController {
 			updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
 		}
 		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
-			DeleteTaskAction.from(columnId, taskId, updatedTaskDetail));
+			DeleteTaskAction.from(taskId, updatedTaskDetail));
 		return updatedTaskDetail;
 	}
 

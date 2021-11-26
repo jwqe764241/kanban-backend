@@ -118,9 +118,8 @@ public class KanbanActionDto {
 			super(ActionType.Delete, Target.Task, payload);
 		}
 
-		public static DeleteTaskAction from(Long columnId, Long deletedTaskId, TaskDetail updatedTaskDetail) {
+		public static DeleteTaskAction from(Long deletedTaskId, TaskDetail updatedTaskDetail) {
 			Map<String, Object> payload = new HashMap<>();
-			payload.put("columnId", columnId);
 			payload.put("deletedTaskId", deletedTaskId);
 			payload.put("updatedTask", updatedTaskDetail);
 
