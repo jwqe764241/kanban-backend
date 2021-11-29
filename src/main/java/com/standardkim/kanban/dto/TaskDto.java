@@ -39,4 +39,14 @@ public class TaskDto {
 		private Long taskId;
 		private Long prevTaskId;
 	}
+
+	@Getter
+	@Builder
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class UpdateTaskParam {
+		@NotBlank
+		@Size(max = 2048)
+		private String text;
+	}
 }

@@ -143,4 +143,19 @@ public class KanbanActionDto {
 				.build();
 		}
 	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class UpdateTaskAction extends KanbanAction {
+		@Builder
+		public UpdateTaskAction(Object payload) {
+			super(ActionType.Update, Target.Task, payload);
+		}
+
+		public static UpdateTaskAction from(TaskDetail updatedTaskDetail) {
+			return UpdateTaskAction.builder()
+				.payload(updatedTaskDetail)
+				.build();
+		}
+	}
 }

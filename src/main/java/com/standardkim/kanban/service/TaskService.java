@@ -9,6 +9,7 @@ import java.util.Set;
 import com.standardkim.kanban.dto.TaskDto.CreateTaskParam;
 import com.standardkim.kanban.dto.TaskDto.ReorderTaskParam;
 import com.standardkim.kanban.dto.TaskDto.TaskDetail;
+import com.standardkim.kanban.dto.TaskDto.UpdateTaskParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.Task;
 import com.standardkim.kanban.entity.TaskColumn;
@@ -167,5 +168,20 @@ public class TaskService {
 
 		updatedTasks.add(task);
 		return updatedTasks;
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public Task update(Long projectId, Long kanbanSequenceId, Long columnId, Long taskId, UpdateTaskParam param) {
+		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
+			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
+		TaskColumn taskColumn = taskColumnRepository.findByIdAndKanbanId(columnId, kanban.getId())
+			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		Task task = taskRepository.findByIdAndTaskColumnId(taskId, taskColumn.getId());
+
+		if(task != null) {
+			task.updateText(param.getText());
+		}
+
+		return task;
 	}
 }

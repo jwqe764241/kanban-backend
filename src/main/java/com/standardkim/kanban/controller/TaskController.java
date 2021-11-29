@@ -7,9 +7,11 @@ import javax.validation.Valid;
 import com.standardkim.kanban.dto.KanbanActionDto.CreateTaskAction;
 import com.standardkim.kanban.dto.KanbanActionDto.DeleteTaskAction;
 import com.standardkim.kanban.dto.KanbanActionDto.ReorderTaskAction;
+import com.standardkim.kanban.dto.KanbanActionDto.UpdateTaskAction;
 import com.standardkim.kanban.dto.TaskDto.CreateTaskParam;
 import com.standardkim.kanban.dto.TaskDto.ReorderTaskParam;
 import com.standardkim.kanban.dto.TaskDto.TaskDetail;
+import com.standardkim.kanban.dto.TaskDto.UpdateTaskParam;
 import com.standardkim.kanban.entity.Task;
 import com.standardkim.kanban.service.TaskService;
 
@@ -20,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,5 +86,17 @@ public class TaskController {
 		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
 			ReorderTaskAction.from(updatedTaskDetails));
 		return updatedTaskDetails;
+	}
+
+	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks/{taskId}")
+	@PreAuthorize("isProjectMember(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public TaskDetail updateTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
+	@PathVariable Long columnId, @PathVariable Long taskId, @Valid @RequestBody UpdateTaskParam param) {
+		Task updatedTask = taskService.update(projectId, sequenceId, columnId, taskId, param);
+		TaskDetail updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
+		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
+			UpdateTaskAction.from(updatedTaskDetail));
+		return updatedTaskDetail;
 	}
 }

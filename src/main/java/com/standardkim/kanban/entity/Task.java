@@ -86,4 +86,8 @@ public class Task {
 			this.taskColumnId = taskColumn.getId();
 		}
 	}
+
+	public void updateText(String text) {
+		this.text = text;
+	}
 }
