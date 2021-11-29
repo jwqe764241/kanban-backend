@@ -16,6 +16,7 @@ import com.standardkim.kanban.exception.taskcolumn.DuplicateTaskColumnNameExcept
 import com.standardkim.kanban.exception.taskcolumn.TaskColumnNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.TaskColumnRepository;
+import com.standardkim.kanban.repository.TaskRepository;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -29,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TaskColumnService {
 	private final TaskColumnRepository taskColumnRepository;
+
+	private final TaskRepository taskRepository;
 
 	private final KanbanRepository kanbanRepository;
 
@@ -102,6 +105,11 @@ public class TaskColumnService {
 			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(taskColumn.getId());
 		
+		//delete tasks
+		taskRepository.updatePrevIdToNullByTaskColumnId(taskColumn.getId());
+		taskRepository.deleteByTaskColumnId(taskColumn.getId());
+		taskRepository.flush();
+
 		//task column is last column or there's no other column
 		if(nextTaskColumn == null) {
 			taskColumnRepository.delete(taskColumn);

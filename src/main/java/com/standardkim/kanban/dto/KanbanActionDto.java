@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.standardkim.kanban.dto.TaskColumnDto.TaskColumnDetail;
+import com.standardkim.kanban.dto.TaskDto.TaskDetail;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -90,6 +91,70 @@ public class KanbanActionDto {
 		public static UpdateColumnAction from(TaskColumnDetail taskColumnDetail) {
 			return UpdateColumnAction.builder()
 				.payload(taskColumnDetail)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class CreateTaskAction extends KanbanAction {
+		@Builder
+		public CreateTaskAction(Object payload) {
+			super(ActionType.Insert, Target.Task, payload);
+		}
+
+		public static CreateTaskAction from(List<TaskDetail> updatedTaskDetails) {
+			return CreateTaskAction.builder()
+				.payload(updatedTaskDetails)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class DeleteTaskAction extends KanbanAction {
+		@Builder
+		public DeleteTaskAction(Object payload) {
+			super(ActionType.Delete, Target.Task, payload);
+		}
+
+		public static DeleteTaskAction from(Long deletedTaskId, TaskDetail updatedTaskDetail) {
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("deletedTaskId", deletedTaskId);
+			payload.put("updatedTask", updatedTaskDetail);
+
+			return DeleteTaskAction.builder()
+				.payload(payload)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class ReorderTaskAction extends KanbanAction {
+		@Builder
+		public ReorderTaskAction(Object payload) {
+			super(ActionType.Reorder, Target.Task, payload);
+		}
+
+		public static ReorderTaskAction from(List<TaskDetail> updatedTaskDetails) {
+			return ReorderTaskAction.builder()
+				.payload(updatedTaskDetails)
+				.build();
+		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class UpdateTaskAction extends KanbanAction {
+		@Builder
+		public UpdateTaskAction(Object payload) {
+			super(ActionType.Update, Target.Task, payload);
+		}
+
+		public static UpdateTaskAction from(TaskDetail updatedTaskDetail) {
+			return UpdateTaskAction.builder()
+				.payload(updatedTaskDetail)
 				.build();
 		}
 	}
