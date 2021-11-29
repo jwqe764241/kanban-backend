@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
+
 import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AccessLevel;
@@ -54,6 +56,14 @@ public class Project {
 	@Builder.Default
 	@OneToMany(mappedBy = "project")
 	private Set<Kanban> kanbans = new HashSet<>();
+
+	public static Project from(CreateProjectParam param, User registerUser) {
+		return Project.builder()
+				.name(param.getName())
+				.description(param.getDescription())
+				.registerUser(registerUser)
+				.build();
+	}
 
 	public void addMember(User user, boolean isRegister) {
 		ProjectMemberKey memberId = ProjectMemberKey.from(id, user.getId());

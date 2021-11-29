@@ -14,7 +14,10 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.standardkim.kanban.dto.UserDto.CreateUserParam;
+
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -53,4 +56,13 @@ public class User {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	@OrderBy("register_date desc")
 	private Set<ProjectMember> projects;
+
+	public static User from(CreateUserParam param, PasswordEncoder passwordEncoder) {
+		return User.builder()
+			.login(param.getLogin())
+			.password(passwordEncoder.encode(param.getPassword()))
+			.name(param.getName())
+			.email(param.getEmail())
+			.build();
+	}
 }

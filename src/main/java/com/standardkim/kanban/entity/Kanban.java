@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.util.BooleanToYNConverter;
 
@@ -58,6 +59,15 @@ public class Kanban {
 	@Builder.Default
 	@OneToMany(mappedBy = "kanban")
 	private Set<TaskColumn> taskColumns = new HashSet<>();
+
+	public static Kanban from(CreateKanbanParam param, Project project) {
+		Kanban kanban = Kanban.builder()
+			.name(param.getName())
+			.description(param.getDescription())
+			.project(project)
+			.build();
+		return kanban;
+	}
 
 	public void updateToDeleted() {
 		isDeleted = true;

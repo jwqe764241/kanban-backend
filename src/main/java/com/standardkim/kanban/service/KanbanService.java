@@ -57,7 +57,7 @@ public class KanbanService {
 	@Transactional(rollbackFor = Exception.class)
 	public Kanban create(Long projectId, CreateKanbanParam createKanbanParam) {
 		Project project = projectService.findById(projectId);
-		Kanban kanban = createKanbanParam.toEntity(project);
+		Kanban kanban = Kanban.from(createKanbanParam, project);
 		return kanbanRepository.save(kanban);
 	}
 

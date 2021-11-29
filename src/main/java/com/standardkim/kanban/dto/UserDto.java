@@ -6,10 +6,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.standardkim.kanban.entity.User;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,15 +33,6 @@ public class UserDto {
 		@NotBlank
 		@Email(regexp = ".+@.+\\..+")
 		private String email;
-
-		public User toEntity(PasswordEncoder passwordEncoder) {
-			return User.builder()
-				.login(login)
-				.password(passwordEncoder.encode(password))
-				.name(name)
-				.email(email)
-				.build();
-		}
 	}
 
 	@Getter

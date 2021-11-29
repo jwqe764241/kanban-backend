@@ -69,7 +69,7 @@ public class UserService {
 		if(isLoginExists(createUserParam.getLogin())) {
 			throw new DuplicateUserNameException("duplicate user name");
 		}
-		User user = createUserParam.toEntity(passwordEncoder);
+		User user = User.from(createUserParam, passwordEncoder);
 		user = userRepository.save(user);
 		return modelMapper.map(user, UserDetail.class);
 	}
