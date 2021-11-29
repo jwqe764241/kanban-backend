@@ -48,6 +48,7 @@ public class Kanban {
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
+	@Builder.Default
 	@Column(name = "is_deleted", nullable = false)
 	@Convert(converter = BooleanToYNConverter.class)
 	private boolean isDeleted = false;
