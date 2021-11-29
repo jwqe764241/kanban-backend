@@ -44,12 +44,15 @@ public class AuthenticationServiceTest {
 	@Test
 	void login_UserIsExistAndPasswordMatched_AuthenticationToken() {
 		given(userService.findByLogin("example")).willReturn(getUser("example"));
-		given(jwtTokenProvider.buildAuthenticationToken("example", "example")).willReturn(getAuthenticationToken());
-		given(refreshTokenService.save(1L, "example")).willReturn(getRefreshToken("example"));
+		given(jwtTokenProvider.build("example", "example", 20L)).willReturn("refresh-token");
+		given(jwtTokenProvider.build("example", "example", 10L)).willReturn("access-token");
+		given(refreshTokenService.save(1L, "refresh-token")).willReturn(getRefreshToken("example"));
 
-		AuthenticationToken token = authenticationService.login(getLoginParam());
+		AuthenticationToken token = authenticationService.login(getLoginParam(), 20L, 10L);
 
 		assertThat(token).isNotNull();
+		assertThat(token.getRefreshToken()).isEqualTo("refresh-token");
+		assertThat(token.getAccessToken()).isEqualTo("Bearer access-token");
 	}
 
 	@Test
@@ -57,7 +60,7 @@ public class AuthenticationServiceTest {
 		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
-			authenticationService.login(getLoginParam());
+			authenticationService.login(getLoginParam(), 20L, 10L);
 		}).isInstanceOf(CannotLoginException.class);
 	}
 
@@ -66,7 +69,7 @@ public class AuthenticationServiceTest {
 		given(userService.findByLogin("example")).willReturn(getUser("example1"));
 
 		assertThatThrownBy(() -> {
-			authenticationService.login(getLoginParam());
+			authenticationService.login(getLoginParam(), 20L, 10L);
 		}).isInstanceOf(CannotLoginException.class);
 	}
 
@@ -76,51 +79,51 @@ public class AuthenticationServiceTest {
 		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatCode(() -> {
-			authenticationService.logout("aaa");
+			authenticationService.logout("refresh-token");
 		}).doesNotThrowAnyException();
 	}
 
 	@Test
 	void getAccessToken_UserIsNotExist_ThrowInvalidRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
 		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
-			authenticationService.getAccessToken("example");
+			authenticationService.getAccessToken("refresh-token", 10L);
 		}).isInstanceOf(InvalidRefreshTokenException.class);
 	}
 
 	@Test
 	void getAccessToken_RefreshTokenIsNotExist_ThrowInvalidRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
 		given(userService.findByLogin("example")).willReturn(getUser(""));
 		given(refreshTokenService.findById(1L)).willThrow(new RefreshTokenNotFoundException(""));
 
 		assertThatThrownBy(() -> {
-			authenticationService.getAccessToken("example");
+			authenticationService.getAccessToken("refresh-token", 10L);
 		}).isInstanceOf(InvalidRefreshTokenException.class);
 	}
 
 	@Test
 	void getAccessToken_RefreshTokenNotMatched_ThrowUnknownRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
 		given(userService.findByLogin("example")).willReturn(getUser(""));
 		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("example1"));
 
 		assertThatThrownBy(() -> {
-			authenticationService.getAccessToken("example");
+			authenticationService.getAccessToken("refresh-token", 10L);
 		}).isInstanceOf(UnknownRefreshTokenException.class);
 	}
 
 	@Test
 	void getAccessToken_RefreshTokenIsExpired_ThrowExpiredRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("example")).willReturn("example");
+		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
 		given(userService.findByLogin("example")).willReturn(getUser(""));
-		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("example"));
-		given(jwtTokenProvider.isTokenExpired("example")).willReturn(true);
+		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("refresh-token"));
+		given(jwtTokenProvider.isExpired("refresh-token")).willReturn(true);
 
 		assertThatThrownBy(() -> {
-			authenticationService.getAccessToken("example");
+			authenticationService.getAccessToken("refresh-token", 10L);
 		}).isInstanceOf(ExpiredRefreshTokenException.class);
 	}
 
@@ -145,13 +148,6 @@ public class AuthenticationServiceTest {
 		return RefreshToken.builder()
 			.userId(1L)
 			.token(token)
-			.build();
-	}
-
-	private AuthenticationToken getAuthenticationToken() {
-		return AuthenticationToken.builder()
-			.accessToken("example")
-			.refreshToken("example")
 			.build();
 	}
 }

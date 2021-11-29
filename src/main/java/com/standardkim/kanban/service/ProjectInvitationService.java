@@ -36,8 +36,7 @@ public class ProjectInvitationService {
 
 	@Transactional(readOnly = true)
 	public boolean isExist(Long projectId, Long invitedUserId) {
-		ProjectInvitationKey key = ProjectInvitationKey.from(projectId, invitedUserId);
-		return projectInvitationRepository.existsById(key);
+		return projectInvitationRepository.existsByProjectIdAndInvitedUserId(projectId, invitedUserId);
 	}
 
 	@Transactional(readOnly = true)
@@ -50,15 +49,12 @@ public class ProjectInvitationService {
 	@Transactional(rollbackFor = Exception.class)
 	private ProjectInvitation create(Project project, User inviteeUser, User inviterUser) {
 		ProjectInvitation invitation = ProjectInvitation.from(project, inviteeUser, inviterUser);
-		return projectInvitationRepository.saveAndFlush(invitation);
+		return projectInvitationRepository.save(invitation);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long invitedUserId) {
-		if(isExist(projectId, invitedUserId)) {
-			ProjectInvitationKey key = ProjectInvitationKey.from(projectId, invitedUserId);
-			projectInvitationRepository.deleteById(key);
-		}
+		projectInvitationRepository.deleteByProjectIdAndInvitedUserId(projectId, invitedUserId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)

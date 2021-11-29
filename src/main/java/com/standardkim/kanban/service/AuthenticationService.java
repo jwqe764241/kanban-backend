@@ -30,7 +30,7 @@ public class AuthenticationService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Transactional(rollbackFor = Exception.class)
-	public AuthenticationToken login(LoginParam loginParam) {
+	public AuthenticationToken login(LoginParam loginParam, Long refreshTokenTTL, Long accessTokenTTL) {
 		User user = null;
 		try {
 			user = userService.findByLogin(loginParam.getLogin());
@@ -43,9 +43,15 @@ public class AuthenticationService {
 			throw new CannotLoginException("incorrect username or password");
 		}
 
-		AuthenticationToken authenticationToken = jwtTokenProvider.buildAuthenticationToken(user.getLogin(), user.getName());
-		refreshTokenService.save(user.getId(), authenticationToken.getRefreshToken());
-		return authenticationToken;
+		String refreshToken = jwtTokenProvider.build(user.getLogin(), user.getName(), refreshTokenTTL);
+		String accessToken = jwtTokenProvider.build(user.getLogin(), user.getName(), accessTokenTTL);
+
+		refreshTokenService.save(user.getId(), refreshToken);
+
+		return AuthenticationToken.builder()
+			.accessToken("Bearer " + accessToken)
+			.refreshToken(refreshToken)
+			.build();
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -60,7 +66,7 @@ public class AuthenticationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class, noRollbackFor = ExpiredRefreshTokenException.class)
-	public String getAccessToken(String token) {
+	public String getAccessToken(String token, Long ttl) {
 		User user = null;
 		RefreshToken refreshToken = null;
 		try {
@@ -74,12 +80,12 @@ public class AuthenticationService {
 			throw new UnknownRefreshTokenException("unknown refresh token");
 		}
 
-		if(jwtTokenProvider.isTokenExpired(refreshToken.getToken())) {
+		if(jwtTokenProvider.isExpired(refreshToken.getToken())) {
 			refreshTokenService.delete(refreshToken.getUserId());
 			throw new ExpiredRefreshTokenException("refresh token was expired");
 		}
  
-		String newAccessToken = jwtTokenProvider.buildAccessToken(user.getLogin(), user.getName());
+		String newAccessToken = jwtTokenProvider.build(user.getLogin(), user.getName(), ttl);
 		return "Bearer " + newAccessToken;
 	}
 }

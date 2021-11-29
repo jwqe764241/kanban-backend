@@ -21,10 +21,17 @@ public enum ErrorCode {
 	USER_ALREADY_INVITED(HttpStatus.CONFLICT, "PROJECT-004", "user already invited"),
 	DUPLICATE_PROJECT_NAME(HttpStatus.CONFLICT, "PROJECT-006", "duplicate project name"),
 	CANNOT_DELETE_PROJECT_OWNER(HttpStatus.BAD_REQUEST, "PROJECT-005", "can't delete project owner"),
+	//TaskColumn
+	DUPLICATE_TASK_COLUMN_NAME(HttpStatus.CONFLICT, "TASKCOLUMN-001", "duplicate task column name"),
+	TASK_COLUMN_NOT_FOUND(HttpStatus.NOT_FOUND, "TASKCOLUMN-002", "task column not found"),
+	//Task
+	TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "TASK-001", "task not found"),
 	//common
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-001", "entity not found"),
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON-002", "input value is invalid"),
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error");
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error"),
+	ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMON-004", "access denied"),
+	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "COMMON-005", "validation failed");
 
 	private final HttpStatus httpStatus;
 	private final String code;

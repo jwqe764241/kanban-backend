@@ -12,8 +12,8 @@ import com.standardkim.kanban.exception.BusinessException;
 import com.standardkim.kanban.exception.ErrorCode;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,11 +32,12 @@ public class ErrorResponseController {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
 		Map<String, Object> errors = toFieldValidationError(e);
-		ErrorResponse errorMessage = ErrorResponse.builder()
-			.message("validation failed")
-			.data(errors)
-			.build();
-		return new ResponseEntity<ErrorResponse>(errorMessage, defaultHeaders, HttpStatus.BAD_REQUEST);
+		return ErrorResponse.toResponseEntity(ErrorCode.VALIDATION_FAILED, errors);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+		return ErrorResponse.toResponseEntity(ErrorCode.ACCESS_DENIED);
 	}
 
 	@ExceptionHandler(BusinessException.class)

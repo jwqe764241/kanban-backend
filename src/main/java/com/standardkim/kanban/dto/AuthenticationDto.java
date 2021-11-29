@@ -95,6 +95,11 @@ public class AuthenticationDto {
 	public static class AuthorizationHeader { 
 		private String type;
 		private String credentials;
+
+		public boolean isValid() {
+			return type != null && type.equals("Bearer") &&
+				credentials != null && !credentials.isBlank();
+		}
 	}
 
 	@Getter
