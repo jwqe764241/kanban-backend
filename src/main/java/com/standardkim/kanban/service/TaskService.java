@@ -1,14 +1,11 @@
 package com.standardkim.kanban.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.standardkim.kanban.dto.TaskDto.CreateTaskParam;
 import com.standardkim.kanban.dto.TaskDto.ReorderTaskParam;
-import com.standardkim.kanban.dto.TaskDto.TaskDetail;
 import com.standardkim.kanban.dto.TaskDto.UpdateTaskParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.Task;
@@ -20,8 +17,6 @@ import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.TaskColumnRepository;
 import com.standardkim.kanban.repository.TaskRepository;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
