@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
@@ -13,8 +12,6 @@ import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
 import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.KanbanSequenceRepository;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,29 +26,25 @@ public class KanbanService {
 
 	private final ProjectService projectService;
 
-	private final ModelMapper modelMapper;
-
 	@Transactional(readOnly = true)
-	public List<KanbanDetail> findKanbanDetailByProjectId(Long projectId) {
+	public List<KanbanSequence> findByProjectId(Long projectId) {
+		//find by projectId and not deleted. ordered by sequenceId
 		List<KanbanSequence> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
-		List<KanbanDetail> kanbanDetails = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanDetail>>(){}.getType());
-		return kanbanDetails;
+		return kanbanSequences;
 	}
 
 	@Transactional(readOnly = true)
-	public KanbanDetail findKanbanDetailByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
+	public KanbanSequence findByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
 		KanbanSequence kanbanSequence = kanbanSequenceRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
-		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
-		return kanbanDetail;
+		return kanbanSequence;
 	}
 
 	@Transactional(readOnly = true)
-	public KanbanDetail findKanbanDetailById(Long kanbanId) {
+	public KanbanSequence findById(Long kanbanId) {
 		KanbanSequence kanbanSequence = kanbanSequenceRepository.findById(kanbanId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
-		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
-		return kanbanDetail;
+		return kanbanSequence;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
@@ -52,56 +51,56 @@ public class KanbanServiceTest {
 	}
 
 	@Test
-	void findKanbanDetailByProjectId_KanbanSequenceIsExist_ListOfKanbanDetail() {
+	void findByProjectId_KanbanSequenceIsExist_ListOfKanbanSequence() {
 		given(kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(1L, false)).willReturn(getKanbanSequenceList(1L, 3));
 		
-		List<KanbanDetail> kanbanDetails = kanbanService.findKanbanDetailByProjectId(1L);
+		List<KanbanSequence> kanbanSequences = kanbanService.findByProjectId(1L);
 		
-		assertThat(kanbanDetails).hasSize(3);
+		assertThat(kanbanSequences).hasSize(3);
 	}
 
 	@Test
-	void findKanbanDetailByProjectId_KanbanSequenceIsNotExist_EmptyList() {
+	void findByProjectId_KanbanSequenceIsNotExist_EmptyList() {
 		given(kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(1L, false)).willReturn(new ArrayList<>());
 	
-		List<KanbanDetail> kanbanDetails = kanbanService.findKanbanDetailByProjectId(1L);
+		List<KanbanSequence> kanbanSequences = kanbanService.findByProjectId(1L);
 
-		assertThat(kanbanDetails).isEmpty();
+		assertThat(kanbanSequences).isEmpty();
 	}
 
 	@Test
-	void findKanbanDetailByProjectIdAndSequenceId_KanbanSequenceIsExist_KanbanDetail() {
+	void findByProjectIdAndSequenceId_KanbanSequenceIsExist_KanbanSequence() {
 		given(kanbanSequenceRepository.findByProjectIdAndSequenceId(1L, 1L)).willReturn(Optional.of(getKanbanSequence(1L, 1L, 1L)));
 
-		KanbanDetail kanbanDetail = kanbanService.findKanbanDetailByProjectIdAndSequenceId(1L, 1L);
+		KanbanSequence kanbanSequence = kanbanService.findByProjectIdAndSequenceId(1L, 1L);
 
-		assertThat(kanbanDetail).isNotNull();
+		assertThat(kanbanSequence).isNotNull();
 	}
 
 	@Test
-	void findKanbanDetailByProjectIdAndSequenceId_KanbanSequenceIsNotExist_ThrowKanbanNotFoundException() {
+	void findByProjectIdAndSequenceId_KanbanSequenceIsNotExist_ThrowKanbanNotFoundException() {
 		given(kanbanSequenceRepository.findByProjectIdAndSequenceId(1L, 1L)).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> {
-			kanbanService.findKanbanDetailByProjectIdAndSequenceId(1L, 1L);
+			kanbanService.findByProjectIdAndSequenceId(1L, 1L);
 		}).isInstanceOf(KanbanNotFoundException.class);
 	}
 
 	@Test
-	void findKanbanDetailById_KanbanSequenceIsExist_KanbanDetail() {
+	void findById_KanbanSequenceIsExist_KanbanSequence() {
 		given(kanbanSequenceRepository.findById(1L)).willReturn(Optional.of(getKanbanSequence(1L, 1L, 1L)));
 
-		KanbanDetail kanbanDetail = kanbanService.findKanbanDetailById(1L);
+		KanbanSequence kanbanSequence = kanbanService.findById(1L);
 
-		assertThat(kanbanDetail).isNotNull();
+		assertThat(kanbanSequence).isNotNull();
 	}
 
 	@Test
-	void findKanbanDetailById_KanbanSequenceIsNotExist_ThrowKanbanNotFoundException() {
+	void findById_KanbanSequenceIsNotExist_ThrowKanbanNotFoundException() {
 		given(kanbanSequenceRepository.findById(1L)).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> {
-			kanbanService.findKanbanDetailById(1L);
+			kanbanService.findById(1L);
 		}).isInstanceOf(KanbanNotFoundException.class);
 	}
 
