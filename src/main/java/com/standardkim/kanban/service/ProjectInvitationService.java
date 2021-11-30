@@ -6,7 +6,6 @@ import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
 import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
-import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;

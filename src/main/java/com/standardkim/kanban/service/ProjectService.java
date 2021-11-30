@@ -74,7 +74,7 @@ public class ProjectService {
 		}
 
 		User user = userService.findBySecurityUser();
-		Project project = createProjectParam.toEntity(user);
+		Project project = Project.from(createProjectParam, user);
 		projectRepository.save(project);
 		project.addMember(user, true);
 		return project;
