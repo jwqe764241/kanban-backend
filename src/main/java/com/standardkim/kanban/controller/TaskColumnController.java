@@ -44,8 +44,9 @@ public class TaskColumnController {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskColumnDetail> getColumns(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		List<TaskColumnDetail> details = taskColumnService.findTaskColumnDetails(projectId, sequenceId);
-		return details;
+		List<TaskColumn> taskColumns = taskColumnService.findByProjectIdAndSequenceId(projectId, sequenceId);
+		List<TaskColumnDetail> taskColumnDetails = modelMapper.map(taskColumns, new TypeToken<List<TaskColumnDetail>>(){}.getType());
+		return taskColumnDetails;
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns")
