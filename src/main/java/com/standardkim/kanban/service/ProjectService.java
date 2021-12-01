@@ -2,6 +2,7 @@ package com.standardkim.kanban.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.entity.Project;
@@ -11,8 +12,6 @@ import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
 import com.standardkim.kanban.exception.project.ProjectNotFoundException;
 import com.standardkim.kanban.repository.ProjectRepository;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +23,6 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 
 	private final UserService userService;
-
-	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
 	public boolean isProjectNameExist(String name) {
@@ -42,7 +39,9 @@ public class ProjectService {
 	public List<Project> findByUserId(Long id) {
 		User user = userService.findById(id);
 		Set<ProjectMember> projectMembers = user.getProjects();
-		List<Project> projects = modelMapper.map(projectMembers, new TypeToken<List<Project>>(){}.getType());
+		List<Project> projects = projectMembers.stream()
+			.map(ProjectMember::getProject)
+			.collect(Collectors.toList());
 		return projects;
 	}
 
