@@ -2,7 +2,6 @@ package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
-import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.exception.user.DuplicateUserNameException;
@@ -27,9 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -161,6 +163,24 @@ public class UserServiceTest {
 	}
 
 	@Test
+	void findNotMemberOrNotInvitedUser_UserIsExist_ListOfUser() {
+		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(getUserList(3));
+	
+		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
+
+		assertThat(list).hasSize(3);
+	}
+
+	@Test
+	void findNotMemberOrNotInvitedUser_UserIsNotExist_EmptyList() {
+		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(new ArrayList<User>());
+	
+		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
+
+		assertThat(list).isEmpty();
+	}
+
+	@Test
 	public void create_LoginIsExist_ThrowDuplicateUserNameException() {
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
@@ -170,13 +190,13 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void create_LoginIsNotExist_UserDetail() {
+	public void create_LoginIsNotExist_User() {
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.save(any(User.class))).willReturn(testUser);
 
-		UserDetail userDetail = userService.create(getCreateUserParam());
+		User user = userService.create(getCreateUserParam());
 
-		assertThat(userDetail).isNotNull();
+		assertThat(user).isNotNull();
 	}
 
 	private User getUser() {
@@ -190,6 +210,14 @@ public class UserServiceTest {
 			.build();
 	}
 	
+	private List<User> getUserList(int size) {
+		ArrayList<User> list = new ArrayList<>(size);
+		for(int i = 1; i <= size; ++i) {
+			list.add(User.builder().id(Long.valueOf(i)).build());
+		}
+		return list;
+	}
+
 	private SecurityUser getSecurityUser() {
 		return SecurityUser.builder()
 			.id(1L)

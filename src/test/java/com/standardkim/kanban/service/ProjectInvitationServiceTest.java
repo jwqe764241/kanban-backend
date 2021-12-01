@@ -1,6 +1,5 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.ProjectMemberKey;
@@ -75,19 +74,19 @@ public class ProjectInvitationServiceTest {
 	}
 
 	@Test
-	void findInvitedUserDetailByProjectId_ProjectInvitationIsExist_ListOfInvitedUserDetail() {
+	void findByProjectId_ProjectInvitationIsExist_ListOfProjectInvitation() {
 		given(projectInvitationRepository.findByProjectId(1L)).willReturn(getProjectInvitationList(1L, 3));
 
-		List<InvitedUserDetail> list = projectInvitationService.findInvitedUserDetailByProjectId(1L);
+		List<ProjectInvitation> list = projectInvitationService.findByProjectId(1L);
 
 		assertThat(list).hasSize(3);
 	}
 
 	@Test
-	void findInvitedUserDetailByProjectId_ProjectInvitationIsNotExist_EmptyList() {
+	void findByProjectId_ProjectInvitationIsNotExist_EmptyList() {
 		given(projectInvitationRepository.findByProjectId(1L)).willReturn(new ArrayList<>());
 	
-		List<InvitedUserDetail> list = projectInvitationService.findInvitedUserDetailByProjectId(1L);
+		List<ProjectInvitation> list = projectInvitationService.findByProjectId(1L);
 
 		assertThat(list).isEmpty();
 	}

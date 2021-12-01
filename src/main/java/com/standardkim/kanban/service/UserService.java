@@ -1,8 +1,9 @@
 package com.standardkim.kanban.service;
 
+import java.util.List;
+
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
-import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.exception.user.DuplicateUserNameException;
@@ -64,13 +65,19 @@ public class UserService {
 		return securityUser;
 	}
 
+	@Transactional(readOnly = true)
+	public List<User> findNotMemberOrNotInvitedUser(Long projectId, String query) {
+		List<User> users = userRepository.findNotMemberOrNotInvited(projectId, query);
+		return users;
+	}
+
 	@Transactional(rollbackFor = Exception.class)
-	public UserDetail create(CreateUserParam createUserParam) {
+	public User create(CreateUserParam createUserParam) {
 		if(isLoginExists(createUserParam.getLogin())) {
 			throw new DuplicateUserNameException("duplicate user name");
 		}
 		User user = User.from(createUserParam, passwordEncoder);
 		user = userRepository.save(user);
-		return modelMapper.map(user, UserDetail.class);
+		return user;
 	}
 }

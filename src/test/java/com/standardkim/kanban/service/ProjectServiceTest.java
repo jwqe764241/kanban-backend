@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
-import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
@@ -138,43 +137,6 @@ public class ProjectServiceTest {
 		assertThatThrownBy(() -> {
 			projectService.findBySecurityUser();
 		}).isInstanceOf(UserNotFoundException.class);
-	}
-
-	@Test
-	void findProjectDetailBySecurityUser_UserIsExist_ListOfProjectDetail() {
-		given(userService.findBySecurityUser()).willReturn(testUser);
-		given(userService.findById(anyLong())).willReturn(testUser);
-
-		List<ProjectDetail> projectDetails = projectService.findProjectDetailBySecurityUser();
-
-		assertThat(projectDetails).isNotNull();
-	}
-
-	@Test
-	void findProjectDetailBySecurityUser_UserIsNotExist_ThrowUserNotFoundException() {
-		given(userService.findBySecurityUser()).willThrow(new UserNotFoundException("user not found"));
-
-		assertThatThrownBy(() -> {
-			projectService.findProjectDetailBySecurityUser();
-		}).isInstanceOf(UserNotFoundException.class);
-	}
-
-	@Test
-	void findProjectDetailById_ProjectIsExist_ProjectDetail() {
-		given(projectRepository.findById(anyLong())).willReturn(Optional.of(testProject));
-
-		ProjectDetail projectDetail = projectService.findProjectDetailById(1L);
-
-		assertThat(projectDetail).isNotNull();
-	}
-
-	@Test
-	void findProjectDetailById_ProjectIsNotExist_ThrowProjectNotFoundException() {
-		given(projectRepository.findById(anyLong())).willReturn(Optional.empty());
-
-		assertThatThrownBy(() -> {
-			projectService.findProjectDetailById(1L);
-		}).isInstanceOf(ProjectNotFoundException.class);
 	}
 
 	@Test

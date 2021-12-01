@@ -63,11 +63,11 @@ public class TaskColumnServiceTest {
 	}
 
 	@Test
-	void findTaskColumnDetails_KanbanIsNotExist_ThrowKanbanNotFoundException() {
+	void findTaskColumns_KanbanIsNotExist_ThrowKanbanNotFoundException() {
 		given(kanbanRepository.findByProjectIdAndSequenceId(1L, 1L)).willReturn(Optional.empty());
 	
 		assertThatThrownBy(() -> {
-			taskColumnService.findTaskColumnDetails(1L, 1L);
+			taskColumnService.findByProjectIdAndSequenceId(1L, 1L);
 		}).isInstanceOf(KanbanNotFoundException.class);
 	}
 

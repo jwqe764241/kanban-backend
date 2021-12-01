@@ -2,8 +2,6 @@ package com.standardkim.kanban.service;
 
 import java.util.List;
 
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
@@ -17,8 +15,6 @@ import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.ProjectRepository;
 import com.standardkim.kanban.repository.UserRepository;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +30,6 @@ public class ProjectMemberService {
 	private final ProjectRepository projectRepository;
 
 	private final UserRepository userRepository;
-
-	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
 	public boolean isExist(Long projectId, Long userId){
@@ -57,17 +51,9 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectMemberDetail> findProjectMemberDetailByProjectId(Long projectId) {
-		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
-		List<ProjectMemberDetail> result = modelMapper.map(members, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
-		return result;
-	}
-
-	@Transactional(readOnly = true)
-	public List<SuggestionUserDetail> findSuggestionUserDetailByProjectId(Long projectId, String query) {
-		List<User> users = userRepository.findSuggestionUserByProjectId(projectId, query);
-		List<SuggestionUserDetail> result = modelMapper.map(users, new TypeToken<List<SuggestionUserDetail>>(){}.getType());
-		return result;
+	public List<ProjectMember> findByProjectId(Long projectId) {
+		List<ProjectMember> projectMembers = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
+		return projectMembers;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
