@@ -2,7 +2,6 @@ package com.standardkim.kanban.service;
 
 import java.util.List;
 
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
@@ -57,10 +56,9 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectMemberDetail> findProjectMemberDetailByProjectId(Long projectId) {
-		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
-		List<ProjectMemberDetail> result = modelMapper.map(members, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
-		return result;
+	public List<ProjectMember> findByProjectId(Long projectId) {
+		List<ProjectMember> projectMembers = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
+		return projectMembers;
 	}
 
 	@Transactional(readOnly = true)

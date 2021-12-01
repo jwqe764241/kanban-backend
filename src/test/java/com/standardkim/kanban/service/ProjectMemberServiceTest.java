@@ -129,21 +129,21 @@ public class ProjectMemberServiceTest {
 	}
 
 	@Test
-	void findProjectMemberDetailByProjectId_ProjectMemberIsExist_ListOfProjectMember() {
+	void findByProjectId_ProjectMemberIsExist_ListOfProjectMember() {
 		given(projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(1L)).willReturn(getProjectMemberList(1L, 3));
 
-		List<ProjectMemberDetail> projectDetails = projectMemberService.findProjectMemberDetailByProjectId(1L);
+		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(1L);
 
-		assertThat(projectDetails).hasSize(3);
+		assertThat(projectMembers).hasSize(3);
 	}
 	
 	@Test
-	void findProjectMemberDetailByProjectId_ProjectMemberIsNotExist_EmptyList() {
+	void findByProjectId_ProjectMemberIsNotExist_EmptyList() {
 		given(projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(1L)).willReturn(new ArrayList<ProjectMember>());
 
-		List<ProjectMemberDetail> projectDetails = projectMemberService.findProjectMemberDetailByProjectId(1L);
+		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(1L);
 
-		assertThat(projectDetails).isEmpty();
+		assertThat(projectMembers).isEmpty();
 	}
 
 	@Test

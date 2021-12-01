@@ -11,6 +11,7 @@ import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.ProjectInvitation;
+import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.service.ProjectInvitationService;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
@@ -64,7 +65,9 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public List<ProjectMemberDetail> getProjectMember(@PathVariable Long projectId) {
-		return projectMemberService.findProjectMemberDetailByProjectId(projectId);
+		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(projectId);
+		List<ProjectMemberDetail> projectMemberDetails = modelMapper.map(projectMembers, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
+		return projectMemberDetails;
 	}
 
 	@GetMapping("/projects/{projectId}/members/suggestions")
