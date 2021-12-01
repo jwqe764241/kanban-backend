@@ -3,7 +3,6 @@ package com.standardkim.kanban.service;
 import java.util.List;
 
 import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.User;
@@ -11,8 +10,6 @@ import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +26,6 @@ public class ProjectInvitationService {
 	
 	private final UserService userService;
 
-	private final ModelMapper modelMapper;
-
 	private final MailService mailService;
 
 	@Transactional(readOnly = true)
@@ -39,10 +34,9 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<InvitedUserDetail> findInvitedUserDetailByProjectId(Long projectId) {
+	public List<ProjectInvitation> findByProjectId(Long projectId) {
 		List<ProjectInvitation> invitations = projectInvitationRepository.findByProjectId(projectId);
-		List<InvitedUserDetail> invitedUserDetails = modelMapper.map(invitations, new TypeToken<List<InvitedUserDetail>>(){}.getType());
-		return invitedUserDetails;
+		return invitations;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -57,7 +51,7 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public InvitedUserDetail invite(Long projectId, Long invitedUserId) {
+	public ProjectInvitation invite(Long projectId, Long invitedUserId) {
 		User invitedUser = userService.findById(invitedUserId);
 		if(isExist(projectId, invitedUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
@@ -77,8 +71,7 @@ public class ProjectInvitationService {
 			.build();
 		mailService.sendInviteProjectMail(inviteProjectParam);
 
-		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
-		return invitedUserDetail;
+		return projectInvitation;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

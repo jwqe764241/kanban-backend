@@ -10,10 +10,13 @@ import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberParam
 import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
+import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.service.ProjectInvitationService;
 import com.standardkim.kanban.service.ProjectMemberService;
 import com.standardkim.kanban.service.ProjectService;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +38,8 @@ public class ProjectController {
 	private final ProjectMemberService projectMemberService;
 
 	private final ProjectInvitationService projectInvitationService;
+
+	private final ModelMapper modelMapper;
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -72,8 +77,11 @@ public class ProjectController {
 	@PostMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
-	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, @RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
-		return projectInvitationService.invite(projectId, inviteProjectMemeberParam.getUserId());
+	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, 
+		@RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
+		ProjectInvitation projectInvitation = projectInvitationService.invite(projectId, inviteProjectMemeberParam.getUserId());
+		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
+		return invitedUserDetail;
 	}
 
 	@DeleteMapping("/projects/{projectId}/members/{userId}")
@@ -93,7 +101,9 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public List<InvitedUserDetail> getInvitations(@PathVariable Long projectId) {
-		return projectInvitationService.findInvitedUserDetailByProjectId(projectId);
+		List<ProjectInvitation> projectInvitations =projectInvitationService.findByProjectId(projectId);
+		List<InvitedUserDetail> invitedUserDetails = modelMapper.map(projectInvitations, new TypeToken<List<InvitedUserDetail>>(){}.getType());
+		return invitedUserDetails;
 	}
 
 	@DeleteMapping("/projects/{projectId}/invitations/{userId}")
