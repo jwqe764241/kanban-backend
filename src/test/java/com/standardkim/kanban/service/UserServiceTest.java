@@ -2,7 +2,6 @@ package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
-import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.exception.user.DuplicateUserNameException;
@@ -164,7 +163,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	void findNotMemberOrNotInvitedUser_UserIsExist_ListOfSuggestionUserDetail() {
+	void findNotMemberOrNotInvitedUser_UserIsExist_ListOfUser() {
 		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(getUserList(3));
 	
 		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
@@ -191,13 +190,13 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void create_LoginIsNotExist_UserDetail() {
+	public void create_LoginIsNotExist_User() {
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.save(any(User.class))).willReturn(testUser);
 
-		UserDetail userDetail = userService.create(getCreateUserParam());
+		User user = userService.create(getCreateUserParam());
 
-		assertThat(userDetail).isNotNull();
+		assertThat(user).isNotNull();
 	}
 
 	private User getUser() {

@@ -1,6 +1,5 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
@@ -19,7 +18,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
-import org.modelmapper.AbstractConverter;
 
 import static org.mockito.BDDMockito.*;
 
@@ -48,20 +46,6 @@ public class ProjectMemberServiceTest {
 		modelMapper.getConfiguration()
 			.setFieldAccessLevel(AccessLevel.PRIVATE)
 			.setFieldMatchingEnabled(true);
-
-		modelMapper.addConverter(new AbstractConverter<ProjectMember, ProjectMemberDetail>() {
-			@Override
-			public ProjectMemberDetail convert(ProjectMember projectMember) {
-				User user = projectMember.getUser();
-				ProjectMemberDetail projectMemberDetail = ProjectMemberDetail.builder()
-					.id(user.getId())
-					.name(user.getName())
-					.email(user.getEmail())
-					.date(projectMember.getRegisterDate())
-					.build();
-				return projectMemberDetail;
-			}
-		});
 	}
 
 	@Test
