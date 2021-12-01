@@ -1,5 +1,7 @@
 package com.standardkim.kanban.service;
 
+import java.util.List;
+
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.dto.UserDto.UserDetail;
@@ -62,6 +64,12 @@ public class UserService {
 			.orElseThrow(() -> new UserNotFoundException("user not found"));
 		SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
 		return securityUser;
+	}
+
+	@Transactional(readOnly = true)
+	public List<User> findNotMemberOrNotInvitedUser(Long projectId, String query) {
+		List<User> users = userRepository.findNotMemberOrNotInvited(projectId, query);
+		return users;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

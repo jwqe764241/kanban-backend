@@ -1,7 +1,6 @@
 package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
@@ -147,24 +146,6 @@ public class ProjectMemberServiceTest {
 	}
 
 	@Test
-	void findSuggestionUserDetailByProjectId_UserIsExist_ListOfSuggestionUserDetail() {
-		given(userRepository.findSuggestionUserByProjectId(eq(1L), anyString())).willReturn(getUserList(3));
-	
-		List<SuggestionUserDetail> list = projectMemberService.findSuggestionUserDetailByProjectId(1L, "a");
-
-		assertThat(list).hasSize(3);
-	}
-
-	@Test
-	void findSuggestionUserDetailByProjectId_UserIsNotExist_EmptyList() {
-		given(userRepository.findSuggestionUserByProjectId(eq(1L), anyString())).willReturn(new ArrayList<User>());
-	
-		List<SuggestionUserDetail> list = projectMemberService.findSuggestionUserDetailByProjectId(1L, "a");
-
-		assertThat(list).isEmpty();
-	}
-
-	@Test
 	void delete_ProjectMemberIsNotExist_DoesNotThrowAnyException() {
 		given(projectMemberRepository.findById(getProjectMemberKey(1L, 1L))).willReturn(Optional.empty());
 
@@ -203,14 +184,6 @@ public class ProjectMemberServiceTest {
 			)
 			.isRegister(isRegister)
 			.build();
-	}
-
-	private List<User> getUserList(int size) {
-		ArrayList<User> list = new ArrayList<>(size);
-		for(int i = 1; i <= size; ++i) {
-			list.add(User.builder().id(Long.valueOf(i)).build());
-		}
-		return list;
 	}
 
 	private List<ProjectMember> getProjectMemberList(Long projectId, int size) {

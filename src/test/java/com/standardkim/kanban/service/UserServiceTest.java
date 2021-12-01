@@ -27,9 +27,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -161,6 +164,24 @@ public class UserServiceTest {
 	}
 
 	@Test
+	void findNotMemberOrNotInvitedUser_UserIsExist_ListOfSuggestionUserDetail() {
+		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(getUserList(3));
+	
+		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
+
+		assertThat(list).hasSize(3);
+	}
+
+	@Test
+	void findNotMemberOrNotInvitedUser_UserIsNotExist_EmptyList() {
+		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(new ArrayList<User>());
+	
+		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
+
+		assertThat(list).isEmpty();
+	}
+
+	@Test
 	public void create_LoginIsExist_ThrowDuplicateUserNameException() {
 		given(userRepository.existsByLogin(anyString())).willReturn(true);
 
@@ -190,6 +211,14 @@ public class UserServiceTest {
 			.build();
 	}
 	
+	private List<User> getUserList(int size) {
+		ArrayList<User> list = new ArrayList<>(size);
+		for(int i = 1; i <= size; ++i) {
+			list.add(User.builder().id(Long.valueOf(i)).build());
+		}
+		return list;
+	}
+
 	private SecurityUser getSecurityUser() {
 		return SecurityUser.builder()
 			.id(1L)
