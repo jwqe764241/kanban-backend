@@ -10,6 +10,7 @@ import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberParam
 import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
+import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.User;
@@ -55,14 +56,18 @@ public class ProjectController {
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
-		return projectService.findProjectDetailBySecurityUser();
+		List<Project> projects = projectService.findBySecurityUser();
+		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
+		return projectDetails;
 	}
 
 	@GetMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public ProjectDetail getProject(@PathVariable Long projectId) {
-		return projectService.findProjectDetailById(projectId);
+		Project project = projectService.findById(projectId);
+		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
+		return projectDetail;
 	}
 
 	@GetMapping("/projects/{projectId}/members")

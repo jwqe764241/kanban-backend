@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
-import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.User;
@@ -51,20 +50,6 @@ public class ProjectService {
 	public List<Project> findBySecurityUser() {
 		User user = userService.findBySecurityUser();
 		return findByUserId(user.getId());
-	}
-
-	@Transactional(readOnly = true)
-	public List<ProjectDetail> findProjectDetailBySecurityUser() {
-		List<Project> projects = findBySecurityUser();
-		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
-		return projectDetails;
-	}
-
-	@Transactional(readOnly = true)
-	public ProjectDetail findProjectDetailById(Long id) {
-		Project project = findById(id);
-		ProjectDetail detail = modelMapper.map(project, ProjectDetail.class);
-		return detail;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
