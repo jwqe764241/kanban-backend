@@ -58,10 +58,10 @@ public class ProjectMemberService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new ProjectNotFoundException("project not found"));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException("user not found"));
 		ProjectMember projectMember = ProjectMember.from(project, user, isRegister);
 		return projectMemberRepository.save(projectMember);
 	}
