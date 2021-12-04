@@ -1,12 +1,9 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
 import com.standardkim.kanban.exception.project.ProjectNotFoundException;
@@ -37,30 +34,18 @@ public class ProjectService {
 
 	@Transactional(readOnly = true)
 	public List<Project> findByUserId(Long id) {
-		User user = userService.findById(id);
-		Set<ProjectMember> projectMembers = user.getProjects();
-		List<Project> projects = projectMembers.stream()
-			.map(ProjectMember::getProject)
-			.collect(Collectors.toList());
-		return projects;
-	}
-
-	@Transactional(readOnly = true)
-	public List<Project> findBySecurityUser() {
-		User user = userService.findBySecurityUser();
-		return findByUserId(user.getId());
+		return projectRepository.findByUserId(id);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Project create(CreateProjectParam createProjectParam) {
+	public Project create(Long userId, CreateProjectParam createProjectParam) {
 		if(isProjectNameExist(createProjectParam.getName())) {
 			throw new DuplicateProjectNameException("duplicate project name");
 		}
-
-		User user = userService.findBySecurityUser();
-		Project project = Project.from(createProjectParam, user);
-		projectRepository.save(project);
-		project.addMember(user, true);
-		return project;
+		User registerUser = userService.findById(userId);
+		Project project = Project.from(createProjectParam, registerUser);
+		Project createdProject = projectRepository.save(project);
+		createdProject.addMember(registerUser, true);
+		return createdProject;
 	}
 }

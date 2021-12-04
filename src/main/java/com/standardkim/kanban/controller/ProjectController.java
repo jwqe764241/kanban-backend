@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberParam;
@@ -50,13 +51,15 @@ public class ProjectController {
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
-		projectService.create(createProjectParam);
+		SecurityUser securityUser = userService.getSecurityUser();
+		projectService.create(securityUser.getId(), createProjectParam);
 	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
-		List<Project> projects = projectService.findBySecurityUser();
+		SecurityUser securityUser = userService.getSecurityUser();
+		List<Project> projects = projectService.findByUserId(securityUser.getId());
 		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
 		return projectDetails;
 	}

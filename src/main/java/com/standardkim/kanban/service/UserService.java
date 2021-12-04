@@ -27,7 +27,7 @@ public class UserService {
 
 	private final ModelMapper modelMapper;
 
-	private SecurityUser getSecurityUser() {
+	public SecurityUser getSecurityUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return (SecurityUser) authentication.getPrincipal();
 	}
