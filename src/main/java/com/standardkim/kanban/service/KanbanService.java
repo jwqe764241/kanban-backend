@@ -1,7 +1,6 @@
 package com.standardkim.kanban.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
@@ -28,23 +27,19 @@ public class KanbanService {
 
 	@Transactional(readOnly = true)
 	public List<KanbanSequence> findByProjectId(Long projectId) {
-		//find by projectId and not deleted. ordered by sequenceId
-		List<KanbanSequence> kanbanSequences = kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
-		return kanbanSequences;
+		return kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
 	}
 
 	@Transactional(readOnly = true)
 	public KanbanSequence findByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
-		KanbanSequence kanbanSequence = kanbanSequenceRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
+		return kanbanSequenceRepository.findByProjectIdAndSequenceId(projectId, sequenceId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
-		return kanbanSequence;
 	}
 
 	@Transactional(readOnly = true)
 	public KanbanSequence findById(Long kanbanId) {
-		KanbanSequence kanbanSequence = kanbanSequenceRepository.findById(kanbanId)
+		return kanbanSequenceRepository.findById(kanbanId)
 			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
-		return kanbanSequence;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -64,12 +59,9 @@ public class KanbanService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long sequenceId) {
-		try {
-			Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId).get();
+		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId).orElse(null);
+		if(kanban != null && !kanban.isDeleted()) {
 			kanban.updateToDeleted();
-		}
-		catch (NoSuchElementException e) {
-			return;
 		}
 	}
 }
