@@ -93,21 +93,20 @@ public class ProjectInvitationServiceTest {
 
 	@Test
 	void invite_ProjectInvitationIsExist_ThrowUserAlreadyInvitedException() {
-		given(userService.findById(1L)).willReturn(getUser(1L));
-		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(true);
+		given(userService.findById(2L)).willReturn(getUser(2L));
+		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 2L)).willReturn(true);
 
 		assertThatThrownBy(() -> {
-			projectInvitationService.invite(1L, 1L);
+			projectInvitationService.invite(1L, 1L, 2L);
 		}).isInstanceOf(UserAlreadyInvitedException.class);
 	}
 
 	@Test
 	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
-		given(userService.findBySecurityUser()).willReturn(getUser(1L));
 		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(false);
 
 		assertThatThrownBy(() -> {
-			projectInvitationService.accept(1L);
+			projectInvitationService.accept(1L, 1L);
 		}).isInstanceOf(InvitationNotFoundException.class);
 	}
 

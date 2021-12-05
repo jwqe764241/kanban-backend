@@ -95,8 +95,9 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, 
-		@RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
-		ProjectInvitation projectInvitation = projectInvitationService.invite(projectId, inviteProjectMemeberParam.getUserId());
+		@RequestBody @Valid InviteProjectMemeberParam param) {
+		SecurityUser securityUser = userService.getSecurityUser();
+		ProjectInvitation projectInvitation = projectInvitationService.invite(projectId, securityUser.getId(), param.getUserId());
 		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
 		return invitedUserDetail;
 	}
@@ -111,7 +112,8 @@ public class ProjectController {
 	@PostMapping("/projects/{projectId}/invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
-		projectInvitationService.accept(projectId);
+		SecurityUser securityUser = userService.getSecurityUser();
+		projectInvitationService.accept(projectId, securityUser.getId());
 	}
 
 	@GetMapping("/projects/{projectId}/invitations")

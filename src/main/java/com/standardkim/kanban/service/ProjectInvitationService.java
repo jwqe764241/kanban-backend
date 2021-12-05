@@ -51,38 +51,28 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public ProjectInvitation invite(Long projectId, Long invitedUserId) {
-		User invitedUser = userService.findById(invitedUserId);
-		if(isExist(projectId, invitedUser.getId())) {
+	public ProjectInvitation invite(Long projectId, Long inviterUserId, Long inviteeUserId) {
+		User inviteeUser = userService.findById(inviteeUserId);
+		if(isExist(projectId, inviteeUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 
-		User user = userService.findBySecurityUser();
+		User inviterUser = userService.findById(inviterUserId);
 		Project project = projectService.findById(projectId);
-		ProjectInvitation projectInvitation = create(project, invitedUser, user);
+		ProjectInvitation projectInvitation = create(project, inviteeUser, inviterUser);
 
 		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
-		InviteProjectMailParam inviteProjectParam = InviteProjectMailParam.builder()
-			.inviteeMailAddress(invitedUser.getEmail())
-			.projectId(project.getId())
-			.projectName(project.getName())
-			.inviteeLogin(invitedUser.getLogin())
-			.inviterLogin(user.getLogin())
-			.build();
-		mailService.sendInviteProjectMail(inviteProjectParam);
+		mailService.sendInviteProjectMail(InviteProjectMailParam.from(project, inviterUser, inviteeUser));
 
 		return projectInvitation;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void accept(Long projectId) {
-		User user = userService.findBySecurityUser();
-		if(isExist(projectId, user.getId())) {
-			projectMemberService.create(projectId, user.getId(), false);
-			delete(projectId, user.getId());
-		}
-		else {
+	public void accept(Long projectId, Long userId) {
+		if(!isExist(projectId, userId)) {
 			throw new InvitationNotFoundException("user not invited");
 		}
+		projectMemberService.create(projectId, userId, false);
+		delete(projectId, userId);
 	}
 }
