@@ -86,6 +86,13 @@ public class AuthenticationDto {
 	public static class AuthenticationToken {
 		private String accessToken;
 		private String refreshToken;
+
+		public static AuthenticationToken from(String accessToken, String refreshToken) {
+			return AuthenticationToken.builder()
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.build();
+		}
 	}
 
 	@Getter
