@@ -4,7 +4,6 @@ import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
@@ -99,15 +98,6 @@ public class ProjectInvitationServiceTest {
 		assertThatThrownBy(() -> {
 			projectInvitationService.invite(1L, 1L, 2L);
 		}).isInstanceOf(UserAlreadyInvitedException.class);
-	}
-
-	@Test
-	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
-		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(false);
-
-		assertThatThrownBy(() -> {
-			projectInvitationService.accept(1L, 1L);
-		}).isInstanceOf(InvitationNotFoundException.class);
 	}
 
 	private User getUser(Long userId) {

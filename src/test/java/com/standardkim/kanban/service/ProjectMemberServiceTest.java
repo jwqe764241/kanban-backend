@@ -5,6 +5,7 @@ import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
 import com.standardkim.kanban.repository.UserRepository;
@@ -31,6 +32,9 @@ import static org.assertj.core.api.Assertions.*;
 public class ProjectMemberServiceTest {
 	@Mock
 	ProjectMemberRepository projectMemberRepository;
+
+	@Mock
+	ProjectInvitationService projectInvitationService;
 
 	@Mock
 	UserRepository userRepository;
@@ -127,6 +131,15 @@ public class ProjectMemberServiceTest {
 		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(1L);
 
 		assertThat(projectMembers).isEmpty();
+	}
+
+	@Test
+	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
+		given(projectInvitationService.isExist(1L, 1L)).willReturn(false);
+
+		assertThatThrownBy(() -> {
+			projectMemberService.accept(1L, 1L);
+		}).isInstanceOf(InvitationNotFoundException.class);
 	}
 
 	@Test

@@ -6,7 +6,6 @@ import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
@@ -21,8 +20,6 @@ public class ProjectInvitationService {
 	private final ProjectInvitationRepository projectInvitationRepository;
 
 	private final ProjectService projectService;
-
-	private final ProjectMemberService projectMemberService;
 	
 	private final UserService userService;
 
@@ -46,8 +43,13 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void delete(Long projectId, Long invitedUserId) {
+	public void deleteByProjectIdAndInvitedUserId(Long projectId, Long invitedUserId) {
 		projectInvitationRepository.deleteByProjectIdAndInvitedUserId(projectId, invitedUserId);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteByProjectIdAndUserId(Long projectId, Long userId) {
+		projectInvitationRepository.deleteByProjectIdAndUserId(projectId, userId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -65,14 +67,5 @@ public class ProjectInvitationService {
 		mailService.sendInviteProjectMail(InviteProjectMailParam.from(project, inviterUser, inviteeUser));
 
 		return projectInvitation;
-	}
-
-	@Transactional(rollbackFor = Exception.class)
-	public void accept(Long projectId, Long userId) {
-		if(!isExist(projectId, userId)) {
-			throw new InvitationNotFoundException("user not invited");
-		}
-		projectMemberService.create(projectId, userId, false);
-		delete(projectId, userId);
 	}
 }

@@ -113,7 +113,7 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
 		SecurityUser securityUser = userService.getSecurityUser();
-		projectInvitationService.accept(projectId, securityUser.getId());
+		projectMemberService.accept(projectId, securityUser.getId());
 	}
 
 	@GetMapping("/projects/{projectId}/invitations")
@@ -129,6 +129,6 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public void removeInvitation(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectInvitationService.delete(projectId, userId);
+		projectInvitationService.deleteByProjectIdAndInvitedUserId(projectId, userId);
 	}
 }
