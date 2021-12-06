@@ -13,7 +13,6 @@ import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,13 +20,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	@Autowired
-	private JwtTokenProvider jwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 
-	@Autowired
-	private UserService userService;
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+	private final JwtTokenProvider jwtTokenProvider;
+
+	private final UserService userService;
 
 	@Value("${config.allowed-origins}")
 	String[] allowedOrigins;
