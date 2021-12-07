@@ -103,6 +103,12 @@ public class TaskService {
 		}
 	}
 
+	@Transactional
+	public void deleteByTaskColumnId(Long columnId) {
+		taskRepository.updatePrevIdToNullByTaskColumnId(columnId);
+		taskRepository.deleteByTaskColumnId(columnId);
+	}
+
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public List<Task> reorder(Long projectId, Long kanbanSequenceId, Long columnId, ReorderTaskParam param) {
 		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)

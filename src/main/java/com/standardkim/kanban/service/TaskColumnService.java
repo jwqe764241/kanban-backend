@@ -10,12 +10,9 @@ import com.standardkim.kanban.dto.TaskColumnDto.ReorderTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.UpdateTaskColumnParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.TaskColumn;
-import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
 import com.standardkim.kanban.exception.taskcolumn.DuplicateTaskColumnNameException;
 import com.standardkim.kanban.exception.taskcolumn.TaskColumnNotFoundException;
-import com.standardkim.kanban.repository.KanbanRepository;
 import com.standardkim.kanban.repository.TaskColumnRepository;
-import com.standardkim.kanban.repository.TaskRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -28,9 +25,9 @@ import lombok.RequiredArgsConstructor;
 public class TaskColumnService {
 	private final TaskColumnRepository taskColumnRepository;
 
-	private final TaskRepository taskRepository;
+	private final TaskService taskService;
 
-	private final KanbanRepository kanbanRepository;
+	private final KanbanService kanbanService;
 
 	@Transactional(readOnly = true)
 	public boolean isNameExist(Long kanbanId, String name) {
@@ -38,14 +35,19 @@ public class TaskColumnService {
 	}
 
 	@Transactional(readOnly = true)
+	public TaskColumn findById(Long columnId) {
+		return taskColumnRepository.findById(columnId)
+			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+	}
+
+	@Transactional(readOnly = true)
 	public List<TaskColumn> findByProjectIdAndSequenceId(Long projectId, Long kanbanSequenceId) {
-		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
-			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
+		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 		List<TaskColumn> taskColumns = taskColumnRepository.findByKanbanId(kanban.getId());
 		return taskColumns;
 	}
 
-	private int findLastItemIndex(final List<TaskColumn> taskColumns) {
+	public int findLastItemIndex(final List<TaskColumn> taskColumns) {
 		int size = taskColumns.size();
 		if(size == 1) {
 			return 0;
@@ -71,8 +73,7 @@ public class TaskColumnService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public TaskColumn create(Long projectId, Long kanbanSequenceId, CreateTaskColumnParam param) {
-		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
-			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
+		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 
 		if(isNameExist(kanban.getId(), param.getName())) {
 			throw new DuplicateTaskColumnNameException("duplicate task column name");
@@ -95,14 +96,11 @@ public class TaskColumnService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public TaskColumn delete(Long columnId) {
-		TaskColumn taskColumn = taskColumnRepository.findById(columnId)
-			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		TaskColumn taskColumn = findById(columnId);
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(taskColumn.getId());
 		
 		//delete tasks
-		taskRepository.updatePrevIdToNullByTaskColumnId(taskColumn.getId());
-		taskRepository.deleteByTaskColumnId(taskColumn.getId());
-		taskRepository.flush();
+		taskService.deleteByTaskColumnId(taskColumn.getId());
 
 		//task column is last column or there's no other column
 		if(nextTaskColumn == null) {
@@ -129,10 +127,8 @@ public class TaskColumnService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
 	public List<TaskColumn> reorder(Long projectId, Long kanbanSequenceId, ReorderTaskColumnParam param) {
-		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
-			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
-		TaskColumn taskColumn = taskColumnRepository.findById(param.getColumnId())
-			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
+		TaskColumn taskColumn = findById(param.getColumnId());
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(param.getColumnId());
 		TaskColumn firstTaskColumn = taskColumnRepository.findByKanbanIdAndPrevId(kanban.getId(), null);
 
@@ -154,8 +150,7 @@ public class TaskColumnService {
 
 		//update current column to be between destination column and next column of destination column
 		if(param.getPrevColumnId() != null) {
-			TaskColumn destTaskColumn = taskColumnRepository.findById(param.getPrevColumnId())
-				.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+			TaskColumn destTaskColumn = findById(param.getPrevColumnId());
 			TaskColumn nextDestTaskColumn = taskColumnRepository.findByPrevId(param.getPrevColumnId());
 
 			if(nextDestTaskColumn != null) {
@@ -178,15 +173,11 @@ public class TaskColumnService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public TaskColumn update(Long projectId, Long kanbanSequenceId, Long columnId, UpdateTaskColumnParam param) {
-		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, kanbanSequenceId)
-			.orElseThrow(() -> new KanbanNotFoundException("kanban not found"));
-
+		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 		if(isNameExist(kanban.getId(), param.getName())) {
 			throw new DuplicateTaskColumnNameException("duplicate task column name");
 		}
-
-		TaskColumn taskColumn = taskColumnRepository.findById(columnId)
-			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+		TaskColumn taskColumn = findById(columnId);
 		taskColumn.updateName(param.getName());
 		return taskColumn;
 	}
