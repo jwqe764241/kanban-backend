@@ -1,7 +1,5 @@
 package com.standardkim.kanban.service;
 
-import java.util.Optional;
-
 import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
@@ -26,17 +24,14 @@ public class RefreshTokenService {
 
 	@Transactional(readOnly = true)
 	public RefreshToken findById(Long userId) {
-		final Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(userId);
-		return refreshToken.orElseThrow(() -> new RefreshTokenNotFoundException("refresh token not found"));
+		return refreshTokenRepository.findById(userId)
+			.orElseThrow(() -> new RefreshTokenNotFoundException("refresh token not found"));
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public RefreshToken create(Long userId, String token) {
 		User user = userService.findById(userId);
-		RefreshToken refreshToken = RefreshToken.builder()
-			.user(user)
-			.token(token)
-			.build();
+		RefreshToken refreshToken = RefreshToken.from(user, token);
 		return refreshTokenRepository.save(refreshToken);
 	}
 

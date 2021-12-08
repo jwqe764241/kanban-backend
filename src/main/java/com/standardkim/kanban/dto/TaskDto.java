@@ -27,7 +27,7 @@ public class TaskDto {
 	@AllArgsConstructor
 	public static class CreateTaskParam {
 		@NotBlank
-		@Size(min = 2, max = 2048)
+		@Size(max = 2048)
 		private String text;
 	}
 

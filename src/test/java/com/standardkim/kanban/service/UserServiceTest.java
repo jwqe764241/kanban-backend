@@ -2,7 +2,6 @@ package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
-import com.standardkim.kanban.dto.UserDto.UserDetail;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.exception.user.DuplicateUserNameException;
@@ -13,23 +12,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration.AccessLevel;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -46,18 +42,11 @@ public class UserServiceTest {
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Spy
-	ModelMapper modelMapper = new ModelMapper();
-
-	@Spy
 	@InjectMocks
 	UserService userService;
 
 	@BeforeEach
 	public void init() {
-		modelMapper.getConfiguration()
-			.setFieldAccessLevel(AccessLevel.PRIVATE)
-			.setFieldMatchingEnabled(true);
-
 		testUser = getUser();
 		testSecurityUser = getSecurityUser();
 	}
@@ -117,47 +106,21 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void findBySecurityUser_UserIsExist_User() {
-		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-		SecurityContextHolder.setContext(securityContext);
-		given(securityContext.getAuthentication())
-					.willReturn(new UsernamePasswordAuthenticationToken(testSecurityUser, null, testSecurityUser.getAuthorities()));
-		given(userRepository.findById(testSecurityUser.getId())).willReturn(Optional.of(testUser));
+	void findNotMemberOrNotInvitedUser_UserIsExist_ListOfUser() {
+		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(getUserList(3));
+	
+		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
 
-		User user = userService.findBySecurityUser();
-
-		assertThat(user).isNotNull();
+		assertThat(list).hasSize(3);
 	}
 
 	@Test
-	public void findBySecurityUser_UserIsNotExist_ThrowUserNotFoundException() {
-		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-		SecurityContextHolder.setContext(securityContext);
-		given(securityContext.getAuthentication())
-					.willReturn(new UsernamePasswordAuthenticationToken(testSecurityUser, null, testSecurityUser.getAuthorities()));
-		given(userRepository.findById(testSecurityUser.getId())).willReturn(Optional.empty());
+	void findNotMemberOrNotInvitedUser_UserIsNotExist_EmptyList() {
+		given(userRepository.findNotMemberOrNotInvited(eq(1L), anyString())).willReturn(new ArrayList<User>());
+	
+		List<User> list = userService.findNotMemberOrNotInvitedUser(1L, "a");
 
-		assertThatThrownBy(() -> {
-			userService.findBySecurityUser();
-		});
-	}
-
-	@Test
-	public void findSecurityUserByLogin_UserIsExist_SecurityUser() {
-		given(userRepository.findByLogin(anyString())).willReturn(Optional.of(testUser));
-
-		SecurityUser securityUser = userService.findSecurityUserByLogin("");
-
-		assertThat(securityUser).isNotNull();
-	}
-
-	@Test
-	public void findSecurityUserByLogin_UserIsNotExist_ThrowUserNotFoundException() {
-		given(userRepository.findByLogin(anyString())).willReturn(Optional.empty());
-
-		assertThatThrownBy(() -> {
-			userService.findSecurityUserByLogin("");
-		});
+		assertThat(list).isEmpty();
 	}
 
 	@Test
@@ -170,13 +133,13 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void create_LoginIsNotExist_UserDetail() {
+	public void create_LoginIsNotExist_User() {
 		given(userRepository.existsByLogin(anyString())).willReturn(false);
 		given(userRepository.save(any(User.class))).willReturn(testUser);
 
-		UserDetail userDetail = userService.create(getCreateUserParam());
+		User user = userService.create(getCreateUserParam());
 
-		assertThat(userDetail).isNotNull();
+		assertThat(user).isNotNull();
 	}
 
 	private User getUser() {
@@ -190,6 +153,14 @@ public class UserServiceTest {
 			.build();
 	}
 	
+	private List<User> getUserList(int size) {
+		ArrayList<User> list = new ArrayList<>(size);
+		for(int i = 1; i <= size; ++i) {
+			list.add(User.builder().id(Long.valueOf(i)).build());
+		}
+		return list;
+	}
+
 	private SecurityUser getSecurityUser() {
 		return SecurityUser.builder()
 			.id(1L)

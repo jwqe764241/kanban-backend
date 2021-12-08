@@ -2,23 +2,15 @@ package com.standardkim.kanban.service;
 
 import java.util.List;
 
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
-import com.standardkim.kanban.exception.project.ProjectNotFoundException;
-import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.repository.ProjectInvitationRepository;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
-import com.standardkim.kanban.repository.ProjectRepository;
-import com.standardkim.kanban.repository.UserRepository;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +21,11 @@ import lombok.RequiredArgsConstructor;
 public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
 
-	private final ProjectInvitationRepository projectInvitationRepository;
+	private final ProjectInvitationService projectInvitationService;
 
-	private final ProjectRepository projectRepository;
+	private final ProjectService projectService;
 
-	private final UserRepository userRepository;
-
-	private final ModelMapper modelMapper;
+	private final UserService userService;
 
 	@Transactional(readOnly = true)
 	public boolean isExist(Long projectId, Long userId){
@@ -57,27 +47,25 @@ public class ProjectMemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProjectMemberDetail> findProjectMemberDetailByProjectId(Long projectId) {
-		List<ProjectMember> members = projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
-		List<ProjectMemberDetail> result = modelMapper.map(members, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
-		return result;
-	}
-
-	@Transactional(readOnly = true)
-	public List<SuggestionUserDetail> findSuggestionUserDetailByProjectId(Long projectId, String query) {
-		List<User> users = userRepository.findSuggestionUserByProjectId(projectId, query);
-		List<SuggestionUserDetail> result = modelMapper.map(users, new TypeToken<List<SuggestionUserDetail>>(){}.getType());
-		return result;
+	public List<ProjectMember> findByProjectId(Long projectId) {
+		return projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new ProjectNotFoundException("project not found"));
+		Project project = projectService.findById(projectId);
+		User user = userService.findById(userId);
 		ProjectMember projectMember = ProjectMember.from(project, user, isRegister);
 		return projectMemberRepository.save(projectMember);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void accept(Long projectId, Long userId) {
+		if(!projectInvitationService.isExist(projectId, userId)) {
+			throw new InvitationNotFoundException("user not invited");
+		}
+		create(projectId, userId, false);
+		projectInvitationService.deleteByProjectIdAndInvitedUserId(projectId, userId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -94,7 +82,7 @@ public class ProjectMemberService {
 			throw new CannotDeleteProjectOwnerException("can't delete project owner");
 		}
 
-		projectInvitationRepository.deleteByProjectMemberId(projectId, userId);
+		projectInvitationService.deleteByProjectIdAndUserId(projectId, userId);
 		projectMemberRepository.delete(member);
 	}
 }

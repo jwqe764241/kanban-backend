@@ -33,6 +33,13 @@ public class RefreshToken {
 	@Column(nullable = false)
 	private String token;
 
+	public static RefreshToken from(User user, String token) {
+		return RefreshToken.builder()
+			.user(user)
+			.token(token)
+			.build();
+	}
+
 	public void updateToken(String token) {
 		this.token = token;
 	}

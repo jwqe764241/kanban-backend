@@ -1,11 +1,9 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.ProjectInvitationDto.InvitedUserDetail;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.ProjectInvitationKey;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
@@ -75,41 +73,31 @@ public class ProjectInvitationServiceTest {
 	}
 
 	@Test
-	void findInvitedUserDetailByProjectId_ProjectInvitationIsExist_ListOfInvitedUserDetail() {
+	void findByProjectId_ProjectInvitationIsExist_ListOfProjectInvitation() {
 		given(projectInvitationRepository.findByProjectId(1L)).willReturn(getProjectInvitationList(1L, 3));
 
-		List<InvitedUserDetail> list = projectInvitationService.findInvitedUserDetailByProjectId(1L);
+		List<ProjectInvitation> list = projectInvitationService.findByProjectId(1L);
 
 		assertThat(list).hasSize(3);
 	}
 
 	@Test
-	void findInvitedUserDetailByProjectId_ProjectInvitationIsNotExist_EmptyList() {
+	void findByProjectId_ProjectInvitationIsNotExist_EmptyList() {
 		given(projectInvitationRepository.findByProjectId(1L)).willReturn(new ArrayList<>());
 	
-		List<InvitedUserDetail> list = projectInvitationService.findInvitedUserDetailByProjectId(1L);
+		List<ProjectInvitation> list = projectInvitationService.findByProjectId(1L);
 
 		assertThat(list).isEmpty();
 	}
 
 	@Test
 	void invite_ProjectInvitationIsExist_ThrowUserAlreadyInvitedException() {
-		given(userService.findById(1L)).willReturn(getUser(1L));
-		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(true);
+		given(userService.findById(2L)).willReturn(getUser(2L));
+		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 2L)).willReturn(true);
 
 		assertThatThrownBy(() -> {
-			projectInvitationService.invite(1L, 1L);
+			projectInvitationService.invite(1L, 1L, 2L);
 		}).isInstanceOf(UserAlreadyInvitedException.class);
-	}
-
-	@Test
-	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
-		given(userService.findBySecurityUser()).willReturn(getUser(1L));
-		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 1L)).willReturn(false);
-
-		assertThatThrownBy(() -> {
-			projectInvitationService.accept(1L);
-		}).isInstanceOf(InvitationNotFoundException.class);
 	}
 
 	private User getUser(Long userId) {

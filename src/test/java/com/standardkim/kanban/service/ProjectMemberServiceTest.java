@@ -1,26 +1,20 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.ProjectMemberDto.ProjectMemberDetail;
-import com.standardkim.kanban.dto.UserDto.SuggestionUserDetail;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
-import com.standardkim.kanban.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration.AccessLevel;
-import org.modelmapper.AbstractConverter;
 
 import static org.mockito.BDDMockito.*;
 
@@ -36,33 +30,13 @@ public class ProjectMemberServiceTest {
 	ProjectMemberRepository projectMemberRepository;
 
 	@Mock
-	UserRepository userRepository;
-
-	@Spy
-	ModelMapper modelMapper = new ModelMapper();
+	ProjectInvitationService projectInvitationService;
 
 	@InjectMocks
 	ProjectMemberService projectMemberService;
 
 	@BeforeEach
 	void init() {
-		modelMapper.getConfiguration()
-			.setFieldAccessLevel(AccessLevel.PRIVATE)
-			.setFieldMatchingEnabled(true);
-
-		modelMapper.addConverter(new AbstractConverter<ProjectMember, ProjectMemberDetail>() {
-			@Override
-			public ProjectMemberDetail convert(ProjectMember projectMember) {
-				User user = projectMember.getUser();
-				ProjectMemberDetail projectMemberDetail = ProjectMemberDetail.builder()
-					.id(user.getId())
-					.name(user.getName())
-					.email(user.getEmail())
-					.date(projectMember.getRegisterDate())
-					.build();
-				return projectMemberDetail;
-			}
-		});
 	}
 
 	@Test
@@ -129,39 +103,30 @@ public class ProjectMemberServiceTest {
 	}
 
 	@Test
-	void findProjectMemberDetailByProjectId_ProjectMemberIsExist_ListOfProjectMember() {
+	void findByProjectId_ProjectMemberIsExist_ListOfProjectMember() {
 		given(projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(1L)).willReturn(getProjectMemberList(1L, 3));
 
-		List<ProjectMemberDetail> projectDetails = projectMemberService.findProjectMemberDetailByProjectId(1L);
+		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(1L);
 
-		assertThat(projectDetails).hasSize(3);
+		assertThat(projectMembers).hasSize(3);
 	}
 	
 	@Test
-	void findProjectMemberDetailByProjectId_ProjectMemberIsNotExist_EmptyList() {
+	void findByProjectId_ProjectMemberIsNotExist_EmptyList() {
 		given(projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(1L)).willReturn(new ArrayList<ProjectMember>());
 
-		List<ProjectMemberDetail> projectDetails = projectMemberService.findProjectMemberDetailByProjectId(1L);
+		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(1L);
 
-		assertThat(projectDetails).isEmpty();
+		assertThat(projectMembers).isEmpty();
 	}
 
 	@Test
-	void findSuggestionUserDetailByProjectId_UserIsExist_ListOfSuggestionUserDetail() {
-		given(userRepository.findSuggestionUserByProjectId(eq(1L), anyString())).willReturn(getUserList(3));
-	
-		List<SuggestionUserDetail> list = projectMemberService.findSuggestionUserDetailByProjectId(1L, "a");
+	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
+		given(projectInvitationService.isExist(1L, 1L)).willReturn(false);
 
-		assertThat(list).hasSize(3);
-	}
-
-	@Test
-	void findSuggestionUserDetailByProjectId_UserIsNotExist_EmptyList() {
-		given(userRepository.findSuggestionUserByProjectId(eq(1L), anyString())).willReturn(new ArrayList<User>());
-	
-		List<SuggestionUserDetail> list = projectMemberService.findSuggestionUserDetailByProjectId(1L, "a");
-
-		assertThat(list).isEmpty();
+		assertThatThrownBy(() -> {
+			projectMemberService.accept(1L, 1L);
+		}).isInstanceOf(InvitationNotFoundException.class);
 	}
 
 	@Test
@@ -203,14 +168,6 @@ public class ProjectMemberServiceTest {
 			)
 			.isRegister(isRegister)
 			.build();
-	}
-
-	private List<User> getUserList(int size) {
-		ArrayList<User> list = new ArrayList<>(size);
-		for(int i = 1; i <= size; ++i) {
-			list.add(User.builder().id(Long.valueOf(i)).build());
-		}
-		return list;
 	}
 
 	private List<ProjectMember> getProjectMemberList(Long projectId, int size) {

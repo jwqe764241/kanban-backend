@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.EmbeddedId;
@@ -43,6 +42,7 @@ public class ProjectMember {
 	@JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
 	private User user;
 
+	@Builder.Default
 	@Column(name = "is_register", nullable = false)
 	@Convert(converter = BooleanToYNConverter.class)
 	private boolean isRegister = false;
@@ -51,6 +51,7 @@ public class ProjectMember {
 	@Column(name = "register_date", nullable = false)
 	private LocalDateTime registerDate;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "projectMember")
 	private Set<ProjectInvitation> invitations = new HashSet<>();
 

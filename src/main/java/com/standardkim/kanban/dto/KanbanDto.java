@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.standardkim.kanban.entity.Kanban;
-import com.standardkim.kanban.entity.Project;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,15 +23,6 @@ public class KanbanDto {
 		
 		@Size(max = 200)
 		private String description;
-
-		public Kanban toEntity(Project project) {
-			Kanban kanban = Kanban.builder()
-				.name(getName())
-				.description(getDescription())
-				.project(project)
-				.build();
-			return kanban;
-		}
 	}
 
 	@Getter
