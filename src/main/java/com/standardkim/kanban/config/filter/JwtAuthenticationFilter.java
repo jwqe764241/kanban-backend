@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthorizationHeader;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
@@ -68,7 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				if(token != null && !token.isBlank() && jwtTokenProvider.isValid(token)) {
 					try {
 						String login = jwtTokenProvider.getLogin(token);
-						SecurityUser securityUser = userService.findSecurityUserByLogin(login);
+						User user = userService.findByLogin(login);
+						SecurityUser securityUser = SecurityUser.from(user);
 						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
 		
 						if(securityUser.isEnabled()) {

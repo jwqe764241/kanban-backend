@@ -9,7 +9,6 @@ import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.exception.user.DuplicateUserNameException;
 import com.standardkim.kanban.repository.UserRepository;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,8 +23,6 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	private final PasswordEncoder passwordEncoder;
-
-	private final ModelMapper modelMapper;
 
 	public SecurityUser getSecurityUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,14 +44,6 @@ public class UserService {
 	public User findByLogin(String login) {
 		return userRepository.findByLogin(login)
 			.orElseThrow(() -> new UserNotFoundException("user not found"));
-	}
-
-	@Transactional(readOnly = true)
-	public SecurityUser findSecurityUserByLogin(String login) {
-		User user = userRepository.findByLogin(login)
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
-		SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
-		return securityUser;
 	}
 
 	@Transactional(readOnly = true)

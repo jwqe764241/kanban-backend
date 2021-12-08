@@ -7,6 +7,8 @@ import java.util.Collection;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.standardkim.kanban.entity.User;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -28,6 +30,16 @@ public class AuthenticationDto {
 		private String name;
 		private LocalDateTime registerDate;
 		private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+
+		public static SecurityUser from(User user ) {
+			return SecurityUser.builder()
+				.id(user.getId())
+				.login(user.getLogin())
+				.password(user.getPassword())
+				.name(user.getName())
+				.registerDate(user.getRegisterDate())
+				.build();
+		}
 
 		@Override
 		public String getUsername() {

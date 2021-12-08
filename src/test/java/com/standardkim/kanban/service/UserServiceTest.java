@@ -14,8 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -44,18 +42,11 @@ public class UserServiceTest {
 	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Spy
-	ModelMapper modelMapper = new ModelMapper();
-
-	@Spy
 	@InjectMocks
 	UserService userService;
 
 	@BeforeEach
 	public void init() {
-		modelMapper.getConfiguration()
-			.setFieldAccessLevel(AccessLevel.PRIVATE)
-			.setFieldMatchingEnabled(true);
-
 		testUser = getUser();
 		testSecurityUser = getSecurityUser();
 	}
@@ -112,24 +103,6 @@ public class UserServiceTest {
 		assertThatThrownBy(() -> {
 			userService.findByLogin("");
 		}).isInstanceOf(UserNotFoundException.class);
-	}
-
-	@Test
-	public void findSecurityUserByLogin_UserIsExist_SecurityUser() {
-		given(userRepository.findByLogin(anyString())).willReturn(Optional.of(testUser));
-
-		SecurityUser securityUser = userService.findSecurityUserByLogin("");
-
-		assertThat(securityUser).isNotNull();
-	}
-
-	@Test
-	public void findSecurityUserByLogin_UserIsNotExist_ThrowUserNotFoundException() {
-		given(userRepository.findByLogin(anyString())).willReturn(Optional.empty());
-
-		assertThatThrownBy(() -> {
-			userService.findSecurityUserByLogin("");
-		});
 	}
 
 	@Test
