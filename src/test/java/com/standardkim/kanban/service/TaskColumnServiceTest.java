@@ -74,6 +74,15 @@ public class TaskColumnServiceTest {
 	}
 
 	@Test
+	void findByIdAndKanbanId_TaskColumnIsNotExist_ThrowTaskColumnNotFoundException() {
+		given(taskColumnRepository.findByIdAndKanbanId(1L, 1L)).willReturn(Optional.empty());
+
+		assertThatThrownBy(() -> {
+			taskColumnService.findByIdAndKanbanId(1L, 1L);
+		}).isInstanceOf(TaskColumnNotFoundException.class);
+	}
+
+	@Test
 	void findLastItemIndex_ValidColumnList_IndexOfLastItem() {
 		// 4 <- 6 <- 1 <- 5 <- 2 <- 3
 		List<TaskColumn> columns = new ArrayList<>();

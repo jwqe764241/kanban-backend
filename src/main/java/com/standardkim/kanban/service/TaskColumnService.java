@@ -13,6 +13,7 @@ import com.standardkim.kanban.entity.TaskColumn;
 import com.standardkim.kanban.exception.taskcolumn.DuplicateTaskColumnNameException;
 import com.standardkim.kanban.exception.taskcolumn.TaskColumnNotFoundException;
 import com.standardkim.kanban.repository.TaskColumnRepository;
+import com.standardkim.kanban.repository.TaskRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class TaskColumnService {
 	private final TaskColumnRepository taskColumnRepository;
 
-	private final TaskService taskService;
+	private final TaskRepository taskRepository;
 
 	private final KanbanService kanbanService;
 
@@ -37,6 +38,12 @@ public class TaskColumnService {
 	@Transactional(readOnly = true)
 	public TaskColumn findById(Long columnId) {
 		return taskColumnRepository.findById(columnId)
+			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public TaskColumn findByIdAndKanbanId(Long id, Long kanbanId) {
+		return taskColumnRepository.findByIdAndKanbanId(id, kanbanId)
 			.orElseThrow(() -> new TaskColumnNotFoundException("task column not found"));
 	}
 
@@ -100,7 +107,8 @@ public class TaskColumnService {
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(taskColumn.getId());
 		
 		//delete tasks
-		taskService.deleteByTaskColumnId(taskColumn.getId());
+		taskRepository.updatePrevIdToNullByTaskColumnId(columnId);
+		taskRepository.deleteByTaskColumnId(columnId);
 
 		//task column is last column or there's no other column
 		if(nextTaskColumn == null) {

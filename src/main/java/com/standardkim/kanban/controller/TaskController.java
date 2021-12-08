@@ -44,7 +44,7 @@ public class TaskController {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskDetail> getTasks(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		List<Task> tasks = taskService.findTasksByKanbanSequence(projectId, sequenceId);
+		List<Task> tasks = taskService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		List<TaskDetail> taskDetails = modelMapper.map(tasks, new TypeToken<List<TaskDetail>>(){}.getType());
 		return taskDetails;
 	}
