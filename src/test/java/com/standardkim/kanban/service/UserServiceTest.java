@@ -12,14 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -116,32 +112,6 @@ public class UserServiceTest {
 		assertThatThrownBy(() -> {
 			userService.findByLogin("");
 		}).isInstanceOf(UserNotFoundException.class);
-	}
-
-	@Test
-	public void findBySecurityUser_UserIsExist_User() {
-		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-		SecurityContextHolder.setContext(securityContext);
-		given(securityContext.getAuthentication())
-					.willReturn(new UsernamePasswordAuthenticationToken(testSecurityUser, null, testSecurityUser.getAuthorities()));
-		given(userRepository.findById(testSecurityUser.getId())).willReturn(Optional.of(testUser));
-
-		User user = userService.findBySecurityUser();
-
-		assertThat(user).isNotNull();
-	}
-
-	@Test
-	public void findBySecurityUser_UserIsNotExist_ThrowUserNotFoundException() {
-		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-		SecurityContextHolder.setContext(securityContext);
-		given(securityContext.getAuthentication())
-					.willReturn(new UsernamePasswordAuthenticationToken(testSecurityUser, null, testSecurityUser.getAuthorities()));
-		given(userRepository.findById(testSecurityUser.getId())).willReturn(Optional.empty());
-
-		assertThatThrownBy(() -> {
-			userService.findBySecurityUser();
-		});
 	}
 
 	@Test

@@ -50,14 +50,6 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public User findBySecurityUser() {
-		SecurityUser securityUser = getSecurityUser();
-		User user = userRepository.findById(securityUser.getId())
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
-		return user;
-	}
-
-	@Transactional(readOnly = true)
 	public SecurityUser findSecurityUserByLogin(String login) {
 		User user = userRepository.findByLogin(login)
 			.orElseThrow(() -> new UserNotFoundException("user not found"));
