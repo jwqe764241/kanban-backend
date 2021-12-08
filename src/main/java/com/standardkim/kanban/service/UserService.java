@@ -48,8 +48,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public List<User> findNotMemberOrNotInvitedUser(Long projectId, String query) {
-		List<User> users = userRepository.findNotMemberOrNotInvited(projectId, query);
-		return users;
+		return userRepository.findNotMemberOrNotInvited(projectId, query);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -58,7 +57,6 @@ public class UserService {
 			throw new DuplicateUserNameException("duplicate user name");
 		}
 		User user = User.from(createUserParam, passwordEncoder);
-		user = userRepository.save(user);
-		return user;
+		return userRepository.save(user);
 	}
 }
