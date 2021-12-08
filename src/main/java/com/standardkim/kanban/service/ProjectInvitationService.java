@@ -6,7 +6,6 @@ import com.standardkim.kanban.dto.MailDto.InviteProjectMailParam;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.ProjectInvitation;
 import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
 import com.standardkim.kanban.repository.ProjectInvitationRepository;
 
@@ -21,8 +20,6 @@ public class ProjectInvitationService {
 	private final ProjectInvitationRepository projectInvitationRepository;
 
 	private final ProjectService projectService;
-
-	private final ProjectMemberService projectMemberService;
 	
 	private final UserService userService;
 
@@ -46,43 +43,29 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void delete(Long projectId, Long invitedUserId) {
+	public void deleteByProjectIdAndInvitedUserId(Long projectId, Long invitedUserId) {
 		projectInvitationRepository.deleteByProjectIdAndInvitedUserId(projectId, invitedUserId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public ProjectInvitation invite(Long projectId, Long invitedUserId) {
-		User invitedUser = userService.findById(invitedUserId);
-		if(isExist(projectId, invitedUser.getId())) {
-			throw new UserAlreadyInvitedException("user already invited");
-		}
-
-		User user = userService.findBySecurityUser();
-		Project project = projectService.findById(projectId);
-		ProjectInvitation projectInvitation = create(project, invitedUser, user);
-
-		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
-		InviteProjectMailParam inviteProjectParam = InviteProjectMailParam.builder()
-			.inviteeMailAddress(invitedUser.getEmail())
-			.projectId(project.getId())
-			.projectName(project.getName())
-			.inviteeLogin(invitedUser.getLogin())
-			.inviterLogin(user.getLogin())
-			.build();
-		mailService.sendInviteProjectMail(inviteProjectParam);
-
-		return projectInvitation;
+	public void deleteByProjectIdAndUserId(Long projectId, Long userId) {
+		projectInvitationRepository.deleteByProjectIdAndUserId(projectId, userId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void accept(Long projectId) {
-		User user = userService.findBySecurityUser();
-		if(isExist(projectId, user.getId())) {
-			projectMemberService.create(projectId, user.getId(), false);
-			delete(projectId, user.getId());
+	public ProjectInvitation invite(Long projectId, Long inviterUserId, Long inviteeUserId) {
+		User inviteeUser = userService.findById(inviteeUserId);
+		if(isExist(projectId, inviteeUser.getId())) {
+			throw new UserAlreadyInvitedException("user already invited");
 		}
-		else {
-			throw new InvitationNotFoundException("user not invited");
-		}
+
+		User inviterUser = userService.findById(inviterUserId);
+		Project project = projectService.findById(projectId);
+		ProjectInvitation projectInvitation = create(project, inviteeUser, inviterUser);
+
+		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
+		mailService.sendInviteProjectMail(InviteProjectMailParam.from(project, inviterUser, inviteeUser));
+
+		return projectInvitation;
 	}
 }

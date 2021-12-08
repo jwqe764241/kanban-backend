@@ -9,6 +9,7 @@ import com.standardkim.kanban.dto.KanbanDto.KanbanDetail;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.entity.Kanban;
 import com.standardkim.kanban.entity.KanbanSequence;
+import com.standardkim.kanban.service.KanbanSequenceService;
 import com.standardkim.kanban.service.KanbanService;
 
 import org.modelmapper.ModelMapper;
@@ -31,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 public class KanbanController {
 	private final KanbanService kanbanService;
 
+	private final KanbanSequenceService kanbanSequenceService;
+
 	private final ModelMapper modelMapper;
 
 	@PostMapping("/projects/{projectId}/kanbans")
@@ -38,7 +41,7 @@ public class KanbanController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
 		Kanban kanban = kanbanService.create(projectId, createKanbanParam);
-		KanbanSequence kanbanSequence = kanbanService.findById(kanban.getId());
+		KanbanSequence kanbanSequence = kanbanSequenceService.findById(kanban.getId());
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
@@ -47,7 +50,7 @@ public class KanbanController {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public List<KanbanDetail> getKanbans(@PathVariable Long projectId) {
-		List<KanbanSequence> kanbanSequences = kanbanService.findByProjectId(projectId);
+		List<KanbanSequence> kanbanSequences = kanbanSequenceService.findByProjectId(projectId);
 		List<KanbanDetail> kanbanDetails = modelMapper.map(kanbanSequences, new TypeToken<List<KanbanDetail>>(){}.getType());
 		return kanbanDetails;
 	}
@@ -56,7 +59,7 @@ public class KanbanController {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public KanbanDetail getKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		KanbanSequence kanbanSequence = kanbanService.findByProjectIdAndSequenceId(projectId, sequenceId);
+		KanbanSequence kanbanSequence = kanbanSequenceService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}

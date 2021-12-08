@@ -9,7 +9,6 @@ import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.exception.user.DuplicateUserNameException;
 import com.standardkim.kanban.repository.UserRepository;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,9 +24,7 @@ public class UserService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	private final ModelMapper modelMapper;
-
-	private SecurityUser getSecurityUser() {
+	public SecurityUser getSecurityUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return (SecurityUser) authentication.getPrincipal();
 	}
@@ -50,25 +47,8 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public User findBySecurityUser() {
-		SecurityUser securityUser = getSecurityUser();
-		User user = userRepository.findById(securityUser.getId())
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
-		return user;
-	}
-
-	@Transactional(readOnly = true)
-	public SecurityUser findSecurityUserByLogin(String login) {
-		User user = userRepository.findByLogin(login)
-			.orElseThrow(() -> new UserNotFoundException("user not found"));
-		SecurityUser securityUser = modelMapper.map(user, SecurityUser.class);
-		return securityUser;
-	}
-
-	@Transactional(readOnly = true)
 	public List<User> findNotMemberOrNotInvitedUser(Long projectId, String query) {
-		List<User> users = userRepository.findNotMemberOrNotInvited(projectId, query);
-		return users;
+		return userRepository.findNotMemberOrNotInvited(projectId, query);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -77,7 +57,6 @@ public class UserService {
 			throw new DuplicateUserNameException("duplicate user name");
 		}
 		User user = User.from(createUserParam, passwordEncoder);
-		user = userRepository.save(user);
-		return user;
+		return userRepository.save(user);
 	}
 }

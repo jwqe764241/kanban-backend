@@ -48,10 +48,7 @@ public class AuthenticationService {
 
 		refreshTokenService.save(user.getId(), refreshToken);
 
-		return AuthenticationToken.builder()
-			.accessToken("Bearer " + accessToken)
-			.refreshToken(refreshToken)
-			.build();
+		return AuthenticationToken.from("Bearer " + accessToken, refreshToken);
 	}
 
 	@Transactional(rollbackFor = Exception.class)

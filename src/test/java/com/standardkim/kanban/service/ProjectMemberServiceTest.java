@@ -5,19 +5,16 @@ import com.standardkim.kanban.entity.ProjectMember;
 import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.exception.project.InvitationNotFoundException;
 import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
 import com.standardkim.kanban.repository.ProjectMemberRepository;
-import com.standardkim.kanban.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration.AccessLevel;
 
 import static org.mockito.BDDMockito.*;
 
@@ -33,19 +30,13 @@ public class ProjectMemberServiceTest {
 	ProjectMemberRepository projectMemberRepository;
 
 	@Mock
-	UserRepository userRepository;
-
-	@Spy
-	ModelMapper modelMapper = new ModelMapper();
+	ProjectInvitationService projectInvitationService;
 
 	@InjectMocks
 	ProjectMemberService projectMemberService;
 
 	@BeforeEach
 	void init() {
-		modelMapper.getConfiguration()
-			.setFieldAccessLevel(AccessLevel.PRIVATE)
-			.setFieldMatchingEnabled(true);
 	}
 
 	@Test
@@ -127,6 +118,15 @@ public class ProjectMemberServiceTest {
 		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(1L);
 
 		assertThat(projectMembers).isEmpty();
+	}
+
+	@Test
+	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
+		given(projectInvitationService.isExist(1L, 1L)).willReturn(false);
+
+		assertThatThrownBy(() -> {
+			projectMemberService.accept(1L, 1L);
+		}).isInstanceOf(InvitationNotFoundException.class);
 	}
 
 	@Test

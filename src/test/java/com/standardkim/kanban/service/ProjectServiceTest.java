@@ -10,7 +10,6 @@ import com.standardkim.kanban.entity.ProjectMemberKey;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
 import com.standardkim.kanban.exception.project.ProjectNotFoundException;
-import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.repository.ProjectRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +25,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -104,7 +104,7 @@ public class ProjectServiceTest {
 
 	@Test
 	void findByUserId_UserIsExist_ListOfProject() {
-		given(userService.findById(anyLong())).willReturn(testUser);
+		given(projectRepository.findByUserId(1L)).willReturn(getProjects(3));
 
 		List<Project> projects = projectService.findByUserId(1L);
 
@@ -112,40 +112,12 @@ public class ProjectServiceTest {
 	}
 
 	@Test
-	void findByUserId_UserIsNotExist_ThrowUserNotFoundException() {
-		given(userService.findById(anyLong())).willThrow(new UserNotFoundException("user not found"));
-
-		assertThatThrownBy(() -> {
-			projectService.findByUserId(1L);
-		}).isInstanceOf(UserNotFoundException.class);
-	}
-
-	@Test
-	void findBySecurityUser_UserIsExist_ListOfProject() {
-		given(userService.findBySecurityUser()).willReturn(testUser);
-		given(userService.findById(anyLong())).willReturn(testUser);
-
-		List<Project> projects = projectService.findBySecurityUser();
-
-		assertThat(projects).isNotNull();
-	}
-
-	@Test
-	void findBySecurityUser_UserIsNotExist_ThrowUserNotFoundException() {
-		given(userService.findBySecurityUser()).willThrow(new UserNotFoundException("user not found"));
-	
-		assertThatThrownBy(() -> {
-			projectService.findBySecurityUser();
-		}).isInstanceOf(UserNotFoundException.class);
-	}
-
-	@Test
 	void create_ProjectNameIsNotExist_Project() {
 		given(projectRepository.existsByName(anyString())).willReturn(false);
-		given(userService.findBySecurityUser()).willReturn(testUser);
+		given(userService.findById(1L)).willReturn(testUser);
 		given(projectRepository.save(any(Project.class))).willReturn(testProject);
 
-		Project project = projectService.create(getCreateProjectParam());
+		Project project = projectService.create(1L, getCreateProjectParam());
 
 		assertThat(project).isNotNull();
 	}
@@ -155,7 +127,7 @@ public class ProjectServiceTest {
 		given(projectRepository.existsByName(anyString())).willReturn(true);
 
 		assertThatThrownBy(() -> {
-			projectService.create(getCreateProjectParam());
+			projectService.create(1L, getCreateProjectParam());
 		}).isInstanceOf(DuplicateProjectNameException.class);
 	}
 
@@ -189,6 +161,16 @@ public class ProjectServiceTest {
 			.registerUser(testUser)
 			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.build();
+	}
+
+	private List<Project> getProjects(int size) {
+		List<Project> list = new ArrayList<>();
+		for(int i = 0; i < size; ++i) {
+			list.add(Project.builder()
+				.id(Long.valueOf(i))
+				.build());
+		}
+		return list;
 	}
 
 	private ProjectMember getProjectMember() {

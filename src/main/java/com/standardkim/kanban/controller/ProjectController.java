@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.dto.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.dto.ProjectInvitationDto.InviteProjectMemeberParam;
@@ -50,13 +51,15 @@ public class ProjectController {
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
-		projectService.create(createProjectParam);
+		SecurityUser securityUser = userService.getSecurityUser();
+		projectService.create(securityUser.getId(), createProjectParam);
 	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
-		List<Project> projects = projectService.findBySecurityUser();
+		SecurityUser securityUser = userService.getSecurityUser();
+		List<Project> projects = projectService.findByUserId(securityUser.getId());
 		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
 		return projectDetails;
 	}
@@ -92,8 +95,9 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, 
-		@RequestBody @Valid InviteProjectMemeberParam inviteProjectMemeberParam) {
-		ProjectInvitation projectInvitation = projectInvitationService.invite(projectId, inviteProjectMemeberParam.getUserId());
+		@RequestBody @Valid InviteProjectMemeberParam param) {
+		SecurityUser securityUser = userService.getSecurityUser();
+		ProjectInvitation projectInvitation = projectInvitationService.invite(projectId, securityUser.getId(), param.getUserId());
 		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
 		return invitedUserDetail;
 	}
@@ -108,7 +112,8 @@ public class ProjectController {
 	@PostMapping("/projects/{projectId}/invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
-		projectInvitationService.accept(projectId);
+		SecurityUser securityUser = userService.getSecurityUser();
+		projectMemberService.accept(projectId, securityUser.getId());
 	}
 
 	@GetMapping("/projects/{projectId}/invitations")
@@ -124,6 +129,6 @@ public class ProjectController {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public void removeInvitation(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectInvitationService.delete(projectId, userId);
+		projectInvitationService.deleteByProjectIdAndInvitedUserId(projectId, userId);
 	}
 }
