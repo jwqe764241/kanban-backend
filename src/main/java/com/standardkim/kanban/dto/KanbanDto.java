@@ -47,6 +47,6 @@ public class KanbanDto {
 		private Long sequenceId;
 		private String name;
 		private String description;
-		private LocalDateTime registerDate;
+		private LocalDateTime createdAt;
 	}
 }

@@ -1,6 +1,5 @@
 package com.standardkim.kanban.entity;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,9 +16,8 @@ import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
 import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
 import com.standardkim.kanban.util.BooleanToYNConverter;
-
-import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Kanban {
+public class Kanban extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
@@ -43,10 +41,6 @@ public class Kanban {
 
 	@Column(length = 200)
 	private String description;
-
-	@CreationTimestamp
-	@Column(name = "register_date", nullable = false)
-	private LocalDateTime registerDate;
 
 	@Builder.Default
 	@Column(name = "is_deleted", nullable = false)

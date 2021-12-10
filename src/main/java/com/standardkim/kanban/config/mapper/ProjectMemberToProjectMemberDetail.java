@@ -20,7 +20,7 @@ public class ProjectMemberToProjectMemberDetail extends ModelMapperConverter<Pro
 					.id(user.getId())
 					.name(user.getName())
 					.email(user.getEmail())
-					.date(projectMember.getRegisterDate())
+					.date(projectMember.getCreatedAt())
 					.build();
 				return projectMemberDetail;
 			}

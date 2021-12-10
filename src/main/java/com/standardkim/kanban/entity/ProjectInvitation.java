@@ -1,8 +1,5 @@
 package com.standardkim.kanban.entity;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -12,7 +9,7 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.CreationTimestamp;
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class ProjectInvitation {
+public class ProjectInvitation extends BaseTimeEntity {
 	@EmbeddedId
 	private ProjectInvitationKey id;
 
@@ -47,11 +44,6 @@ public class ProjectInvitation {
 	@MapsId("invitedUserId")
 	@JoinColumn(name = "invited_user_id", nullable = false, insertable = false)
 	private User invitedUser;
-
-	@CreationTimestamp
-	@Column(name = "register_date", nullable = false, updatable = false)
-	@Builder.Default
-	private LocalDateTime registerDate = LocalDateTime.now();
 
 	public static ProjectInvitation from(Project project, User inviteeUser, User inviterUser) {
 		ProjectMemberKey projectMemberId = ProjectMemberKey.from(project.getId(), inviterUser.getId());

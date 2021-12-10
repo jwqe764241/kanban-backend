@@ -9,6 +9,8 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public class RefreshToken {
+public class RefreshToken extends BaseTimeEntity {
 	@Id
 	private Long userId;
 
