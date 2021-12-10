@@ -1,6 +1,5 @@
 package com.standardkim.kanban.entity;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -15,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.standardkim.kanban.dto.UserDto.CreateUserParam;
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.AccessLevel;
@@ -31,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class User {
+public class User extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
@@ -48,10 +47,6 @@ public class User {
 
 	@Column(length = 320, nullable = false)
 	private String email;
-
-	@CreationTimestamp
-	@Column(name = "register_date", nullable = false)
-	private LocalDateTime registerDate;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	@OrderBy("register_date desc")

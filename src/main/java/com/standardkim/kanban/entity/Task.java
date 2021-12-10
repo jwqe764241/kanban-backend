@@ -1,7 +1,5 @@
 package com.standardkim.kanban.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,8 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.standardkim.kanban.dto.TaskDto.CreateTaskParam;
-
-import org.hibernate.annotations.CreationTimestamp;
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,7 +31,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Task {
+public class Task extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
@@ -42,10 +39,6 @@ public class Task {
 
 	@Column(nullable = false, length=2048)
 	private String text;
-
-	@CreationTimestamp
-	@Column(name = "register_date", nullable = false)
-	private LocalDateTime registerDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "task_column_id", nullable = false)

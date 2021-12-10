@@ -48,7 +48,7 @@ public class ProjectMemberService {
 
 	@Transactional(readOnly = true)
 	public List<ProjectMember> findByProjectId(Long projectId) {
-		return projectMemberRepository.findByProjectIdOrderByRegisterDateAsc(projectId);
+		return projectMemberRepository.findByProjectIdOrderByCreatedAtAsc(projectId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)

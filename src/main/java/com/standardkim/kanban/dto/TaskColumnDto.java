@@ -51,6 +51,6 @@ public class TaskColumnDto {
 		private Long id;
 		private Long prevId;
 		private String name;
-		private LocalDateTime registerDate;
+		private LocalDateTime createdAt;
 	}
 }

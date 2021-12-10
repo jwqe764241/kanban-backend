@@ -1,6 +1,5 @@
 package com.standardkim.kanban.entity;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,9 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
 import com.standardkim.kanban.util.BooleanToYNConverter;
-
-import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class ProjectMember {
+public class ProjectMember extends BaseTimeEntity {
 	@EmbeddedId
 	ProjectMemberKey id;
 
@@ -46,10 +44,6 @@ public class ProjectMember {
 	@Column(name = "is_register", nullable = false)
 	@Convert(converter = BooleanToYNConverter.class)
 	private boolean isRegister = false;
-
-	@CreationTimestamp
-	@Column(name = "register_date", nullable = false)
-	private LocalDateTime registerDate;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "projectMember")

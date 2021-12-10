@@ -36,7 +36,7 @@ public class KanbanSequence {
 	
 	private String description;
 
-	private LocalDateTime registerDate;
+	private LocalDateTime createdAt;
 
 	@Convert(converter = BooleanToYNConverter.class)
 	private boolean isDeleted;
