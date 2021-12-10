@@ -1,9 +1,7 @@
 package com.standardkim.kanban.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.standardkim.kanban.dto.TaskColumnDto.CreateTaskColumnParam;
 import com.standardkim.kanban.dto.TaskColumnDto.ReorderTaskColumnParam;
@@ -14,6 +12,7 @@ import com.standardkim.kanban.exception.taskcolumn.DuplicateTaskColumnNameExcept
 import com.standardkim.kanban.exception.taskcolumn.TaskColumnNotFoundException;
 import com.standardkim.kanban.repository.TaskColumnRepository;
 import com.standardkim.kanban.repository.TaskRepository;
+import com.standardkim.kanban.util.LinkedListUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -54,30 +53,6 @@ public class TaskColumnService {
 		return taskColumns;
 	}
 
-	public int findLastItemIndex(final List<TaskColumn> taskColumns) {
-		int size = taskColumns.size();
-		if(size == 1) {
-			return 0;
-		}
-
-		Set<Long> prevIdCache = new HashSet<>();
-		for(TaskColumn taskColumn : taskColumns) {
-			Long prevId = taskColumn.getPrevId();
-			if(prevId != null) {
-				prevIdCache.add(prevId);
-			}
-		}
-
-		for(int i = 0; i < size; ++i) {
-			TaskColumn taskColumn = taskColumns.get(i);
-			if(!prevIdCache.contains(taskColumn.getId())) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public TaskColumn create(Long projectId, Long kanbanSequenceId, CreateTaskColumnParam param) {
 		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
@@ -92,7 +67,7 @@ public class TaskColumnService {
 			taskColumn = TaskColumn.from(param, kanban);
 		}
 		else {
-			int index = findLastItemIndex(taskColumns);
+			int index = LinkedListUtil.findLastItemIndex(taskColumns);
 			TaskColumn lastTaskColumn = taskColumns.get(index);
 			taskColumn = TaskColumn.from(param, kanban, lastTaskColumn);
 		}

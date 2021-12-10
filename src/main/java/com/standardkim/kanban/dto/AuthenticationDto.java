@@ -28,7 +28,7 @@ public class AuthenticationDto {
 		private String login;
 		private String password;
 		private String name;
-		private LocalDateTime registerDate;
+		private LocalDateTime createdAt;
 		private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
 		public static SecurityUser from(User user ) {
@@ -37,7 +37,7 @@ public class AuthenticationDto {
 				.login(user.getLogin())
 				.password(user.getPassword())
 				.name(user.getName())
-				.registerDate(user.getRegisterDate())
+				.createdAt(user.getCreatedAt())
 				.build();
 		}
 

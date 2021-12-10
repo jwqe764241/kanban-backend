@@ -18,7 +18,7 @@ public class ProjectToProjectDetailConverter extends ModelMapperConverter<Projec
 					.id(project.getId())
 					.name(project.getName())
 					.description(project.getDescription())
-					.registerDate(project.getRegisterDate())
+					.createdAt(project.getCreatedAt())
 					.registerUsername(project.getRegisterUser().getName())
 					.build();
 				return projectDetail;

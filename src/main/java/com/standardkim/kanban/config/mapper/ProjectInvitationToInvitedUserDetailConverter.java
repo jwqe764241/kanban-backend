@@ -20,7 +20,7 @@ public class ProjectInvitationToInvitedUserDetailConverter extends ModelMapperCo
 					.id(invitedUser.getId())
 					.name(invitedUser.getName())
 					.email(invitedUser.getEmail())
-					.date(projectInvitation.getRegisterDate())
+					.date(projectInvitation.getCreatedAt())
 					.build();
 				return invitedUserDetail;
 			}

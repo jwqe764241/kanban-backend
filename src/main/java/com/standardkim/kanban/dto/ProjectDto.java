@@ -34,6 +34,6 @@ public class ProjectDto {
 		private String name;
 		private String description;
 		private String registerUsername;
-		private LocalDateTime registerDate;
+		private LocalDateTime createdAt;
 	}
 }

@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -149,7 +148,6 @@ public class UserServiceTest {
 			.password("$2a$10$bblgiOA1X6W06J0kyBm1ie13O8o5Q2rm4C4.oZyA8e55PNP7OAXKu")
 			.name("example")
 			.email("example@example.com")
-			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.build();
 	}
 	
@@ -167,7 +165,6 @@ public class UserServiceTest {
 			.login("example")
 			.password("$2a$10$bblgiOA1X6W06J0kyBm1ie13O8o5Q2rm4C4.oZyA8e55PNP7OAXKu")
 			.name("example")
-			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.build();
 	}
 

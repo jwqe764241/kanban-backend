@@ -1,6 +1,5 @@
 package com.standardkim.kanban.entity;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,8 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
-
-import org.hibernate.annotations.CreationTimestamp;
+import com.standardkim.kanban.entity.common.BaseTimeEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Project {
+public class Project extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
@@ -44,10 +42,6 @@ public class Project {
 	@ManyToOne(cascade = CascadeType.DETACH, optional = false)
 	@JoinColumn(name = "register_user_id", referencedColumnName = "id")
 	private User registerUser;
-	
-	@CreationTimestamp
-	@Column(name = "register_date", nullable = false)
-	private LocalDateTime registerDate;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

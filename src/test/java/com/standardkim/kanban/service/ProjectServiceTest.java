@@ -24,7 +24,6 @@ import org.modelmapper.config.Configuration.AccessLevel;
 
 import static org.mockito.BDDMockito.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -138,7 +137,6 @@ public class ProjectServiceTest {
 			.password("$2a$10$bblgiOA1X6W06J0kyBm1ie13O8o5Q2rm4C4.oZyA8e55PNP7OAXKu")
 			.name("example")
 			.email("example@example.com")
-			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.projects(new HashSet<ProjectMember>())
 			.build();
 	}
@@ -149,7 +147,6 @@ public class ProjectServiceTest {
 			.login("example")
 			.password("$2a$10$bblgiOA1X6W06J0kyBm1ie13O8o5Q2rm4C4.oZyA8e55PNP7OAXKu")
 			.name("example")
-			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.build();
 	}
 
@@ -159,7 +156,6 @@ public class ProjectServiceTest {
 			.name("example")
 			.description("example")
 			.registerUser(testUser)
-			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.build();
 	}
 
@@ -184,7 +180,6 @@ public class ProjectServiceTest {
 			.user(getUser())
 			.project(getProject())
 			.isRegister(true)
-			.registerDate(LocalDateTime.of(2021, 7, 1, 22, 0, 0, 0))
 			.build();
 	}
 
