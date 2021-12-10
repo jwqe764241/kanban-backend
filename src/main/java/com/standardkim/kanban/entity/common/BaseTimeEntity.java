@@ -16,6 +16,6 @@ import lombok.Getter;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
 	@CreatedDate
-	@Column(name = "create_at", updatable = false, nullable = false)
+	@Column(name = "created_at", updatable = false, nullable = false)
 	private LocalDateTime createdAt;
 }
