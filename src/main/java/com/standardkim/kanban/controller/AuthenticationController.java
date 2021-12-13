@@ -39,6 +39,9 @@ public class AuthenticationController {
 	@Value("${config.authentication.ws-token-ttl}")
 	private Long wsTokenTTL;
 
+	@Value("${config.cookie-domain}")
+	private String cookieDomain;
+
 	@PostMapping("/auth/login")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken login(@RequestBody @Valid LoginParam loginParam, HttpServletResponse response) throws Exception {
@@ -46,7 +49,7 @@ public class AuthenticationController {
 		AuthenticationToken authenticationToken = authenticationService.login(loginParam, refreshTokenTTL, accessTokenTTL);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
-			.domain("localhost")
+			.domain(cookieDomain)
 			.path("/")
 			.sameSite("Lax")
 			.maxAge(refreshTokenTTL)
@@ -67,7 +70,7 @@ public class AuthenticationController {
 		authenticationService.logout(refreshToken);
 
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
-			.domain("localhost")
+			.domain(cookieDomain)
 			.path("/")
 			.sameSite("Lax")
 			.maxAge(0)
