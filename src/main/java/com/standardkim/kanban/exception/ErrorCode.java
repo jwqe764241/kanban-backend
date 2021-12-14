@@ -9,6 +9,7 @@ public enum ErrorCode {
 	EMPTY_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH-003", "refresh token is empty"),
 	INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH-004", " refresh token is invalid"),
 	INCORRECT_USERNAME_OR_PASSWORD(HttpStatus.UNAUTHORIZED, "AUTH-005", "username or password is incorrect."),
+	INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH-006", "access token is invalid. check your authentication"),
 	//user
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "user not found"),
 	DUPLICATE_USER_NAME(HttpStatus.CONFLICT, "USER-002", "duplicate user name"),

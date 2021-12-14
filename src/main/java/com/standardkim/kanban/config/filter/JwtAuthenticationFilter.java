@@ -10,9 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.standardkim.kanban.dto.AuthenticationDto.AuthorizationHeader;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.dto.ErrorResponseDto.ErrorResponse;
+import com.standardkim.kanban.entity.RefreshToken;
 import com.standardkim.kanban.entity.User;
+import com.standardkim.kanban.exception.ErrorCode;
+import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
 import com.standardkim.kanban.exception.user.UserNotFoundException;
+import com.standardkim.kanban.service.RefreshTokenService;
 import com.standardkim.kanban.service.UserService;
+import com.standardkim.kanban.util.ErrorResponseJsonConverter;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,9 +33,13 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+	private ErrorResponseJsonConverter errorResponseJsonConverter = new ErrorResponseJsonConverter();
+
 	private final JwtTokenProvider jwtTokenProvider;
 
 	private final UserService userService;
+
+	private final RefreshTokenService refreshTokenService;
 
 	@Value("${config.allowed-origins}")
 	String[] allowedOrigins;
@@ -62,13 +72,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				try{
 					String login = jwtTokenProvider.getLogin(token);
 					User user = userService.findByLogin(login);
+					RefreshToken refreshToken = refreshTokenService.findById(user.getId());
+					// access token and refresh token must not be same
+					if(refreshToken.getToken().equals(authorizationHeader.getCredentials())) {
+						setInvalidAccessTokenResponse(response);
+						return;
+					}
 					SecurityUser securityUser = SecurityUser.from(user);
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
 					if(securityUser.isEnabled()) {
 						SecurityContextHolder.getContext().setAuthentication(authentication);
 					}
-				} catch (UserNotFoundException e) {
-					setUnauthorizedResponse(response);
+				} catch (UserNotFoundException | RefreshTokenNotFoundException e) {
+					setInvalidAccessTokenResponse(response);
 					return;
 				} 
 			}
@@ -82,11 +98,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 		response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, OPTION");
+		response.setContentType("application/json;charset=UTF-8");
 	}
 
-	private void setUnauthorizedResponse(HttpServletResponse response) {
+	private void setInvalidAccessTokenResponse(HttpServletResponse response) {
+		ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.INVALID_ACCESS_TOKEN);
+		String responseJson = errorResponseJsonConverter.convert(errorResponse).orElse("");
 		setDefaultHeader(response);
 		response.setStatus(401);
+		try {
+			response.getWriter().write(responseJson);
+		} catch (IOException e) {}
 	}
 
 	private void setPreflightResponse(HttpServletResponse response) {
