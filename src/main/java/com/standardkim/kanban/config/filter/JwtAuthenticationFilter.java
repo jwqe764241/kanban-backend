@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.standardkim.kanban.dto.AuthenticationDto.AuthorizationHeader;
 import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.entity.User;
+import com.standardkim.kanban.exception.user.UserNotFoundException;
 import com.standardkim.kanban.service.UserService;
 import com.standardkim.kanban.util.JwtTokenProvider;
 
@@ -46,44 +47,50 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		//preflight 요청은 200으로 응답함.
 		if(request.getMethod().equals(HttpMethod.OPTIONS.name()))
 		{
-			response.setHeader("Access-Control-Allow-Origin", flattenAllowedOrigins);
-			response.setHeader("Access-Control-Allow-Credentials", "true");
-			response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-			response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, OPTION");
-			response.setStatus(200);
+			setPreflightResponse(response);
 			return;
 		}
 
 		AuthorizationHeader authorizationHeader = null;
-
 		try {
 			authorizationHeader = AuthorizationHeader.from(request.getHeader("Authorization"));
-		} catch (Exception e) {
-		}
+		} catch (IllegalArgumentException e) {}
 
-		if(authorizationHeader != null) {
-			String type = authorizationHeader.getType();
+		if(authorizationHeader != null){
 			String token = authorizationHeader.getCredentials();
-
-			if(type.equals("Bearer")){
-				if(token != null && !token.isBlank() && jwtTokenProvider.isValid(token)) {
-					try {
-						String login = jwtTokenProvider.getLogin(token);
-						User user = userService.findByLogin(login);
-						SecurityUser securityUser = SecurityUser.from(user);
-						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
-		
-						if(securityUser.isEnabled()) {
-							SecurityContextHolder.getContext().setAuthentication(authentication);
-						}
+			if(authorizationHeader.isValid() && jwtTokenProvider.isValid(token)) {
+				try{
+					String login = jwtTokenProvider.getLogin(token);
+					User user = userService.findByLogin(login);
+					SecurityUser securityUser = SecurityUser.from(user);
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
+					if(securityUser.isEnabled()) {
+						SecurityContextHolder.getContext().setAuthentication(authentication);
 					}
-					catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
+				} catch (UserNotFoundException e) {
+					setUnauthorizedResponse(response);
+					return;
+				} 
 			}
 		}
 		
 		filterChain.doFilter(request, response);
+	}
+
+	private void setDefaultHeader(HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Origin", flattenAllowedOrigins);
+		response.setHeader("Access-Control-Allow-Credentials", "true");
+		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, OPTION");
+	}
+
+	private void setUnauthorizedResponse(HttpServletResponse response) {
+		setDefaultHeader(response);
+		response.setStatus(401);
+	}
+
+	private void setPreflightResponse(HttpServletResponse response) {
+		setDefaultHeader(response);
+		response.setStatus(200);
 	}
 }

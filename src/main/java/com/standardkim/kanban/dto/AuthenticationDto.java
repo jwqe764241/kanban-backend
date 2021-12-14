@@ -121,8 +121,8 @@ public class AuthenticationDto {
 		}
 
 		public static AuthorizationHeader from(String header) {
-			if(header == null) {
-				throw new NullPointerException("Authorization is null");
+			if(header == null || header.isEmpty()) {
+				throw new IllegalArgumentException("empty argument");
 			}
 	
 			String[] tokenized = header.split(" ");
