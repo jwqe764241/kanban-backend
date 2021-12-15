@@ -32,7 +32,8 @@ public enum ErrorCode {
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON-002", "input value is invalid"),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error"),
 	ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMON-004", "access denied"),
-	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "COMMON-005", "validation failed");
+	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "COMMON-005", "validation failed"),
+	METHOD_NOT_SUPPORTED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-006", "method not supported");
 
 	private final HttpStatus httpStatus;
 	private final String code;
