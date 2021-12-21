@@ -19,6 +19,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ErrorResponseController {
@@ -34,6 +35,11 @@ public class ErrorResponseController {
 	public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
 		Map<String, Object> errors = toFieldValidationError(e);
 		return ErrorResponse.toResponseEntity(ErrorCode.VALIDATION_FAILED, errors);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+		return ErrorResponse.toResponseEntity(ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)

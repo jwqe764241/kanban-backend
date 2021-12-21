@@ -33,7 +33,8 @@ public enum ErrorCode {
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-003", "internal server error"),
 	ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMON-004", "access denied"),
 	VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "COMMON-005", "validation failed"),
-	METHOD_NOT_SUPPORTED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-006", "method not supported");
+	METHOD_NOT_SUPPORTED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-006", "method not supported"),
+	METHOD_ARGUMENT_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "COMMON-007", "invalid argument type");
 
 	private final HttpStatus httpStatus;
 	private final String code;
