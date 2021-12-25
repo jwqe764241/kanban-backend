@@ -49,7 +49,7 @@ public class User extends BaseTimeEntity {
 	private String email;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	@OrderBy("register_date desc")
+	@OrderBy("created_at desc")
 	private Set<ProjectMember> projects;
 
 	public static User from(CreateUserParam param, PasswordEncoder passwordEncoder) {

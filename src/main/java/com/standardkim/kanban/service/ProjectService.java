@@ -3,6 +3,7 @@ package com.standardkim.kanban.service;
 import java.util.List;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.dto.ProjectDto.UpdateProjectParam;
 import com.standardkim.kanban.entity.Project;
 import com.standardkim.kanban.entity.User;
 import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
@@ -47,5 +48,15 @@ public class ProjectService {
 		Project createdProject = projectRepository.save(project);
 		createdProject.addMember(registerUser, true);
 		return createdProject;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public Project update(Long projectId, UpdateProjectParam updateProjectParam) {
+		if(isProjectNameExist(updateProjectParam.getName())) {
+			throw new DuplicateProjectNameException("duplicate project name");
+		}
+		Project project = findById(projectId);
+		project.update(updateProjectParam);
+		return project;
 	}
 }

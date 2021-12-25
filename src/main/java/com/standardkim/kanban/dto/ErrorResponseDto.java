@@ -26,23 +26,29 @@ public class ErrorResponseDto {
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		private Object data;
 
+		public static ErrorResponse from(ErrorCode errorCode) {
+			return ErrorResponse.builder()
+				.code(errorCode.getCode())
+				.message(errorCode.getMessage())
+				.build();
+		}
+
+		public static ErrorResponse from(ErrorCode errorCode, Object data) {
+			return ErrorResponse.builder()
+				.code(errorCode.getCode())
+				.message(errorCode.getMessage())
+				.data(data)
+				.build();
+		}
+
 		public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
 			return ResponseEntity.status(errorCode.getHttpStatus())
-				.body(ErrorResponse.builder()
-						.code(errorCode.getCode())
-						.message(errorCode.getMessage())
-						.build()
-				);
+				.body(from(errorCode));
 		}
 
 		public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode, Object data) {
 			return ResponseEntity.status(errorCode.getHttpStatus())
-				.body(ErrorResponse.builder()
-						.code(errorCode.getCode())
-						.message(errorCode.getMessage())
-						.data(data)
-						.build()
-				);
+				.body(from(errorCode, data));
 		}
 	}
 

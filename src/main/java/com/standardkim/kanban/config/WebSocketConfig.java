@@ -2,6 +2,7 @@ package com.standardkim.kanban.config;
 
 import com.standardkim.kanban.config.interceptor.WebSocketConnectInterceptor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -17,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private final WebSocketConnectInterceptor webSocketConnectInterceptor;
 
+	@Value("${config.allowed-origins}")
+	String[] allowedOrigins;
+
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		registry.enableSimpleBroker("/topic/project");
@@ -30,7 +34,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/kanban-event")
-			.setAllowedOrigins("http://localhost:3000")
+			.setAllowedOrigins(allowedOrigins)
 			.withSockJS();
 	}
 }

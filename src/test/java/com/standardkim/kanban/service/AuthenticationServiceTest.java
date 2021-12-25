@@ -52,7 +52,7 @@ public class AuthenticationServiceTest {
 
 		assertThat(token).isNotNull();
 		assertThat(token.getRefreshToken()).isEqualTo("refresh-token");
-		assertThat(token.getAccessToken()).isEqualTo("Bearer access-token");
+		assertThat(token.getAccessToken()).isEqualTo("access-token");
 	}
 
 	@Test

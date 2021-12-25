@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.dto.ProjectDto.UpdateProjectParam;
 import com.standardkim.kanban.entity.common.BaseTimeEntity;
 
 import lombok.AccessLevel;
@@ -57,6 +58,10 @@ public class Project extends BaseTimeEntity {
 				.description(param.getDescription())
 				.registerUser(registerUser)
 				.build();
+	}
+
+	public void update(UpdateProjectParam param) {
+		name = param.getName();
 	}
 
 	public void addMember(User user, boolean isRegister) {

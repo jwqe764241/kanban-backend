@@ -48,7 +48,7 @@ public class AuthenticationService {
 
 		refreshTokenService.save(user.getId(), refreshToken);
 
-		return AuthenticationToken.from("Bearer " + accessToken, refreshToken);
+		return AuthenticationToken.from(accessToken, refreshToken);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -82,7 +82,6 @@ public class AuthenticationService {
 			throw new ExpiredRefreshTokenException("refresh token was expired");
 		}
  
-		String newAccessToken = jwtTokenProvider.build(user.getLogin(), user.getName(), ttl);
-		return "Bearer " + newAccessToken;
+		return jwtTokenProvider.build(user.getLogin(), user.getName(), ttl);
 	}
 }
