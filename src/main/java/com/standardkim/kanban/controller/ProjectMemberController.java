@@ -58,7 +58,7 @@ public class ProjectMemberController {
 		projectMemberService.delete(projectId, userId);
 	}
 
-	@PostMapping("/projects/{projectId}/invitation")
+	@PostMapping("/projects/{projectId}/members/accept-invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
 		SecurityUser securityUser = userService.getSecurityUser();

@@ -34,7 +34,7 @@ public class ProjectInvitationController {
 
 	private final ModelMapper modelMapper;
 
-	@PostMapping("/projects/{projectId}/members")
+	@PostMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, 
