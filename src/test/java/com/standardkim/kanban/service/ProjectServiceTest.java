@@ -2,15 +2,18 @@ package com.standardkim.kanban.service;
 
 import static org.mockito.ArgumentMatchers.anyString;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
-import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.entity.ProjectMember;
-import com.standardkim.kanban.entity.ProjectMemberKey;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
-import com.standardkim.kanban.exception.project.ProjectNotFoundException;
-import com.standardkim.kanban.repository.ProjectRepository;
+import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.domain.Project;
+import com.standardkim.kanban.domain.project.domain.ProjectRepository;
+import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
+import com.standardkim.kanban.domain.project.exception.ProjectNotFoundException;
+import com.standardkim.kanban.domain.project.presentation.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.domain.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

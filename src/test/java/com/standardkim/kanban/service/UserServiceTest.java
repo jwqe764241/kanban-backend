@@ -1,11 +1,12 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.dto.UserDto.CreateUserParam;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.exception.user.DuplicateUserNameException;
-import com.standardkim.kanban.repository.UserRepository;
+import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.domain.User;
+import com.standardkim.kanban.domain.user.domain.UserRepository;
+import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
+import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
+import com.standardkim.kanban.domain.user.presentation.UserDto.CreateUserParam;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

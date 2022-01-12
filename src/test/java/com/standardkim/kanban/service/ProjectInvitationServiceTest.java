@@ -1,11 +1,16 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.entity.ProjectInvitation;
-import com.standardkim.kanban.entity.ProjectInvitationKey;
-import com.standardkim.kanban.entity.ProjectMemberKey;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.UserAlreadyInvitedException;
-import com.standardkim.kanban.repository.ProjectInvitationRepository;
+import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
+import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
+import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitationKey;
+import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitationRepository;
+import com.standardkim.kanban.domain.projectinvitation.exception.UserAlreadyInvitedException;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.domain.User;
+import com.standardkim.kanban.infra.mail.MailService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

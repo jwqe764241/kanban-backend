@@ -2,12 +2,14 @@ package com.standardkim.kanban.service;
 
 import java.util.Optional;
 
-import com.standardkim.kanban.dto.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.dto.KanbanDto.UpdateKanbanParam;
-import com.standardkim.kanban.entity.Kanban;
-import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.exception.kanban.KanbanNotFoundException;
-import com.standardkim.kanban.repository.KanbanRepository;
+import com.standardkim.kanban.domain.kanban.application.KanbanService;
+import com.standardkim.kanban.domain.kanban.domain.Kanban;
+import com.standardkim.kanban.domain.kanban.domain.KanbanRepository;
+import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
+import com.standardkim.kanban.domain.kanban.presentation.KanbanDto.CreateKanbanParam;
+import com.standardkim.kanban.domain.kanban.presentation.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.domain.Project;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

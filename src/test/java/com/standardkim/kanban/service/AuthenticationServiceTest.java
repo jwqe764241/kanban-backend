@@ -1,16 +1,19 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.dto.AuthenticationDto.LoginParam;
-import com.standardkim.kanban.entity.RefreshToken;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.auth.CannotLoginException;
-import com.standardkim.kanban.exception.auth.ExpiredRefreshTokenException;
-import com.standardkim.kanban.exception.auth.InvalidRefreshTokenException;
-import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
-import com.standardkim.kanban.exception.auth.UnknownRefreshTokenException;
-import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.util.JwtTokenProvider;
+import com.standardkim.kanban.domain.auth.application.AuthenticationService;
+import com.standardkim.kanban.domain.auth.exception.CannotLoginException;
+import com.standardkim.kanban.domain.auth.exception.ExpiredRefreshTokenException;
+import com.standardkim.kanban.domain.auth.exception.InvalidRefreshTokenException;
+import com.standardkim.kanban.domain.auth.exception.UnknownRefreshTokenException;
+import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.AuthenticationToken;
+import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.LoginParam;
+import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
+import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
+import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.domain.User;
+import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
+import com.standardkim.kanban.global.util.JwtTokenProvider;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

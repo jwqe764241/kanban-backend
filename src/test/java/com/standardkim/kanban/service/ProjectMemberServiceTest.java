@@ -1,13 +1,15 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.entity.ProjectMember;
-import com.standardkim.kanban.entity.ProjectMemberKey;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.CannotDeleteProjectOwnerException;
-import com.standardkim.kanban.exception.project.InvitationNotFoundException;
-import com.standardkim.kanban.exception.project.ProjectMemberNotFoundException;
-import com.standardkim.kanban.repository.ProjectMemberRepository;
+import com.standardkim.kanban.domain.project.domain.Project;
+import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberRepository;
+import com.standardkim.kanban.domain.projectmember.exception.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.domain.projectmember.exception.InvitationNotFoundException;
+import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
+import com.standardkim.kanban.domain.user.domain.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
