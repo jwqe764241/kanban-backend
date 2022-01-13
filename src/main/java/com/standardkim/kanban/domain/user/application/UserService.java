@@ -2,15 +2,12 @@ package com.standardkim.kanban.domain.user.application;
 
 import java.util.List;
 
-import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.domain.UserRepository;
 import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.domain.user.presentation.UserDto.CreateUserParam;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +20,6 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	private final PasswordEncoder passwordEncoder;
-
-	public SecurityUser getSecurityUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return (SecurityUser) authentication.getPrincipal();
-	}
 
 	@Transactional(readOnly = true)
 	public boolean isLoginExists(String login) {

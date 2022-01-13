@@ -10,7 +10,7 @@ import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.project.presentation.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.presentation.ProjectDto.ProjectDetail;
 import com.standardkim.kanban.domain.project.presentation.ProjectDto.UpdateProjectParam;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.global.util.SecurityContextFacade;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -31,21 +31,19 @@ import lombok.RequiredArgsConstructor;
 public class ProjectController {
 	private final ProjectService projectService;
 
-	private final UserService userService;
-
 	private final ModelMapper modelMapper;
 
 	@PostMapping("/projects")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
-		SecurityUser securityUser = userService.getSecurityUser();
+		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
 		projectService.create(securityUser.getId(), createProjectParam);
 	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
-		SecurityUser securityUser = userService.getSecurityUser();
+		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
 		List<Project> projects = projectService.findByUserId(securityUser.getId());
 		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
 		return projectDetails;

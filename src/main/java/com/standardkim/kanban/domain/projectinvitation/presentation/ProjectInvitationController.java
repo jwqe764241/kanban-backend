@@ -9,7 +9,7 @@ import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvita
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
 import com.standardkim.kanban.domain.projectinvitation.presentation.ProjectInvitationDto.InviteProjectMemeberParam;
 import com.standardkim.kanban.domain.projectinvitation.presentation.ProjectInvitationDto.InvitedUserDetail;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.global.util.SecurityContextFacade;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -30,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 public class ProjectInvitationController {
 	private final ProjectInvitationService projectInvitationService;
 
-	private final UserService userService;
-
 	private final ModelMapper modelMapper;
 
 	@PostMapping("/projects/{projectId}/invitations")
@@ -39,7 +37,7 @@ public class ProjectInvitationController {
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, 
 		@RequestBody @Valid InviteProjectMemeberParam param) {
-		SecurityUser securityUser = userService.getSecurityUser();
+		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
 		ProjectInvitation projectInvitation = projectInvitationService.invite(projectId, securityUser.getId(), param.getUserId());
 		InvitedUserDetail invitedUserDetail = modelMapper.map(projectInvitation, InvitedUserDetail.class);
 		return invitedUserDetail;

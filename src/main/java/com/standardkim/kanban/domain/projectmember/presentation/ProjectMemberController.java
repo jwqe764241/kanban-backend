@@ -9,6 +9,7 @@ import com.standardkim.kanban.domain.projectmember.presentation.ProjectMemberDto
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.presentation.UserDto.SuggestionUserDetail;
+import com.standardkim.kanban.global.util.SecurityContextFacade;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -61,7 +62,7 @@ public class ProjectMemberController {
 	@PostMapping("/projects/{projectId}/members/accept-invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
-		SecurityUser securityUser = userService.getSecurityUser();
+		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
 		projectMemberService.accept(projectId, securityUser.getId());
 	}
 }
