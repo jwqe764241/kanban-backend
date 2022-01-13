@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class ProjectController {
+public class ProjectApi {
 	private final ProjectService projectService;
 
 	private final ModelMapper modelMapper;

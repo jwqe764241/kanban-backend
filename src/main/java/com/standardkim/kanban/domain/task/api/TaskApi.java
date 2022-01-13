@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class TaskController {
+public class TaskApi {
 	private final TaskService taskService;
 
 	private final SimpMessagingTemplate simpMessagingTemplate;

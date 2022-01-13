@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class KanbanController {
+public class KanbanApi {
 	private final KanbanService kanbanService;
 
 	private final KanbanSequenceService kanbanSequenceService;

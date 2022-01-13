@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class TaskColumnController {
+public class TaskColumnApi {
 	private final TaskColumnService taskColumnService;
 
 	private final SimpMessagingTemplate simpMessagingTemplate;

@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class AuthenticationApi {
 	private final AuthenticationService authenticationService;
 
 	@Value("${config.refresh-token-name}")

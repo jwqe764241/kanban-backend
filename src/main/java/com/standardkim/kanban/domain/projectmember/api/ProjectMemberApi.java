@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class ProjectMemberController {
+public class ProjectMemberApi {
 	private final ProjectMemberService projectMemberService;
 
 	private final UserService userService;
