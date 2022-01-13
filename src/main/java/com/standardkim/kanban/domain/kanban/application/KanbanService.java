@@ -1,10 +1,10 @@
 package com.standardkim.kanban.domain.kanban.application;
 
+import com.standardkim.kanban.domain.kanban.dao.KanbanRepository;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
-import com.standardkim.kanban.domain.kanban.domain.KanbanRepository;
+import com.standardkim.kanban.domain.kanban.dto.KanbanDto.CreateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
-import com.standardkim.kanban.domain.kanban.presentation.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.domain.kanban.presentation.KanbanDto.UpdateKanbanParam;
 import com.standardkim.kanban.domain.project.application.ProjectService;
 import com.standardkim.kanban.domain.project.domain.Project;
 

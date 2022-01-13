@@ -1,11 +1,11 @@
 package com.standardkim.kanban.domain.auth.application;
 
+import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AuthenticationToken;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.LoginParam;
 import com.standardkim.kanban.domain.auth.exception.CannotLoginException;
 import com.standardkim.kanban.domain.auth.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.domain.auth.exception.InvalidRefreshTokenException;
 import com.standardkim.kanban.domain.auth.exception.UnknownRefreshTokenException;
-import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.LoginParam;
 import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;

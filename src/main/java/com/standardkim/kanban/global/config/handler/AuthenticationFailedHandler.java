@@ -7,8 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.standardkim.kanban.global.exception.ErrorCode;
-import com.standardkim.kanban.global.exception.ErrorResponseDto.ErrorResponse;
+import com.standardkim.kanban.global.error.ErrorCode;
+import com.standardkim.kanban.global.error.ErrorResponseDto.ErrorResponse;
 import com.standardkim.kanban.global.util.ErrorResponseJsonConverter;
 
 import org.springframework.beans.factory.annotation.Value;

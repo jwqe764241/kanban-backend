@@ -14,11 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.standardkim.kanban.domain.kanban.presentation.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.domain.kanban.presentation.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.KanbanDto.CreateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
-import com.standardkim.kanban.global.entity.BaseTimeEntity;
 import com.standardkim.kanban.global.util.BooleanToYNConverter;
 
 import lombok.AccessLevel;

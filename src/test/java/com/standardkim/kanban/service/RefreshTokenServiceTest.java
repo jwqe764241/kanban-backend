@@ -1,8 +1,8 @@
 package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
+import com.standardkim.kanban.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
-import com.standardkim.kanban.domain.refreshtoken.domain.RefreshTokenRepository;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.domain.User;

@@ -17,9 +17,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
+import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.task.domain.Task;
-import com.standardkim.kanban.domain.taskcolumn.presentation.TaskColumnDto.CreateTaskColumnParam;
-import com.standardkim.kanban.global.entity.BaseTimeEntity;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.CreateTaskColumnParam;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

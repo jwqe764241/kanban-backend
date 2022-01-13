@@ -1,6 +1,6 @@
 package com.standardkim.kanban.global.config.interceptor;
 
-import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.AuthorizationHeader;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AuthorizationHeader;
 import com.standardkim.kanban.global.util.JwtTokenProvider;
 
 import org.springframework.messaging.Message;

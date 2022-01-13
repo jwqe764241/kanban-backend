@@ -9,8 +9,8 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.global.entity.BaseTimeEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

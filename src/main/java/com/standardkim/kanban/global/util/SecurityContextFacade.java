@@ -1,6 +1,6 @@
 package com.standardkim.kanban.global.util;
 
-import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

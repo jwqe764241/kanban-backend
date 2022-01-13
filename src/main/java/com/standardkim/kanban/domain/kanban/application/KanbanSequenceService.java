@@ -2,8 +2,8 @@ package com.standardkim.kanban.domain.kanban.application;
 
 import java.util.List;
 
+import com.standardkim.kanban.domain.kanban.dao.KanbanSequenceRepository;
 import com.standardkim.kanban.domain.kanban.domain.KanbanSequence;
-import com.standardkim.kanban.domain.kanban.domain.KanbanSequenceRepository;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
 
 import org.springframework.stereotype.Service;

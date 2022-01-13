@@ -1,6 +1,6 @@
 package com.standardkim.kanban.domain.auth.exception;
 
-import com.standardkim.kanban.global.exception.ErrorCode;
+import com.standardkim.kanban.global.error.ErrorCode;
 
 public class ExpiredRefreshTokenException extends InvalidRefreshTokenException {
 	public ExpiredRefreshTokenException(String message) {

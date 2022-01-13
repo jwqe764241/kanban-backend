@@ -3,10 +3,10 @@ package com.standardkim.kanban.service;
 import com.standardkim.kanban.domain.kanban.application.KanbanService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnService;
-import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumnRepository;
+import com.standardkim.kanban.domain.taskcolumn.dao.TaskColumnRepository;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.CreateTaskColumnParam;
 import com.standardkim.kanban.domain.taskcolumn.exception.DuplicateTaskColumnNameException;
 import com.standardkim.kanban.domain.taskcolumn.exception.TaskColumnNotFoundException;
-import com.standardkim.kanban.domain.taskcolumn.presentation.TaskColumnDto.CreateTaskColumnParam;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -2,11 +2,11 @@ package com.standardkim.kanban.domain.user.application;
 
 import java.util.List;
 
+import com.standardkim.kanban.domain.user.dao.UserRepository;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.domain.user.domain.UserRepository;
+import com.standardkim.kanban.domain.user.dto.UserDto.CreateUserParam;
 import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
-import com.standardkim.kanban.domain.user.presentation.UserDto.CreateUserParam;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.standardkim.kanban.domain.projectmember.exception;
 
-import com.standardkim.kanban.global.exception.ErrorCode;
-import com.standardkim.kanban.global.exception.InvalidValueException;
+import com.standardkim.kanban.global.error.ErrorCode;
+import com.standardkim.kanban.global.error.exception.InvalidValueException;
 
 public class CannotDeleteProjectOwnerException extends InvalidValueException {
 	public CannotDeleteProjectOwnerException(String message) {

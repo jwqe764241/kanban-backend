@@ -2,13 +2,13 @@ package com.standardkim.kanban.service;
 
 import static org.mockito.ArgumentMatchers.anyString;
 
-import com.standardkim.kanban.domain.auth.presentation.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
 import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.project.domain.ProjectRepository;
+import com.standardkim.kanban.domain.project.dto.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
 import com.standardkim.kanban.domain.project.exception.ProjectNotFoundException;
-import com.standardkim.kanban.domain.project.presentation.ProjectDto.CreateProjectParam;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;

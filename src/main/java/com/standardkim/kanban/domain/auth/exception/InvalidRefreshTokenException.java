@@ -1,7 +1,7 @@
 package com.standardkim.kanban.domain.auth.exception;
 
-import com.standardkim.kanban.global.exception.ErrorCode;
-import com.standardkim.kanban.global.exception.InvalidValueException;
+import com.standardkim.kanban.global.error.ErrorCode;
+import com.standardkim.kanban.global.error.exception.InvalidValueException;
 
 public class InvalidRefreshTokenException extends InvalidValueException {
 	public InvalidRefreshTokenException(String message) {

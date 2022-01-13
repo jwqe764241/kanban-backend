@@ -6,12 +6,12 @@ import java.util.Set;
 
 import com.standardkim.kanban.domain.kanban.application.KanbanService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
+import com.standardkim.kanban.domain.task.dao.TaskRepository;
 import com.standardkim.kanban.domain.task.domain.Task;
-import com.standardkim.kanban.domain.task.domain.TaskRepository;
+import com.standardkim.kanban.domain.task.dto.TaskDto.CreateTaskParam;
+import com.standardkim.kanban.domain.task.dto.TaskDto.ReorderTaskParam;
+import com.standardkim.kanban.domain.task.dto.TaskDto.UpdateTaskParam;
 import com.standardkim.kanban.domain.task.exception.TaskNotFoundException;
-import com.standardkim.kanban.domain.task.presentation.TaskDto.CreateTaskParam;
-import com.standardkim.kanban.domain.task.presentation.TaskDto.ReorderTaskParam;
-import com.standardkim.kanban.domain.task.presentation.TaskDto.UpdateTaskParam;
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnService;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
 

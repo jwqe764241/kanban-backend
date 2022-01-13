@@ -1,7 +1,7 @@
 package com.standardkim.kanban.global.config.mapper;
 
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.project.presentation.ProjectDto.ProjectDetail;
+import com.standardkim.kanban.domain.project.dto.ProjectDto.ProjectDetail;
 
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;

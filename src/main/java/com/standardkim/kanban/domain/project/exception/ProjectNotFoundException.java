@@ -1,7 +1,7 @@
 package com.standardkim.kanban.domain.project.exception;
 
-import com.standardkim.kanban.global.exception.EntityNotFoundException;
-import com.standardkim.kanban.global.exception.ErrorCode;
+import com.standardkim.kanban.global.error.ErrorCode;
+import com.standardkim.kanban.global.error.exception.EntityNotFoundException;
 
 public class ProjectNotFoundException extends EntityNotFoundException {
 	public ProjectNotFoundException(String message) {

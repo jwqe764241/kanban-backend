@@ -1,7 +1,7 @@
 package com.standardkim.kanban.domain.taskcolumn.exception;
 
-import com.standardkim.kanban.global.exception.EntityNotFoundException;
-import com.standardkim.kanban.global.exception.ErrorCode;
+import com.standardkim.kanban.global.error.ErrorCode;
+import com.standardkim.kanban.global.error.exception.EntityNotFoundException;
 
 public class TaskColumnNotFoundException extends EntityNotFoundException {
 	public TaskColumnNotFoundException(String message) {

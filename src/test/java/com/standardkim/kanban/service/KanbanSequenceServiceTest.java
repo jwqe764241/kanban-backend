@@ -1,8 +1,8 @@
 package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.domain.kanban.application.KanbanSequenceService;
+import com.standardkim.kanban.domain.kanban.dao.KanbanSequenceRepository;
 import com.standardkim.kanban.domain.kanban.domain.KanbanSequence;
-import com.standardkim.kanban.domain.kanban.domain.KanbanSequenceRepository;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
 
 import org.junit.jupiter.api.Test;

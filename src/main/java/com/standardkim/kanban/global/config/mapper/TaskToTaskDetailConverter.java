@@ -1,7 +1,7 @@
 package com.standardkim.kanban.global.config.mapper;
 
 import com.standardkim.kanban.domain.task.domain.Task;
-import com.standardkim.kanban.domain.task.presentation.TaskDto.TaskDetail;
+import com.standardkim.kanban.domain.task.dto.TaskDto.TaskDetail;
 
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;

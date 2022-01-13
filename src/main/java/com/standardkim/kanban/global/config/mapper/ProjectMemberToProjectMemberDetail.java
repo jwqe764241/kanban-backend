@@ -1,7 +1,7 @@
 package com.standardkim.kanban.global.config.mapper;
 
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.projectmember.presentation.ProjectMemberDto.ProjectMemberDetail;
+import com.standardkim.kanban.domain.projectmember.dto.ProjectMemberDto.ProjectMemberDetail;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import org.modelmapper.Converter;

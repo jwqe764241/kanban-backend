@@ -13,9 +13,9 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.user.presentation.UserDto.CreateUserParam;
-import com.standardkim.kanban.global.entity.BaseTimeEntity;
+import com.standardkim.kanban.domain.user.dto.UserDto.CreateUserParam;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 

@@ -12,10 +12,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 
+import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.global.entity.BaseTimeEntity;
 import com.standardkim.kanban.global.util.BooleanToYNConverter;
 
 import lombok.AccessLevel;

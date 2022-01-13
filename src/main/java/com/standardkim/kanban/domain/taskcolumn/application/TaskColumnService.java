@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.standardkim.kanban.domain.kanban.application.KanbanService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
-import com.standardkim.kanban.domain.task.domain.TaskRepository;
+import com.standardkim.kanban.domain.task.dao.TaskRepository;
+import com.standardkim.kanban.domain.taskcolumn.dao.TaskColumnRepository;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
-import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumnRepository;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.CreateTaskColumnParam;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.ReorderTaskColumnParam;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.UpdateTaskColumnParam;
 import com.standardkim.kanban.domain.taskcolumn.exception.DuplicateTaskColumnNameException;
 import com.standardkim.kanban.domain.taskcolumn.exception.TaskColumnNotFoundException;
-import com.standardkim.kanban.domain.taskcolumn.presentation.TaskColumnDto.CreateTaskColumnParam;
-import com.standardkim.kanban.domain.taskcolumn.presentation.TaskColumnDto.ReorderTaskColumnParam;
-import com.standardkim.kanban.domain.taskcolumn.presentation.TaskColumnDto.UpdateTaskColumnParam;
 import com.standardkim.kanban.global.util.LinkedListUtil;
 
 import org.springframework.stereotype.Service;
