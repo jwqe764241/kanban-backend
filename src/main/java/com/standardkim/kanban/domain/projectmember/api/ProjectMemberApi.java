@@ -2,13 +2,13 @@ package com.standardkim.kanban.domain.projectmember.api;
 
 import java.util.List;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.projectmember.dto.ProjectMemberDto.ProjectMemberDetail;
+import com.standardkim.kanban.domain.projectmember.dto.ProjectMemberDetail;
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.domain.user.dto.UserDto.SuggestionUserDetail;
+import com.standardkim.kanban.domain.user.dto.SuggestionUserDetail;
 import com.standardkim.kanban.global.util.SecurityContextFacade;
 
 import org.modelmapper.ModelMapper;

@@ -1,6 +1,6 @@
 package com.standardkim.kanban.global.config.handler;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
 import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
 

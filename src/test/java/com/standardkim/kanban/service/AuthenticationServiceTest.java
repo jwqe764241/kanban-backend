@@ -1,8 +1,14 @@
 package com.standardkim.kanban.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+
 import com.standardkim.kanban.domain.auth.application.AuthenticationService;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.LoginParam;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationToken;
+import com.standardkim.kanban.domain.auth.dto.LoginParam;
 import com.standardkim.kanban.domain.auth.exception.CannotLoginException;
 import com.standardkim.kanban.domain.auth.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.domain.auth.exception.InvalidRefreshTokenException;
@@ -23,9 +29,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.mockito.BDDMockito.*;
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationServiceTest {

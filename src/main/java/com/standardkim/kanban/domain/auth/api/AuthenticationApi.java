@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.domain.auth.application.AuthenticationService;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AccessToken;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.LoginParam;
+import com.standardkim.kanban.domain.auth.dto.AccessToken;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationToken;
+import com.standardkim.kanban.domain.auth.dto.LoginParam;
 import com.standardkim.kanban.domain.auth.exception.EmptyRefreshTokenException;
 import com.standardkim.kanban.global.util.CookieUtil;
 

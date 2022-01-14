@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.standardkim.kanban.domain.task.dto.TaskDto.TaskDetail;
-import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.TaskColumnDetail;
+import com.standardkim.kanban.domain.task.dto.TaskDetail;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDetail;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,22 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.dao.UserRepository;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.domain.user.dto.UserDto.CreateUserParam;
+import com.standardkim.kanban.domain.user.dto.CreateUserParam;
 import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 
@@ -17,18 +29,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

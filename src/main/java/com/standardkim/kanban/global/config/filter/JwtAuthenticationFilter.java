@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AuthorizationHeader;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.auth.dto.AuthorizationHeader;
+import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;

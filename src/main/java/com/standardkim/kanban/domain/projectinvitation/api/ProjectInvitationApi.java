@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
+import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
-import com.standardkim.kanban.domain.projectinvitation.dto.ProjectInvitationDto.InviteProjectMemeberParam;
-import com.standardkim.kanban.domain.projectinvitation.dto.ProjectInvitationDto.InvitedUserDetail;
+import com.standardkim.kanban.domain.projectinvitation.dto.InviteProjectMemeberParam;
+import com.standardkim.kanban.domain.projectinvitation.dto.InvitedUserDetail;
 import com.standardkim.kanban.global.util.SecurityContextFacade;
 
 import org.modelmapper.ModelMapper;

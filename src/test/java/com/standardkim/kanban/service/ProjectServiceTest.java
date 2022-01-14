@@ -1,12 +1,22 @@
 package com.standardkim.kanban.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.SecurityUser;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.project.application.ProjectService;
 import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.project.dto.ProjectDto.CreateProjectParam;
+import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
 import com.standardkim.kanban.domain.project.exception.ProjectNotFoundException;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
@@ -24,15 +34,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
-
-import static org.mockito.BDDMockito.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProjectServiceTest {

@@ -1,12 +1,18 @@
 package com.standardkim.kanban.service;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
 import java.util.Optional;
 
 import com.standardkim.kanban.domain.kanban.application.KanbanService;
 import com.standardkim.kanban.domain.kanban.dao.KanbanRepository;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
-import com.standardkim.kanban.domain.kanban.dto.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.domain.kanban.dto.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanParam;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
 import com.standardkim.kanban.domain.project.application.ProjectService;
 import com.standardkim.kanban.domain.project.domain.Project;
@@ -16,9 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.BDDMockito.*;
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class KanbanServiceTest {

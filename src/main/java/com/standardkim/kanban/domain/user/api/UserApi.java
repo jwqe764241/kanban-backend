@@ -3,7 +3,7 @@ package com.standardkim.kanban.domain.user.api;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.domain.user.application.UserService;
-import com.standardkim.kanban.domain.user.dto.UserDto.CreateUserParam;
+import com.standardkim.kanban.domain.user.dto.CreateUserParam;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.project.dto.ProjectDto.CreateProjectParam;
-import com.standardkim.kanban.domain.project.dto.ProjectDto.UpdateProjectParam;
+import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
+import com.standardkim.kanban.domain.project.dto.UpdateProjectParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
 import com.standardkim.kanban.domain.project.exception.ProjectNotFoundException;
 import com.standardkim.kanban.domain.user.application.UserService;

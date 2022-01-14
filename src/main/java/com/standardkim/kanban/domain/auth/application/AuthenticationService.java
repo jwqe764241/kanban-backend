@@ -1,7 +1,7 @@
 package com.standardkim.kanban.domain.auth.application;
 
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.AuthenticationToken;
-import com.standardkim.kanban.domain.auth.dto.AuthenticationDto.LoginParam;
+import com.standardkim.kanban.domain.auth.dto.AuthenticationToken;
+import com.standardkim.kanban.domain.auth.dto.LoginParam;
 import com.standardkim.kanban.domain.auth.exception.CannotLoginException;
 import com.standardkim.kanban.domain.auth.exception.ExpiredRefreshTokenException;
 import com.standardkim.kanban.domain.auth.exception.InvalidRefreshTokenException;

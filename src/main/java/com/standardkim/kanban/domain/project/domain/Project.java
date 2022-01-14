@@ -15,8 +15,8 @@ import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
-import com.standardkim.kanban.domain.project.dto.ProjectDto.CreateProjectParam;
-import com.standardkim.kanban.domain.project.dto.ProjectDto.UpdateProjectParam;
+import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
+import com.standardkim.kanban.domain.project.dto.UpdateProjectParam;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
 import com.standardkim.kanban.domain.user.domain.User;

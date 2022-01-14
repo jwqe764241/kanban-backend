@@ -8,9 +8,9 @@ import com.standardkim.kanban.domain.kanban.application.KanbanSequenceService;
 import com.standardkim.kanban.domain.kanban.application.KanbanService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.kanban.domain.KanbanSequence;
-import com.standardkim.kanban.domain.kanban.dto.KanbanDto.CreateKanbanParam;
-import com.standardkim.kanban.domain.kanban.dto.KanbanDto.KanbanDetail;
-import com.standardkim.kanban.domain.kanban.dto.KanbanDto.UpdateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.KanbanDetail;
+import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanParam;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

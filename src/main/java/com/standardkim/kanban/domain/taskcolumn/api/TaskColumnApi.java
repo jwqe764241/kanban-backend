@@ -10,10 +10,10 @@ import com.standardkim.kanban.domain.kanban.dto.KanbanActionDto.ReorderColumnAct
 import com.standardkim.kanban.domain.kanban.dto.KanbanActionDto.UpdateColumnAction;
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnService;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
-import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.CreateTaskColumnParam;
-import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.ReorderTaskColumnParam;
-import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.TaskColumnDetail;
-import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDto.UpdateTaskColumnParam;
+import com.standardkim.kanban.domain.taskcolumn.dto.CreateTaskColumnParam;
+import com.standardkim.kanban.domain.taskcolumn.dto.ReorderTaskColumnParam;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDetail;
+import com.standardkim.kanban.domain.taskcolumn.dto.UpdateTaskColumnParam;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

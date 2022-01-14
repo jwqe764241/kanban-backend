@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.standardkim.kanban.domain.user.dao.UserRepository;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.domain.user.dto.UserDto.CreateUserParam;
+import com.standardkim.kanban.domain.user.dto.CreateUserParam;
 import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 
