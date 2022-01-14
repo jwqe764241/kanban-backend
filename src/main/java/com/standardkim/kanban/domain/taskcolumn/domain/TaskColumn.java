@@ -19,7 +19,6 @@ import javax.persistence.UniqueConstraint;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.task.domain.Task;
-import com.standardkim.kanban.domain.taskcolumn.dto.CreateTaskColumnParam;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -62,16 +61,16 @@ public class TaskColumn extends BaseTimeEntity {
 	@OneToMany(mappedBy = "taskColumn")
 	private Set<Task> tasks = new HashSet<>();
 
-	public static TaskColumn from(CreateTaskColumnParam param, Kanban kanban) {
+	public static TaskColumn from(String name, Kanban kanban) {
 		return TaskColumn.builder()
-			.name(param.getName())
+			.name(name)
 			.kanban(kanban)
 			.build();
 	}
 
-	public static TaskColumn from(CreateTaskColumnParam param, Kanban kanban, TaskColumn prevTaskColumn) {
+	public static TaskColumn from(String name, Kanban kanban, TaskColumn prevTaskColumn) {
 		return TaskColumn.builder()
-			.name(param.getName())
+			.name(name)
 			.kanban(kanban)
 			.prevTaskColumn(prevTaskColumn)
 			.prevId(prevTaskColumn.getId())

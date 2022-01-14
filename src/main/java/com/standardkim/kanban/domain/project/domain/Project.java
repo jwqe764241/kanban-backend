@@ -15,10 +15,7 @@ import javax.persistence.OneToMany;
 
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
-import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
-import com.standardkim.kanban.domain.project.dto.UpdateProjectParam;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import lombok.AccessLevel;
@@ -56,26 +53,20 @@ public class Project extends BaseTimeEntity {
 	@OneToMany(mappedBy = "project")
 	private Set<Kanban> kanbans = new HashSet<>();
 
-	public static Project from(CreateProjectParam param, User registerUser) {
+	public static Project from(String name, String description, User registerUser) {
 		return Project.builder()
-				.name(param.getName())
-				.description(param.getDescription())
-				.registerUser(registerUser)
-				.build();
+			.name(name)
+			.description(description)
+			.registerUser(registerUser)
+			.build();
 	}
 
-	public void update(UpdateProjectParam param) {
-		name = param.getName();
+	public void updateName(String name) {
+		this.name = name;
 	}
 
 	public void addMember(User user, boolean isRegister) {
-		ProjectMemberKey memberId = ProjectMemberKey.from(id, user.getId());
-		ProjectMember member = ProjectMember.builder()
-			.id(memberId)
-			.project(this)
-			.user(user)
-			.isRegister(isRegister)
-			.build();
+		ProjectMember member = ProjectMember.from(this, user, isRegister);
 		members.add(member);
 	}
 }

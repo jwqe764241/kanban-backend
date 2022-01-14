@@ -29,14 +29,15 @@ public class KanbanService {
 	@Transactional(rollbackFor = Exception.class)
 	public Kanban create(Long projectId, CreateKanbanParam createKanbanParam) {
 		Project project = projectService.findById(projectId);
-		Kanban kanban = Kanban.from(createKanbanParam, project);
+		Kanban kanban = Kanban.from(createKanbanParam.getName(), createKanbanParam.getDescription(), project);
 		return kanbanRepository.save(kanban);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public Kanban update(Long projectId, Long sequenceId, UpdateKanbanParam updateKanbanParam) {
 		Kanban kanban = findByProjectIdAndSequenceId(projectId, sequenceId);
-		kanban.updateKanban(updateKanbanParam);
+		kanban.updateName(updateKanbanParam.getName());
+		kanban.updateDescription(updateKanbanParam.getDescription());
 		return kanban;
 	}
 
@@ -44,7 +45,7 @@ public class KanbanService {
 	public void delete(Long projectId, Long sequenceId) {
 		Kanban kanban = kanbanRepository.findByProjectIdAndSequenceId(projectId, sequenceId).orElse(null);
 		if(kanban != null && !kanban.isDeleted()) {
-			kanban.updateToDeleted();
+			kanban.delete();
 		}
 	}
 }

@@ -65,12 +65,12 @@ public class TaskColumnService {
 		List<TaskColumn> taskColumns = taskColumnRepository.findByKanbanId(kanban.getId());
 		TaskColumn taskColumn = null;
 		if(taskColumns.isEmpty()) {
-			taskColumn = TaskColumn.from(param, kanban);
+			taskColumn = TaskColumn.from(param.getName(), kanban);
 		}
 		else {
 			int index = LinkedListUtil.findLastItemIndex(taskColumns);
 			TaskColumn lastTaskColumn = taskColumns.get(index);
-			taskColumn = TaskColumn.from(param, kanban, lastTaskColumn);
+			taskColumn = TaskColumn.from(param.getName(), kanban, lastTaskColumn);
 		}
 
 		taskColumnRepository.save(taskColumn);

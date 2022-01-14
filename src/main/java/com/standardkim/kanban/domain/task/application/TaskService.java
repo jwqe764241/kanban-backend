@@ -56,7 +56,7 @@ public class TaskService {
 		TaskColumn taskColumn = taskColumnService.findByIdAndKanbanId(columnId, kanban.getId());
 
 		Task firstTask = taskRepository.findByPrevIdAndTaskColumnId(null, taskColumn.getId());
-		Task task = Task.from(param, taskColumn);
+		Task task = Task.from(param.getText(), taskColumn);
 		taskRepository.save(task);
 
 		if(firstTask != null) {

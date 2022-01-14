@@ -48,7 +48,11 @@ public class UserService {
 		if(isLoginExists(createUserParam.getLogin())) {
 			throw new DuplicateUserNameException("duplicate user name");
 		}
-		User user = User.from(createUserParam, passwordEncoder);
+		User user = User.from(createUserParam.getLogin(), 
+			createUserParam.getPassword(),
+			createUserParam.getName(),
+			createUserParam.getEmail(),	
+			passwordEncoder);
 		return userRepository.save(user);
 	}
 }

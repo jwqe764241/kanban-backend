@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
-import com.standardkim.kanban.domain.task.dto.CreateTaskParam;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
 
 import lombok.AccessLevel;
@@ -55,9 +54,9 @@ public class Task extends BaseTimeEntity {
 	@Column(name = "prev_id", nullable = true, insertable = false, updatable = false)
 	private Long prevId;
 
-	public static Task from(CreateTaskParam param, TaskColumn taskColumn) {
+	public static Task from(String text, TaskColumn taskColumn) {
 		return Task.builder()
-			.text(param.getText())
+			.text(text)
 			.taskColumn(taskColumn)
 			.taskColumnId(taskColumn.getId())
 			.build();

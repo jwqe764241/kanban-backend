@@ -14,8 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
-import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanParam;
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
@@ -57,21 +55,24 @@ public class Kanban extends BaseTimeEntity {
 	@OneToMany(mappedBy = "kanban")
 	private Set<TaskColumn> taskColumns = new HashSet<>();
 
-	public static Kanban from(CreateKanbanParam param, Project project) {
+	public static Kanban from(String name, String description, Project project) {
 		Kanban kanban = Kanban.builder()
-			.name(param.getName())
-			.description(param.getDescription())
+			.name(name)
+			.description(description)
 			.project(project)
 			.build();
 		return kanban;
 	}
 
-	public void updateToDeleted() {
+	public void delete() {
 		isDeleted = true;
 	}
 
-	public void updateKanban(UpdateKanbanParam updateKanbanParam) {
-		name = updateKanbanParam.getName();
-		description = updateKanbanParam.getDescription();
+	public void updateName(String name) {
+		this.name = name;
+	}
+
+	public void updateDescription(String description) {
+		this.description = description;
 	}
 }

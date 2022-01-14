@@ -45,7 +45,7 @@ public class ProjectService {
 			throw new DuplicateProjectNameException("duplicate project name");
 		}
 		User registerUser = userService.findById(userId);
-		Project project = Project.from(createProjectParam, registerUser);
+		Project project = Project.from(createProjectParam.getName(), createProjectParam.getDescription(), registerUser);
 		Project createdProject = projectRepository.save(project);
 		createdProject.addMember(registerUser, true);
 		return createdProject;
@@ -57,7 +57,7 @@ public class ProjectService {
 			throw new DuplicateProjectNameException("duplicate project name");
 		}
 		Project project = findById(projectId);
-		project.update(updateProjectParam);
+		project.updateName(updateProjectParam.getName());
 		return project;
 	}
 }

@@ -15,7 +15,6 @@ import javax.persistence.UniqueConstraint;
 
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.user.dto.CreateUserParam;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -53,12 +52,12 @@ public class User extends BaseTimeEntity {
 	@OrderBy("created_at desc")
 	private Set<ProjectMember> projects;
 
-	public static User from(CreateUserParam param, PasswordEncoder passwordEncoder) {
+	public static User from(String login, String password, String name, String email, PasswordEncoder passwordEncoder) {
 		return User.builder()
-			.login(param.getLogin())
-			.password(passwordEncoder.encode(param.getPassword()))
-			.name(param.getName())
-			.email(param.getEmail())
+			.login(login)
+			.password(passwordEncoder.encode(password))
+			.name(name)
+			.email(email)
 			.build();
 	}
 }
