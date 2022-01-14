@@ -29,7 +29,7 @@ public class KanbanService {
 	@Transactional(rollbackFor = Exception.class)
 	public Kanban create(Long projectId, CreateKanbanParam createKanbanParam) {
 		Project project = projectService.findById(projectId);
-		Kanban kanban = Kanban.from(createKanbanParam.getName(), createKanbanParam.getDescription(), project);
+		Kanban kanban = Kanban.of(createKanbanParam.getName(), createKanbanParam.getDescription(), project);
 		return kanbanRepository.save(kanban);
 	}
 

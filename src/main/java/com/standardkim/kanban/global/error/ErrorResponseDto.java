@@ -25,14 +25,14 @@ public class ErrorResponseDto {
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		private Object data;
 
-		public static ErrorResponse from(ErrorCode errorCode) {
+		public static ErrorResponse of(ErrorCode errorCode) {
 			return ErrorResponse.builder()
 				.code(errorCode.getCode())
 				.message(errorCode.getMessage())
 				.build();
 		}
 
-		public static ErrorResponse from(ErrorCode errorCode, Object data) {
+		public static ErrorResponse of(ErrorCode errorCode, Object data) {
 			return ErrorResponse.builder()
 				.code(errorCode.getCode())
 				.message(errorCode.getMessage())
@@ -42,12 +42,12 @@ public class ErrorResponseDto {
 
 		public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
 			return ResponseEntity.status(errorCode.getHttpStatus())
-				.body(from(errorCode));
+				.body(of(errorCode));
 		}
 
 		public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode, Object data) {
 			return ResponseEntity.status(errorCode.getHttpStatus())
-				.body(from(errorCode, data));
+				.body(of(errorCode, data));
 		}
 	}
 

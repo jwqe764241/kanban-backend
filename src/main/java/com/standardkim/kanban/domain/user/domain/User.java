@@ -52,7 +52,7 @@ public class User extends BaseTimeEntity {
 	@OrderBy("created_at desc")
 	private Set<ProjectMember> projects;
 
-	public static User from(String login, String password, String name, String email, PasswordEncoder passwordEncoder) {
+	public static User of(String login, String password, String name, String email, PasswordEncoder passwordEncoder) {
 		return User.builder()
 			.login(login)
 			.password(passwordEncoder.encode(password))

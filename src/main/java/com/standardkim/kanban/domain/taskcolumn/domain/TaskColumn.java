@@ -61,14 +61,14 @@ public class TaskColumn extends BaseTimeEntity {
 	@OneToMany(mappedBy = "taskColumn")
 	private Set<Task> tasks = new HashSet<>();
 
-	public static TaskColumn from(String name, Kanban kanban) {
+	public static TaskColumn of(String name, Kanban kanban) {
 		return TaskColumn.builder()
 			.name(name)
 			.kanban(kanban)
 			.build();
 	}
 
-	public static TaskColumn from(String name, Kanban kanban, TaskColumn prevTaskColumn) {
+	public static TaskColumn of(String name, Kanban kanban, TaskColumn prevTaskColumn) {
 		return TaskColumn.builder()
 			.name(name)
 			.kanban(kanban)

@@ -32,7 +32,7 @@ public class ProjectMemberService {
 
 	@Transactional(readOnly = true)
 	public boolean isExist(Long projectId, Long userId){
-		ProjectMemberKey key = ProjectMemberKey.from(projectId, userId);
+		ProjectMemberKey key = ProjectMemberKey.of(projectId, userId);
 		return projectMemberRepository.existsById(key);
 	}
 
@@ -44,7 +44,7 @@ public class ProjectMemberService {
 
 	@Transactional(readOnly = true)
 	public ProjectMember findById(Long projectId, Long userId) {
-		ProjectMemberKey key = ProjectMemberKey.from(projectId, userId);
+		ProjectMemberKey key = ProjectMemberKey.of(projectId, userId);
 		return projectMemberRepository.findById(key)
 			.orElseThrow(() -> new ProjectMemberNotFoundException("project member not found"));
 	}
@@ -58,7 +58,7 @@ public class ProjectMemberService {
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
 		Project project = projectService.findById(projectId);
 		User user = userService.findById(userId);
-		ProjectMember projectMember = ProjectMember.from(project, user, isRegister);
+		ProjectMember projectMember = ProjectMember.of(project, user, isRegister);
 		return projectMemberRepository.save(projectMember);
 	}
 

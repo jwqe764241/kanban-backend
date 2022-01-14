@@ -19,7 +19,7 @@ public class AuthorizationHeader {
 			credentials != null && !credentials.isBlank();
 	}
 
-	public static AuthorizationHeader from(String header) {
+	public static AuthorizationHeader of(String header) {
 		if(header == null || header.isEmpty()) {
 			throw new IllegalArgumentException("empty argument");
 		}

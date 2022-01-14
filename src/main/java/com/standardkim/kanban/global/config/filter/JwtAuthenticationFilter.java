@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		AuthorizationHeader authorizationHeader = null;
 		try {
-			authorizationHeader = AuthorizationHeader.from(request.getHeader("Authorization"));
+			authorizationHeader = AuthorizationHeader.of(request.getHeader("Authorization"));
 		} catch (IllegalArgumentException e) {}
 
 		if(authorizationHeader != null){
@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						setInvalidAccessTokenResponse(response);
 						return;
 					}
-					SecurityUser securityUser = SecurityUser.from(user);
+					SecurityUser securityUser = SecurityUser.of(user);
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(securityUser, null, securityUser.getAuthorities());
 					if(securityUser.isEnabled()) {
 						SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -102,7 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private void setInvalidAccessTokenResponse(HttpServletResponse response) {
-		ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.INVALID_ACCESS_TOKEN);
+		ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_ACCESS_TOKEN);
 		String responseJson = errorResponseJsonConverter.convert(errorResponse).orElse("");
 		setDefaultHeader(response);
 		response.setStatus(401);

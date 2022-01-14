@@ -33,7 +33,7 @@ public class AuthenticationFailedHandler implements AuthenticationEntryPoint{
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-		ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.INVALID_ACCESS_TOKEN);
+		ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_ACCESS_TOKEN);
 		String responseJson = errorResponseJsonConverter.convert(errorResponse).orElse("");
 		response.setHeader("Access-Control-Allow-Origin", flattenAllowedOrigins);
 		response.setHeader("Access-Control-Allow-Credentials", "true");

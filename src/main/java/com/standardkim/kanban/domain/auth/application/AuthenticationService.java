@@ -50,7 +50,7 @@ public class AuthenticationService {
 
 		refreshTokenService.save(user.getId(), refreshToken);
 
-		return AuthenticationToken.from(accessToken, refreshToken);
+		return AuthenticationToken.of(accessToken, refreshToken);
 	}
 
 	@Transactional(rollbackFor = Exception.class)

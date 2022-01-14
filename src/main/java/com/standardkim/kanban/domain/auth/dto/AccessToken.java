@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class AccessToken {
 	private String token;
 
-	public static AccessToken from(String token) {
+	public static AccessToken of(String token) {
 		return AccessToken.builder()
 			.token(token)
 			.build();

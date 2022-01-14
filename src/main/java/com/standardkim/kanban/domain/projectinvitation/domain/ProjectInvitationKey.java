@@ -24,7 +24,7 @@ public class ProjectInvitationKey implements Serializable {
 	@Column(name = "invited_user_id")
 	private Long invitedUserId;
 
-	public static ProjectInvitationKey from(ProjectMemberKey projectMemberId, Long invitedUserId) {
+	public static ProjectInvitationKey of(ProjectMemberKey projectMemberId, Long invitedUserId) {
 		return ProjectInvitationKey.builder()
 			.projectMemberId(projectMemberId)
 			.invitedUserId(invitedUserId)

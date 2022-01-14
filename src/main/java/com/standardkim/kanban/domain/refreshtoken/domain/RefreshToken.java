@@ -36,7 +36,7 @@ public class RefreshToken extends BaseTimeEntity {
 	@Column(nullable = false)
 	private String token;
 
-	public static RefreshToken from(User user, String token) {
+	public static RefreshToken of(User user, String token) {
 		return RefreshToken.builder()
 			.user(user)
 			.token(token)

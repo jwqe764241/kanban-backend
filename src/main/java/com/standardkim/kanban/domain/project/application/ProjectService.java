@@ -45,7 +45,7 @@ public class ProjectService {
 			throw new DuplicateProjectNameException("duplicate project name");
 		}
 		User registerUser = userService.findById(userId);
-		Project project = Project.from(createProjectParam.getName(), createProjectParam.getDescription(), registerUser);
+		Project project = Project.of(createProjectParam.getName(), createProjectParam.getDescription(), registerUser);
 		Project createdProject = projectRepository.save(project);
 		createdProject.addMember(registerUser, true);
 		return createdProject;

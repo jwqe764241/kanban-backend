@@ -54,7 +54,7 @@ public class Task extends BaseTimeEntity {
 	@Column(name = "prev_id", nullable = true, insertable = false, updatable = false)
 	private Long prevId;
 
-	public static Task from(String text, TaskColumn taskColumn) {
+	public static Task of(String text, TaskColumn taskColumn) {
 		return Task.builder()
 			.text(text)
 			.taskColumn(taskColumn)

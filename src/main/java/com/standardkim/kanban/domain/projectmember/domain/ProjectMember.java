@@ -52,8 +52,8 @@ public class ProjectMember extends BaseTimeEntity {
 	@OneToMany(mappedBy = "projectMember")
 	private Set<ProjectInvitation> invitations = new HashSet<>();
 
-	public static ProjectMember from(Project project, User user, boolean isRegister) {
-		ProjectMemberKey id = ProjectMemberKey.from(project.getId(), user.getId());
+	public static ProjectMember of(Project project, User user, boolean isRegister) {
+		ProjectMemberKey id = ProjectMemberKey.of(project.getId(), user.getId());
 		return ProjectMember.builder()
 			.id(id)
 			.project(project)

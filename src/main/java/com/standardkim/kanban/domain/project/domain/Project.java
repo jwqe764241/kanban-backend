@@ -53,7 +53,7 @@ public class Project extends BaseTimeEntity {
 	@OneToMany(mappedBy = "project")
 	private Set<Kanban> kanbans = new HashSet<>();
 
-	public static Project from(String name, String description, User registerUser) {
+	public static Project of(String name, String description, User registerUser) {
 		return Project.builder()
 			.name(name)
 			.description(description)
@@ -66,7 +66,7 @@ public class Project extends BaseTimeEntity {
 	}
 
 	public void addMember(User user, boolean isRegister) {
-		ProjectMember member = ProjectMember.from(this, user, isRegister);
+		ProjectMember member = ProjectMember.of(this, user, isRegister);
 		members.add(member);
 	}
 }

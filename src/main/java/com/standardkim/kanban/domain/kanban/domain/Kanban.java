@@ -55,7 +55,7 @@ public class Kanban extends BaseTimeEntity {
 	@OneToMany(mappedBy = "kanban")
 	private Set<TaskColumn> taskColumns = new HashSet<>();
 
-	public static Kanban from(String name, String description, Project project) {
+	public static Kanban of(String name, String description, Project project) {
 		Kanban kanban = Kanban.builder()
 			.name(name)
 			.description(description)

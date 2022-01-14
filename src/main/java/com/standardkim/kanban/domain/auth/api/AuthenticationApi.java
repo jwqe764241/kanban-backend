@@ -57,7 +57,7 @@ public class AuthenticationApi {
 			.build();
 		response.setHeader("Set-Cookie", cookie.toString());
 
-		return AccessToken.from(authenticationToken.getAccessToken());
+		return AccessToken.of(authenticationToken.getAccessToken());
 	}
 
 	@PostMapping("/auth/logout")
@@ -87,7 +87,7 @@ public class AuthenticationApi {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
 		String accessToken = authenticationService.getAccessToken(refreshToken, accessTokenTTL);
-		return AccessToken.from(accessToken);
+		return AccessToken.of(accessToken);
 	}
 
 	@GetMapping("/auth/ws-token")
@@ -98,7 +98,7 @@ public class AuthenticationApi {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
 		String accessToken = authenticationService.getAccessToken(refreshToken, wsTokenTTL);
-		return AccessToken.from(accessToken);
+		return AccessToken.of(accessToken);
 	}
 
 	@GetMapping("/auth/check-token")

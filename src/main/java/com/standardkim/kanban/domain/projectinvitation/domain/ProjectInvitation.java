@@ -49,8 +49,8 @@ public class ProjectInvitation extends BaseTimeEntity {
 	@JoinColumn(name = "invited_user_id", nullable = false, insertable = false)
 	private User invitedUser;
 
-	public static ProjectInvitation from(Project project, User inviteeUser, User inviterUser) {
-		ProjectMemberKey projectMemberId = ProjectMemberKey.from(project.getId(), inviterUser.getId());
+	public static ProjectInvitation of(Project project, User inviteeUser, User inviterUser) {
+		ProjectMemberKey projectMemberId = ProjectMemberKey.of(project.getId(), inviterUser.getId());
 		ProjectMember projectMember = ProjectMember.builder()
 			.id(projectMemberId)
 			.build();

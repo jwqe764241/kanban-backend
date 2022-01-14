@@ -41,7 +41,7 @@ public class ProjectInvitationService {
 
 	@Transactional(rollbackFor = Exception.class)
 	private ProjectInvitation create(Project project, User inviteeUser, User inviterUser) {
-		ProjectInvitation invitation = ProjectInvitation.from(project, inviteeUser, inviterUser);
+		ProjectInvitation invitation = ProjectInvitation.of(project, inviteeUser, inviterUser);
 		return projectInvitationRepository.save(invitation);
 	}
 
@@ -67,7 +67,7 @@ public class ProjectInvitationService {
 		ProjectInvitation projectInvitation = create(project, inviteeUser, inviterUser);
 
 		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
-		mailService.sendInviteProjectMail(InviteProjectMailParam.from(project, inviterUser, inviteeUser));
+		mailService.sendInviteProjectMail(InviteProjectMailParam.of(project, inviterUser, inviteeUser));
 
 		return projectInvitation;
 	}

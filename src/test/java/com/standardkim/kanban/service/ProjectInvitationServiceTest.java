@@ -112,8 +112,8 @@ public class ProjectInvitationServiceTest {
 	}
 
 	private ProjectInvitationKey getProjectInvitationKey(Long projectId, Long userId, Long invitedUserId) {
-		ProjectMemberKey id = ProjectMemberKey.from(projectId, userId);
-		return ProjectInvitationKey.from(id, invitedUserId);
+		ProjectMemberKey id = ProjectMemberKey.of(projectId, userId);
+		return ProjectInvitationKey.of(id, invitedUserId);
 	}
 
 	private ProjectInvitation getProjectInvitation(Long projectId, Long userId, Long invitedUserId) {

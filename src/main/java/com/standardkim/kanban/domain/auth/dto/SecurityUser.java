@@ -28,7 +28,7 @@ public class SecurityUser implements UserDetails {
 	@Builder.Default
 	private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-	public static SecurityUser from(User user ) {
+	public static SecurityUser of(User user ) {
 		return SecurityUser.builder()
 			.id(user.getId())
 			.login(user.getLogin())

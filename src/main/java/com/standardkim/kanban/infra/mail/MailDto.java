@@ -21,7 +21,7 @@ public class MailDto {
 		private String inviterLogin;
 		private String inviteeLogin;
 
-		public static InviteProjectMailParam from(Project project, User inviterUser, User inviteeUser) {
+		public static InviteProjectMailParam of(Project project, User inviterUser, User inviteeUser) {
 			return InviteProjectMailParam.builder()
 				.inviteeMailAddress(inviteeUser.getEmail())
 				.projectId(project.getId())

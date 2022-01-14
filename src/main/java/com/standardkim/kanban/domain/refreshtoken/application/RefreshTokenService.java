@@ -32,7 +32,7 @@ public class RefreshTokenService {
 	@Transactional(rollbackFor = Exception.class)
 	public RefreshToken create(Long userId, String token) {
 		User user = userService.findById(userId);
-		RefreshToken refreshToken = RefreshToken.from(user, token);
+		RefreshToken refreshToken = RefreshToken.of(user, token);
 		return refreshTokenRepository.save(refreshToken);
 	}
 
