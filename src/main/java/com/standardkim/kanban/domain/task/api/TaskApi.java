@@ -4,15 +4,15 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.domain.kanban.dto.KanbanActionDto.CreateTaskAction;
-import com.standardkim.kanban.domain.kanban.dto.KanbanActionDto.DeleteTaskAction;
-import com.standardkim.kanban.domain.kanban.dto.KanbanActionDto.ReorderTaskAction;
-import com.standardkim.kanban.domain.kanban.dto.KanbanActionDto.UpdateTaskAction;
 import com.standardkim.kanban.domain.task.application.TaskService;
 import com.standardkim.kanban.domain.task.domain.Task;
+import com.standardkim.kanban.domain.task.dto.CreateTaskAction;
 import com.standardkim.kanban.domain.task.dto.CreateTaskParam;
+import com.standardkim.kanban.domain.task.dto.DeleteTaskAction;
+import com.standardkim.kanban.domain.task.dto.ReorderTaskAction;
 import com.standardkim.kanban.domain.task.dto.ReorderTaskParam;
 import com.standardkim.kanban.domain.task.dto.TaskDetail;
+import com.standardkim.kanban.domain.task.dto.UpdateTaskAction;
 import com.standardkim.kanban.domain.task.dto.UpdateTaskParam;
 
 import org.modelmapper.ModelMapper;
