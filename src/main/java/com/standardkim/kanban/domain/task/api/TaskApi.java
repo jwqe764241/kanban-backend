@@ -4,21 +4,17 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.standardkim.kanban.domain.task.application.TaskActionService;
 import com.standardkim.kanban.domain.task.application.TaskService;
 import com.standardkim.kanban.domain.task.domain.Task;
-import com.standardkim.kanban.domain.task.dto.CreateTaskAction;
-import com.standardkim.kanban.domain.task.dto.CreateTaskParam;
-import com.standardkim.kanban.domain.task.dto.DeleteTaskAction;
-import com.standardkim.kanban.domain.task.dto.ReorderTaskAction;
-import com.standardkim.kanban.domain.task.dto.ReorderTaskParam;
 import com.standardkim.kanban.domain.task.dto.TaskDetail;
-import com.standardkim.kanban.domain.task.dto.UpdateTaskAction;
+import com.standardkim.kanban.domain.task.dto.CreateTaskParam;
 import com.standardkim.kanban.domain.task.dto.UpdateTaskParam;
+import com.standardkim.kanban.domain.task.dto.ReorderTaskParam;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class TaskApi {
 	private final TaskService taskService;
 
-	private final SimpMessagingTemplate simpMessagingTemplate;
+	private final TaskActionService taskActionService;
 
 	private final ModelMapper modelMapper;
 
@@ -54,11 +50,21 @@ public class TaskApi {
 	@ResponseStatus(HttpStatus.CREATED)
 	public List<TaskDetail> createTask(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId,
 		@Valid @RequestBody CreateTaskParam param) {
-		List<Task> task = taskService.create(projectId, sequenceId, columnId, param);
-		List<TaskDetail> taskDetail = modelMapper.map(task, new TypeToken<List<TaskDetail>>(){}.getType());
-		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
-			CreateTaskAction.from(taskDetail));
-		return taskDetail;
+		List<Task> updatedTasks = taskService.create(projectId, sequenceId, columnId, param);
+		List<TaskDetail> updatedTaskDetails = modelMapper.map(updatedTasks, new TypeToken<List<TaskDetail>>(){}.getType());
+		taskActionService.sendCreateAction(projectId, sequenceId, updatedTaskDetails);
+		return updatedTaskDetails;
+	}
+
+	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks/{taskId}")
+	@PreAuthorize("isProjectMember(#projectId)")
+	@ResponseStatus(HttpStatus.OK)
+	public TaskDetail updateTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
+	@PathVariable Long columnId, @PathVariable Long taskId, @Valid @RequestBody UpdateTaskParam param) {
+		Task updatedTask = taskService.update(projectId, sequenceId, columnId, taskId, param);
+		TaskDetail updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
+		taskActionService.sendUpdateAction(projectId, sequenceId, updatedTaskDetail);
+		return updatedTaskDetail;
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks/{taskId}")
@@ -71,8 +77,7 @@ public class TaskApi {
 		if(updatedTask != null) {
 			updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
 		}
-		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
-			DeleteTaskAction.from(taskId, updatedTaskDetail));
+		taskActionService.sendDeleteAction(projectId, sequenceId, taskId, updatedTaskDetail);
 		return updatedTaskDetail;
 	}
 
@@ -83,20 +88,7 @@ public class TaskApi {
 		@PathVariable Long columnId, @RequestBody ReorderTaskParam param) {
 		List<Task> updatedTasks = taskService.reorder(projectId, sequenceId, columnId, param);
 		List<TaskDetail> updatedTaskDetails = modelMapper.map(updatedTasks, new TypeToken<List<TaskDetail>>(){}.getType());
-		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
-			ReorderTaskAction.from(updatedTaskDetails));
+		taskActionService.sendReorderAction(projectId, sequenceId, updatedTaskDetails);
 		return updatedTaskDetails;
-	}
-
-	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks/{taskId}")
-	@PreAuthorize("isProjectMember(#projectId)")
-	@ResponseStatus(HttpStatus.OK)
-	public TaskDetail updateTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
-	@PathVariable Long columnId, @PathVariable Long taskId, @Valid @RequestBody UpdateTaskParam param) {
-		Task updatedTask = taskService.update(projectId, sequenceId, columnId, taskId, param);
-		TaskDetail updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
-		simpMessagingTemplate.convertAndSend("/topic/project/" + projectId + "/kanban/" + sequenceId, 
-			UpdateTaskAction.from(updatedTaskDetail));
-		return updatedTaskDetail;
 	}
 }
