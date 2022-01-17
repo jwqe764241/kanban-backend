@@ -17,7 +17,7 @@ import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.global.error.ErrorCode;
-import com.standardkim.kanban.global.error.ErrorResponseDto.ErrorResponse;
+import com.standardkim.kanban.global.error.ErrorResponse;
 import com.standardkim.kanban.global.util.ErrorResponseJsonConverter;
 import com.standardkim.kanban.global.util.JwtTokenProvider;
 

@@ -1,13 +1,11 @@
 package com.standardkim.kanban.global.error;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 
-import com.standardkim.kanban.global.error.ErrorResponseDto.ErrorResponse;
-import com.standardkim.kanban.global.error.ErrorResponseDto.FieldValidationError;
 import com.standardkim.kanban.global.error.exception.BusinessException;
 
 import org.springframework.http.HttpHeaders;
@@ -66,11 +64,10 @@ public class ErrorResponseController {
 		List<FieldError> list = e.getFieldErrors();
 		Map<String, Object> result = new HashMap<>();
 		for(FieldError fieldError : list) {
-			FieldValidationError error = FieldValidationError.builder()
-				.fieldName(fieldError.getField())
-				.rejectedValue(fieldError.getRejectedValue())
-				.message(fieldError.getDefaultMessage())
-				.build();
+			FieldValidationError error = FieldValidationError.of(
+				fieldError.getField(), 
+				fieldError.getRejectedValue(), 
+				fieldError.getDefaultMessage());
 			result.put(fieldError.getField(), error);
 		}
 		return result;
