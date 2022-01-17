@@ -5,7 +5,7 @@ import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
 import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanParam;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
-import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class KanbanService {
 	private final KanbanRepository kanbanRepository;
 
-	private final ProjectService projectService;
+	private final ProjectFindService projectFindService;
 
 	@Transactional(readOnly = true)
 	public Kanban findByProjectIdAndSequenceId(Long projectId, Long sequenceId) {
@@ -28,7 +28,7 @@ public class KanbanService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public Kanban create(Long projectId, CreateKanbanParam createKanbanParam) {
-		Project project = projectService.findById(projectId);
+		Project project = projectFindService.findById(projectId);
 		Kanban kanban = Kanban.of(createKanbanParam.getName(), createKanbanParam.getDescription(), project);
 		return kanbanRepository.save(kanban);
 	}

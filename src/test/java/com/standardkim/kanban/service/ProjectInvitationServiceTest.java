@@ -1,6 +1,13 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.domain.project.application.ProjectService;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
 import com.standardkim.kanban.domain.projectinvitation.dao.ProjectInvitationRepository;
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
@@ -22,20 +29,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 
-import static org.mockito.BDDMockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 public class ProjectInvitationServiceTest {
 	@Mock
 	ProjectInvitationRepository projectInvitationRepository;
 
 	@Mock
-	ProjectService projectService;
+	ProjectFindService projectFindService;
 
 	@Mock
 	ProjectMemberService projectMemberService;

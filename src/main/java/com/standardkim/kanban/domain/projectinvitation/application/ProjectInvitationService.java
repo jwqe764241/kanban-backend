@@ -2,15 +2,15 @@ package com.standardkim.kanban.domain.projectinvitation.application;
 
 import java.util.List;
 
-import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.dao.ProjectInvitationRepository;
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
 import com.standardkim.kanban.domain.projectinvitation.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.infra.mail.MailService;
 import com.standardkim.kanban.infra.mail.MailDto.InviteProjectMailParam;
+import com.standardkim.kanban.infra.mail.MailService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectInvitationService {
 	private final ProjectInvitationRepository projectInvitationRepository;
 
-	private final ProjectService projectService;
+	private final ProjectFindService projectFindService;
 	
 	private final UserService userService;
 
@@ -63,7 +63,7 @@ public class ProjectInvitationService {
 		}
 
 		User inviterUser = userService.findById(inviterUserId);
-		Project project = projectService.findById(projectId);
+		Project project = projectFindService.findById(projectId);
 		ProjectInvitation projectInvitation = create(project, inviteeUser, inviterUser);
 
 		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함

@@ -14,7 +14,7 @@ import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
 import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanParam;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
-import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ public class KanbanServiceTest {
 	KanbanRepository kanbanRepository;
 
 	@Mock
-	ProjectService projectService;
+	ProjectFindService projectFindService;
 
 	@InjectMocks
 	KanbanService kanbanService;
@@ -45,7 +45,7 @@ public class KanbanServiceTest {
 
 	@Test
 	void create_KanabanNameIsExist_Save() {
-		given(projectService.findById(1L)).willReturn(getProject(1L));
+		given(projectFindService.findById(1L)).willReturn(getProject(1L));
 
 		kanbanService.create(1L, getCreateKanbanParam());
 

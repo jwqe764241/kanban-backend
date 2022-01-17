@@ -2,7 +2,7 @@ package com.standardkim.kanban.domain.projectmember.application;
 
 import java.util.List;
 
-import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
 import com.standardkim.kanban.domain.projectmember.dao.ProjectMemberRepository;
@@ -26,7 +26,7 @@ public class ProjectMemberService {
 
 	private final ProjectInvitationService projectInvitationService;
 
-	private final ProjectService projectService;
+	private final ProjectFindService projectFindService;
 
 	private final UserService userService;
 
@@ -56,7 +56,7 @@ public class ProjectMemberService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
-		Project project = projectService.findById(projectId);
+		Project project = projectFindService.findById(projectId);
 		User user = userService.findById(userId);
 		ProjectMember projectMember = ProjectMember.of(project, user, isRegister);
 		return projectMemberRepository.save(projectMember);
