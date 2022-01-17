@@ -1,4 +1,4 @@
-package com.standardkim.kanban.domain.auth.exception;
+package com.standardkim.kanban.global.auth.exception;
 
 import com.standardkim.kanban.global.error.ErrorCode;
 import com.standardkim.kanban.global.error.exception.InvalidValueException;

@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.project.application.ProjectService;
 import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
@@ -24,6 +23,7 @@ import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.domain.User;
+import com.standardkim.kanban.global.auth.dto.SecurityUser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

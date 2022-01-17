@@ -1,8 +1,8 @@
 package com.standardkim.kanban.global.config.handler;
 
-import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
 import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
+import com.standardkim.kanban.global.auth.dto.SecurityUser;
 
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;

@@ -1,4 +1,4 @@
-package com.standardkim.kanban.domain.auth.dto;
+package com.standardkim.kanban.global.auth.dto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

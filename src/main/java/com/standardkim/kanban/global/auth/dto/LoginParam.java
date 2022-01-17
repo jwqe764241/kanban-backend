@@ -1,4 +1,4 @@
-package com.standardkim.kanban.domain.auth.dto;
+package com.standardkim.kanban.global.auth.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

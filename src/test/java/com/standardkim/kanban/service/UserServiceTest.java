@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.standardkim.kanban.domain.auth.dto.SecurityUser;
 import com.standardkim.kanban.domain.user.application.UserService;
 import com.standardkim.kanban.domain.user.dao.UserRepository;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.dto.CreateUserParam;
 import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
+import com.standardkim.kanban.global.auth.dto.SecurityUser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
