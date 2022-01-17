@@ -15,7 +15,7 @@ public class UpdateTaskAction extends KanbanAction {
 		super(ActionType.Update, Target.Task, payload);
 	}
 
-	public static UpdateTaskAction from(TaskDetail updatedTaskDetail) {
+	public static UpdateTaskAction of(TaskDetail updatedTaskDetail) {
 		return UpdateTaskAction.builder()
 			.payload(updatedTaskDetail)
 			.build();

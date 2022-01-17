@@ -24,21 +24,21 @@ public class TaskColumnActionService {
 
 	public void sendCreateAction(Long projectId, Long sequenceId, TaskColumnDetail taskColumnDetail) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			CreateColumnAction.from(taskColumnDetail));
+			CreateColumnAction.of(taskColumnDetail));
 	}
 
 	public void sendUpdateAction(Long projectId, Long sequenceId, TaskColumnDetail taskColumnDetail) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId),
-			UpdateColumnAction.from(taskColumnDetail));
+			UpdateColumnAction.of(taskColumnDetail));
 	}
 	
 	public void sendDeleteAction(Long projectId, Long sequenceId, Long columnId, TaskColumnDetail taskColumnDetail) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			DeleteColumnAction.from(columnId, taskColumnDetail));
+			DeleteColumnAction.of(columnId, taskColumnDetail));
 	}
 	
 	public void sendReorderAction(Long projectId, Long sequenceId, List<TaskColumnDetail> taskColumnDetails) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			ReorderColumnAction.from(taskColumnDetails));
+			ReorderColumnAction.of(taskColumnDetails));
 	}
 }

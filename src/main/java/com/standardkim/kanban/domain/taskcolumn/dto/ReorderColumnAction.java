@@ -17,7 +17,7 @@ public class ReorderColumnAction extends KanbanAction {
 		super(ActionType.Reorder, Target.Column, payload);
 	}
 
-	public static ReorderColumnAction from(List<TaskColumnDetail> updatedTaskColumnDetails) {
+	public static ReorderColumnAction of(List<TaskColumnDetail> updatedTaskColumnDetails) {
 		return ReorderColumnAction.builder()
 			.payload(updatedTaskColumnDetails)
 			.build();

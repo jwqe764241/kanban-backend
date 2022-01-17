@@ -15,7 +15,7 @@ public class CreateColumnAction extends KanbanAction {
 		super(ActionType.Insert, Target.Column, payload);
 	}
 
-	public static CreateColumnAction from(TaskColumnDetail taskColumnDetail) {
+	public static CreateColumnAction of(TaskColumnDetail taskColumnDetail) {
 		return CreateColumnAction.builder()
 			.payload(taskColumnDetail)
 			.build();

@@ -17,7 +17,7 @@ public class CreateTaskAction extends KanbanAction {
 		super(ActionType.Insert, Target.Task, payload);
 	}
 
-	public static CreateTaskAction from(List<TaskDetail> updatedTaskDetails) {
+	public static CreateTaskAction of(List<TaskDetail> updatedTaskDetails) {
 		return CreateTaskAction.builder()
 			.payload(updatedTaskDetails)
 			.build();

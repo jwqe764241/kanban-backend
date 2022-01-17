@@ -24,21 +24,21 @@ public class TaskActionService {
 
 	public void sendCreateAction(Long projectId, Long sequenceId, List<TaskDetail> taskDetails) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			CreateTaskAction.from(taskDetails));
+			CreateTaskAction.of(taskDetails));
 	}
 
 	public void sendUpdateAction(Long projectId, Long sequenceId, TaskDetail taskDetail) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			UpdateTaskAction.from(taskDetail));
+			UpdateTaskAction.of(taskDetail));
 	}
 
 	public void sendDeleteAction(Long projectId, Long sequenceId, Long taskId, TaskDetail taskDetail) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			DeleteTaskAction.from(taskId, taskDetail));
+			DeleteTaskAction.of(taskId, taskDetail));
 	}
 	
 	public void sendReorderAction(Long projectId, Long sequenceId, List<TaskDetail> taskDetails) {
 		simpMessagingTemplate.convertAndSend(getDestination(projectId, sequenceId), 
-			ReorderTaskAction.from(taskDetails));
+			ReorderTaskAction.of(taskDetails));
 	}
 }

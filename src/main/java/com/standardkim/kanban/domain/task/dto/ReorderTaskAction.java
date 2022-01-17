@@ -17,7 +17,7 @@ public class ReorderTaskAction extends KanbanAction {
 		super(ActionType.Reorder, Target.Task, payload);
 	}
 
-	public static ReorderTaskAction from(List<TaskDetail> updatedTaskDetails) {
+	public static ReorderTaskAction of(List<TaskDetail> updatedTaskDetails) {
 		return ReorderTaskAction.builder()
 			.payload(updatedTaskDetails)
 			.build();

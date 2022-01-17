@@ -15,7 +15,7 @@ public class UpdateColumnAction extends KanbanAction {
 		super(ActionType.Update, Target.Column, payload);
 	}
 
-	public static UpdateColumnAction from(TaskColumnDetail taskColumnDetail) {
+	public static UpdateColumnAction of(TaskColumnDetail taskColumnDetail) {
 		return UpdateColumnAction.builder()
 			.payload(taskColumnDetail)
 			.build();

@@ -18,7 +18,7 @@ public class DeleteColumnAction extends KanbanAction {
 		super(ActionType.Delete, Target.Column, payload);
 	}
 
-	public static DeleteColumnAction from(Long deletedColumnId, TaskColumnDetail updatedColumn) {
+	public static DeleteColumnAction of(Long deletedColumnId, TaskColumnDetail updatedColumn) {
 		Map<String, Object> payload = new HashMap<>();
 		payload.put("deletedColumnId", deletedColumnId);
 		payload.put("updatedColumn", updatedColumn);
