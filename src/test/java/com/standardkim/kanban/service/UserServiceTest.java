@@ -1,22 +1,7 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.dto.UserDto.CreateUserParam;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.user.UserNotFoundException;
-import com.standardkim.kanban.exception.user.DuplicateUserNameException;
-import com.standardkim.kanban.repository.UserRepository;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,7 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.dao.UserRepository;
+import com.standardkim.kanban.domain.user.domain.User;
+import com.standardkim.kanban.domain.user.dto.CreateUserParam;
+import com.standardkim.kanban.domain.user.exception.DuplicateUserNameException;
+import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
+import com.standardkim.kanban.global.auth.dto.SecurityUser;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

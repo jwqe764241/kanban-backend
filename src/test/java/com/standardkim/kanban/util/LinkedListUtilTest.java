@@ -3,7 +3,8 @@ package com.standardkim.kanban.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.standardkim.kanban.entity.TaskColumn;
+import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
+import com.standardkim.kanban.global.util.LinkedListUtil;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

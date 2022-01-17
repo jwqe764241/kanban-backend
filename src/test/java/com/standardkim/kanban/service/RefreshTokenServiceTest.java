@@ -1,9 +1,11 @@
 package com.standardkim.kanban.service;
 
-import com.standardkim.kanban.entity.RefreshToken;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.auth.RefreshTokenNotFoundException;
-import com.standardkim.kanban.repository.RefreshTokenRepository;
+import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
+import com.standardkim.kanban.domain.refreshtoken.dao.RefreshTokenRepository;
+import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
+import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.domain.User;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

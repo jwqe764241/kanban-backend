@@ -1,16 +1,29 @@
 package com.standardkim.kanban.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-import com.standardkim.kanban.dto.AuthenticationDto.SecurityUser;
-import com.standardkim.kanban.dto.ProjectDto.CreateProjectParam;
-import com.standardkim.kanban.entity.Project;
-import com.standardkim.kanban.entity.ProjectMember;
-import com.standardkim.kanban.entity.ProjectMemberKey;
-import com.standardkim.kanban.entity.User;
-import com.standardkim.kanban.exception.project.DuplicateProjectNameException;
-import com.standardkim.kanban.exception.project.ProjectNotFoundException;
-import com.standardkim.kanban.repository.ProjectRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.dao.ProjectRepository;
+import com.standardkim.kanban.domain.project.domain.Project;
+import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
+import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
+import com.standardkim.kanban.domain.project.exception.ProjectNotFoundException;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
+import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.domain.User;
+import com.standardkim.kanban.global.auth.dto.SecurityUser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,15 +34,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
-
-import static org.mockito.BDDMockito.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProjectServiceTest {
