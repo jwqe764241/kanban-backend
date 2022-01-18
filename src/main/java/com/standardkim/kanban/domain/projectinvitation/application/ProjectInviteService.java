@@ -1,7 +1,5 @@
 package com.standardkim.kanban.domain.projectinvitation.application;
 
-import java.util.List;
-
 import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.dao.ProjectInvitationRepository;
@@ -19,25 +17,16 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ProjectInvitationService {
-	private final ProjectInvitationRepository projectInvitationRepository;
+public class ProjectInviteService {
+	private final ProjectInvitationFindService projectInvitationFindService;
 
 	private final ProjectFindService projectFindService;
-	
+
 	private final UserFindService userFindService;
 
+	private final ProjectInvitationRepository projectInvitationRepository;
+
 	private final MailService mailService;
-
-	@Transactional(readOnly = true)
-	public boolean isExist(Long projectId, Long invitedUserId) {
-		return projectInvitationRepository.existsByProjectIdAndInvitedUserId(projectId, invitedUserId);
-	}
-
-	@Transactional(readOnly = true)
-	public List<ProjectInvitation> findByProjectId(Long projectId) {
-		List<ProjectInvitation> invitations = projectInvitationRepository.findByProjectId(projectId);
-		return invitations;
-	}
 
 	@Transactional(rollbackFor = Exception.class)
 	private ProjectInvitation create(Project project, User inviteeUser, User inviterUser) {
@@ -46,19 +35,9 @@ public class ProjectInvitationService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteByProjectIdAndInvitedUserId(Long projectId, Long invitedUserId) {
-		projectInvitationRepository.deleteByProjectIdAndInvitedUserId(projectId, invitedUserId);
-	}
-
-	@Transactional(rollbackFor = Exception.class)
-	public void deleteByProjectIdAndUserId(Long projectId, Long userId) {
-		projectInvitationRepository.deleteByProjectIdAndUserId(projectId, userId);
-	}
-
-	@Transactional(rollbackFor = Exception.class)
 	public ProjectInvitation invite(Long projectId, Long inviterUserId, Long inviteeUserId) {
 		User inviteeUser = userFindService.findById(inviteeUserId);
-		if(isExist(projectId, inviteeUser.getId())) {
+		if(projectInvitationFindService.isExist(projectId, inviteeUser.getId())) {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 

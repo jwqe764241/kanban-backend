@@ -1,7 +1,8 @@
 package com.standardkim.kanban.service;
 
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
+import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationDeleteService;
+import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationFindService;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
 import com.standardkim.kanban.domain.projectmember.dao.ProjectMemberRepository;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
@@ -32,7 +33,10 @@ public class ProjectMemberServiceTest {
 	ProjectMemberRepository projectMemberRepository;
 
 	@Mock
-	ProjectInvitationService projectInvitationService;
+	private ProjectInvitationFindService projectInvitationFindService;
+	
+	@Mock
+	private ProjectInvitationDeleteService projectInvitationDeleteService;
 
 	@InjectMocks
 	ProjectMemberService projectMemberService;
@@ -124,7 +128,7 @@ public class ProjectMemberServiceTest {
 
 	@Test
 	void accept_ProjectInvitationIsNotExist_ThrowInvitationNotFoundException() {
-		given(projectInvitationService.isExist(1L, 1L)).willReturn(false);
+		given(projectInvitationFindService.isExist(1L, 1L)).willReturn(false);
 
 		assertThatThrownBy(() -> {
 			projectMemberService.accept(1L, 1L);

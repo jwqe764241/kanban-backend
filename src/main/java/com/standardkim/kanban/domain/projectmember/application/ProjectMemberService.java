@@ -4,7 +4,8 @@ import java.util.List;
 
 import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationService;
+import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationDeleteService;
+import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationFindService;
 import com.standardkim.kanban.domain.projectmember.dao.ProjectMemberRepository;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
@@ -24,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 public class ProjectMemberService {
 	private final ProjectMemberRepository projectMemberRepository;
 
-	private final ProjectInvitationService projectInvitationService;
+	private final ProjectInvitationFindService projectInvitationFindService;
+
+	private final ProjectInvitationDeleteService projectInvitationDeleteService;
 
 	private final ProjectFindService projectFindService;
 
@@ -64,11 +67,11 @@ public class ProjectMemberService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void accept(Long projectId, Long userId) {
-		if(!projectInvitationService.isExist(projectId, userId)) {
+		if(!projectInvitationFindService.isExist(projectId, userId)) {
 			throw new InvitationNotFoundException("user not invited");
 		}
 		create(projectId, userId, false);
-		projectInvitationService.deleteByProjectIdAndInvitedUserId(projectId, userId);
+		projectInvitationDeleteService.deleteByProjectIdAndInvitedUserId(projectId, userId);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -85,7 +88,7 @@ public class ProjectMemberService {
 			throw new CannotDeleteProjectOwnerException("can't delete project owner");
 		}
 
-		projectInvitationService.deleteByProjectIdAndUserId(projectId, userId);
+		projectInvitationDeleteService.deleteByProjectIdAndUserId(projectId, userId);
 		projectMemberRepository.delete(member);
 	}
 }
