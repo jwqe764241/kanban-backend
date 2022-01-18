@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
+import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenFindService;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.standardkim.kanban.domain.user.application.UserFindService;
@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final UserFindService userFindService;
 
-	private final RefreshTokenService refreshTokenService;
+	private final RefreshTokenFindService refreshTokenFindService;
 
 	@Value("${config.allowed-origins}")
 	String[] allowedOrigins;
@@ -72,7 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				try{
 					String login = jwtTokenProvider.getLogin(token);
 					User user = userFindService.findByLogin(login);
-					RefreshToken refreshToken = refreshTokenService.findById(user.getId());
+					RefreshToken refreshToken = refreshTokenFindService.findById(user.getId());
 					// access token and refresh token must not be same
 					if(refreshToken.getToken().equals(authorizationHeader.getCredentials())) {
 						setInvalidAccessTokenResponse(response);
