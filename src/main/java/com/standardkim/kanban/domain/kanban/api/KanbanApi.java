@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.standardkim.kanban.domain.kanban.application.KanbanCreateService;
+import com.standardkim.kanban.domain.kanban.application.KanbanDeleteService;
 import com.standardkim.kanban.domain.kanban.application.KanbanSequenceFindService;
-import com.standardkim.kanban.domain.kanban.application.KanbanService;
+import com.standardkim.kanban.domain.kanban.application.KanbanUpdateService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.kanban.domain.KanbanSequence;
 import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
@@ -30,21 +32,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class KanbanApi {
-	private final KanbanService kanbanService;
+	private final KanbanCreateService kanbanCreateService;
+
+	private final KanbanUpdateService kanbanUpdateService;
+
+	private final KanbanDeleteService kanbanDeleteService;
 
 	private final KanbanSequenceFindService kanbanSequenceFindService;
 
 	private final ModelMapper modelMapper;
-
-	@PostMapping("/projects/{projectId}/kanbans")
-	@PreAuthorize("isProjectOwner(#projectId)")
-	@ResponseStatus(HttpStatus.CREATED)
-	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
-		Kanban kanban = kanbanService.create(projectId, createKanbanParam);
-		KanbanSequence kanbanSequence = kanbanSequenceFindService.findById(kanban.getId());
-		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
-		return kanbanDetail;
-	}
 
 	@GetMapping("/projects/{projectId}/kanbans")
 	@PreAuthorize("isProjectMember(#projectId)")
@@ -64,17 +60,27 @@ public class KanbanApi {
 		return kanbanDetail;
 	}
 
+	@PostMapping("/projects/{projectId}/kanbans")
+	@PreAuthorize("isProjectOwner(#projectId)")
+	@ResponseStatus(HttpStatus.CREATED)
+	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
+		Kanban kanban = kanbanCreateService.create(projectId, createKanbanParam);
+		KanbanSequence kanbanSequence = kanbanSequenceFindService.findById(kanban.getId());
+		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
+		return kanbanDetail;
+	}
+
 	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public void updateKanban(@PathVariable Long projectId, @PathVariable Long sequenceId, @RequestBody @Valid UpdateKanbanParam updateKanbanParam) {
-		kanbanService.update(projectId, sequenceId, updateKanbanParam);
+		kanbanUpdateService.update(projectId, sequenceId, updateKanbanParam);
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")
 	@PreAuthorize("isProjectOwner(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		kanbanService.delete(projectId, sequenceId);
+		kanbanDeleteService.delete(projectId, sequenceId);
 	}
 }

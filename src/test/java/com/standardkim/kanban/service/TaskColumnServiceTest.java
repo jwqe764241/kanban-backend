@@ -6,7 +6,7 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
 
-import com.standardkim.kanban.domain.kanban.application.KanbanService;
+import com.standardkim.kanban.domain.kanban.application.KanbanFindService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnService;
 import com.standardkim.kanban.domain.taskcolumn.dao.TaskColumnRepository;
@@ -30,7 +30,7 @@ public class TaskColumnServiceTest {
 	TaskColumnRepository taskColumnRepository;
 	
 	@Mock
-	KanbanService kanbanService;
+	KanbanFindService kanbanFindService;
 
 	@Spy
 	ModelMapper modelMapper;
@@ -83,7 +83,7 @@ public class TaskColumnServiceTest {
 
 	@Test
 	void create_NameIsExist_ThrowDuplicateTaskColumnNameException() {
-		given(kanbanService.findByProjectIdAndSequenceId(1L, 1L)).willReturn(getKanban(1L));
+		given(kanbanFindService.findByProjectIdAndSequenceId(1L, 1L)).willReturn(getKanban(1L));
 		given(taskColumnRepository.existsByKanbanIdAndName(1L, "example")).willReturn(true);
 
 		assertThatThrownBy(() -> {

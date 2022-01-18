@@ -3,7 +3,7 @@ package com.standardkim.kanban.domain.taskcolumn.application;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.standardkim.kanban.domain.kanban.application.KanbanService;
+import com.standardkim.kanban.domain.kanban.application.KanbanFindService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.task.dao.TaskRepository;
 import com.standardkim.kanban.domain.taskcolumn.dao.TaskColumnRepository;
@@ -28,7 +28,7 @@ public class TaskColumnService {
 
 	private final TaskRepository taskRepository;
 
-	private final KanbanService kanbanService;
+	private final KanbanFindService kanbanFindService;
 
 	@Transactional(readOnly = true)
 	public boolean isNameExist(Long kanbanId, String name) {
@@ -49,14 +49,14 @@ public class TaskColumnService {
 
 	@Transactional(readOnly = true)
 	public List<TaskColumn> findByProjectIdAndSequenceId(Long projectId, Long kanbanSequenceId) {
-		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
+		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 		List<TaskColumn> taskColumns = taskColumnRepository.findByKanbanId(kanban.getId());
 		return taskColumns;
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public TaskColumn create(Long projectId, Long kanbanSequenceId, CreateTaskColumnParam param) {
-		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
+		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 
 		if(isNameExist(kanban.getId(), param.getName())) {
 			throw new DuplicateTaskColumnNameException("duplicate task column name");
@@ -111,7 +111,7 @@ public class TaskColumnService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
 	public List<TaskColumn> reorder(Long projectId, Long kanbanSequenceId, ReorderTaskColumnParam param) {
-		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
+		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 		TaskColumn taskColumn = findById(param.getColumnId());
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(param.getColumnId());
 		TaskColumn firstTaskColumn = taskColumnRepository.findByKanbanIdAndPrevId(kanban.getId(), null);
@@ -157,7 +157,7 @@ public class TaskColumnService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public TaskColumn update(Long projectId, Long kanbanSequenceId, Long columnId, UpdateTaskColumnParam param) {
-		Kanban kanban = kanbanService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
+		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 		if(isNameExist(kanban.getId(), param.getName())) {
 			throw new DuplicateTaskColumnNameException("duplicate task column name");
 		}
