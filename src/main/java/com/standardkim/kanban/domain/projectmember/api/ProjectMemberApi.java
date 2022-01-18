@@ -2,7 +2,9 @@ package com.standardkim.kanban.domain.projectmember.api;
 
 import java.util.List;
 
-import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberAcceptService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberDeleteService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberFindService;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.dto.ProjectMemberDetail;
 import com.standardkim.kanban.global.auth.dto.SecurityUser;
@@ -24,7 +26,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class ProjectMemberApi {
-	private final ProjectMemberService projectMemberService;
+	private final ProjectMemberFindService projectMemberFindService;
+
+	private final ProjectMemberAcceptService projectMemberAcceptService;
+
+	private final ProjectMemberDeleteService projectMemberDeleteService;
 
 	private final ModelMapper modelMapper;
 
@@ -32,22 +38,22 @@ public class ProjectMemberApi {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public List<ProjectMemberDetail> getProjectMember(@PathVariable Long projectId) {
-		List<ProjectMember> projectMembers = projectMemberService.findByProjectId(projectId);
+		List<ProjectMember> projectMembers = projectMemberFindService.findByProjectId(projectId);
 		List<ProjectMemberDetail> projectMemberDetails = modelMapper.map(projectMembers, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
 		return projectMemberDetails;
-	}
-
-	@DeleteMapping("/projects/{projectId}/members/{userId}")
-	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
-	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
-		projectMemberService.delete(projectId, userId);
 	}
 
 	@PostMapping("/projects/{projectId}/members/accept-invitation")
 	@ResponseStatus(HttpStatus.OK)
 	public void acceptInvitation(@PathVariable Long projectId) {
 		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
-		projectMemberService.accept(projectId, securityUser.getId());
+		projectMemberAcceptService.accept(projectId, securityUser.getId());
+	}
+
+	@DeleteMapping("/projects/{projectId}/members/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
+		projectMemberDeleteService.delete(projectId, userId);
 	}
 }

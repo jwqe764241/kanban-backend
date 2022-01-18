@@ -1,6 +1,6 @@
 package com.standardkim.kanban.global.config.handler;
 
-import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberFindService;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -17,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 public class MethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
-	private final ProjectMemberService projectMemberService;
+	private final ProjectMemberFindService projectMemberFindService;
 
 	@Override
 	protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
-		MethodSecurityExpressionRoot methodSecurityExpressionRoot = new MethodSecurityExpressionRoot(authentication, projectMemberService);
+		MethodSecurityExpressionRoot methodSecurityExpressionRoot = new MethodSecurityExpressionRoot(authentication, projectMemberFindService);
 		methodSecurityExpressionRoot.setPermissionEvaluator(getPermissionEvaluator());
 		methodSecurityExpressionRoot.setTrustResolver(trustResolver);
 		methodSecurityExpressionRoot.setRoleHierarchy(getRoleHierarchy());

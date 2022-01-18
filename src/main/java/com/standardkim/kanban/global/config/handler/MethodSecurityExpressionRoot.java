@@ -1,6 +1,6 @@
 package com.standardkim.kanban.global.config.handler;
 
-import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberFindService;
 import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
 import com.standardkim.kanban.global.auth.dto.SecurityUser;
 
@@ -9,14 +9,14 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 
 public class MethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
-	private final ProjectMemberService projectMemberService;
+	private final ProjectMemberFindService projectMemberFindService;
 
 	private Object filterObject;
     private Object returnObject;
 
-	public MethodSecurityExpressionRoot(Authentication authentication, ProjectMemberService projectMemberService) {
+	public MethodSecurityExpressionRoot(Authentication authentication, ProjectMemberFindService projectMemberFindService) {
 		super(authentication);
-		this.projectMemberService = projectMemberService;
+		this.projectMemberFindService = projectMemberFindService;
 	}
 
 	private SecurityUser getSecurityUser() {
@@ -27,7 +27,7 @@ public class MethodSecurityExpressionRoot extends SecurityExpressionRoot impleme
 	public boolean isProjectOwner(Long projectId) {
 		SecurityUser user = getSecurityUser();
 		try {
-			return projectMemberService.isProjectOwner(projectId, user.getId());
+			return projectMemberFindService.isProjectOwner(projectId, user.getId());
 		} catch (ProjectMemberNotFoundException e) {
 			return false;
 		}
@@ -35,7 +35,7 @@ public class MethodSecurityExpressionRoot extends SecurityExpressionRoot impleme
 
 	public boolean isProjectMember(Long projectId) {
 		SecurityUser user = getSecurityUser();
-		return projectMemberService.isExist(projectId, user.getId());
+		return projectMemberFindService.isExist(projectId, user.getId());
 	}
 
 	@Override
