@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.given;
 import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.global.auth.application.AuthenticationService;
@@ -33,7 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationServiceTest {
 	@Mock
-	UserService userService;
+	UserFindService userFindService;
 
 	@Mock
 	RefreshTokenService refreshTokenService;
@@ -49,7 +49,7 @@ public class AuthenticationServiceTest {
 
 	@Test
 	void login_UserIsExistAndPasswordMatched_AuthenticationToken() {
-		given(userService.findByLogin("example")).willReturn(getUser("example"));
+		given(userFindService.findByLogin("example")).willReturn(getUser("example"));
 		given(jwtTokenProvider.build("example", "example", 20L)).willReturn("refresh-token");
 		given(jwtTokenProvider.build("example", "example", 10L)).willReturn("access-token");
 		given(refreshTokenService.save(1L, "refresh-token")).willReturn(getRefreshToken("example"));
@@ -63,7 +63,7 @@ public class AuthenticationServiceTest {
 
 	@Test
 	void login_UserIsNotExist_ThrowCannotLoginException() {
-		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+		given(userFindService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
 			authenticationService.login(getLoginParam(), 20L, 10L);
@@ -72,7 +72,7 @@ public class AuthenticationServiceTest {
 
 	@Test
 	void login_PasswordNotMatched_ThrowCannotLoginException() {
-		given(userService.findByLogin("example")).willReturn(getUser("example1"));
+		given(userFindService.findByLogin("example")).willReturn(getUser("example1"));
 
 		assertThatThrownBy(() -> {
 			authenticationService.login(getLoginParam(), 20L, 10L);
@@ -82,7 +82,7 @@ public class AuthenticationServiceTest {
 	@Test
 	void logout_UserIsNotExist_DoesNotThrowAnyException() {
 		given(jwtTokenProvider.getLogin(anyString())).willReturn("example");
-		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+		given(userFindService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatCode(() -> {
 			authenticationService.logout("refresh-token");
@@ -92,7 +92,7 @@ public class AuthenticationServiceTest {
 	@Test
 	void getAccessToken_UserIsNotExist_ThrowInvalidRefreshTokenException() {
 		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+		given(userFindService.findByLogin("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
 			authenticationService.getAccessToken("refresh-token", 10L);
@@ -102,7 +102,7 @@ public class AuthenticationServiceTest {
 	@Test
 	void getAccessToken_RefreshTokenIsNotExist_ThrowInvalidRefreshTokenException() {
 		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userService.findByLogin("example")).willReturn(getUser(""));
+		given(userFindService.findByLogin("example")).willReturn(getUser(""));
 		given(refreshTokenService.findById(1L)).willThrow(new RefreshTokenNotFoundException(""));
 
 		assertThatThrownBy(() -> {
@@ -113,7 +113,7 @@ public class AuthenticationServiceTest {
 	@Test
 	void getAccessToken_RefreshTokenNotMatched_ThrowUnknownRefreshTokenException() {
 		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userService.findByLogin("example")).willReturn(getUser(""));
+		given(userFindService.findByLogin("example")).willReturn(getUser(""));
 		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("example1"));
 
 		assertThatThrownBy(() -> {
@@ -124,7 +124,7 @@ public class AuthenticationServiceTest {
 	@Test
 	void getAccessToken_RefreshTokenIsExpired_ThrowExpiredRefreshTokenException() {
 		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userService.findByLogin("example")).willReturn(getUser(""));
+		given(userFindService.findByLogin("example")).willReturn(getUser(""));
 		given(refreshTokenService.findById(1L)).willReturn(getRefreshToken("refresh-token"));
 		given(jwtTokenProvider.isExpired("refresh-token")).willReturn(true);
 

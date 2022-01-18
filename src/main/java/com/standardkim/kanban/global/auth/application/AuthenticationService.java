@@ -3,7 +3,7 @@ package com.standardkim.kanban.global.auth.application;
 import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.global.auth.dto.AuthenticationToken;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-	private final UserService userService;
+	private final UserFindService userFindService;
 	
 	private final RefreshTokenService refreshTokenService;
 
@@ -35,7 +35,7 @@ public class AuthenticationService {
 	public AuthenticationToken login(LoginParam loginParam, Long refreshTokenTTL, Long accessTokenTTL) {
 		User user = null;
 		try {
-			user = userService.findByLogin(loginParam.getLogin());
+			user = userFindService.findByLogin(loginParam.getLogin());
 		}
 		catch (UserNotFoundException e) {
 			throw new CannotLoginException("incorrect username or password");
@@ -57,7 +57,7 @@ public class AuthenticationService {
 	public void logout(String refreshToken) {
 		String login = jwtTokenProvider.getLogin(refreshToken);
 		try {
-			User user = userService.findByLogin(login);
+			User user = userFindService.findByLogin(login);
 			refreshTokenService.delete(user.getId());
 		} catch (UserNotFoundException e) {
 			return;
@@ -69,7 +69,7 @@ public class AuthenticationService {
 		User user = null;
 		RefreshToken refreshToken = null;
 		try {
-			user = userService.findByLogin(jwtTokenProvider.getLogin(token));
+			user = userFindService.findByLogin(jwtTokenProvider.getLogin(token));
 			refreshToken = refreshTokenService.findById(user.getId());
 		} catch (UserNotFoundException | RefreshTokenNotFoundException e) {
 			throw new InvalidRefreshTokenException("refresh token was invalid", e);

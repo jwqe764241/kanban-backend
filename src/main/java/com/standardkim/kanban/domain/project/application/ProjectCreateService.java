@@ -4,7 +4,7 @@ import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectCreateService {
 	private final ProjectFindService projectFindService;
 
-	private final UserService userService;
+	private final UserFindService userFindService;
 
 	private final ProjectRepository projectRepository;
 
@@ -26,7 +26,7 @@ public class ProjectCreateService {
 		if(projectFindService.isNameExist(createProjectParam.getName())) {
 			throw new DuplicateProjectNameException("duplicate project name");
 		}
-		User user = userService.findById(userId);
+		User user = userFindService.findById(userId);
 		Project project = Project.of(createProjectParam.getName(), createProjectParam.getDescription(), user);
 		Project newProject = projectRepository.save(project);
 		newProject.addMemberAsRegister(user);

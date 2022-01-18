@@ -3,7 +3,7 @@ package com.standardkim.kanban.domain.refreshtoken.application;
 import com.standardkim.kanban.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class RefreshTokenService {
 	private final RefreshTokenRepository refreshTokenRepository;
 
-	private final UserService userService;
+	private final UserFindService userFindService;
 
 	@Transactional(readOnly = true)
 	public boolean isExist(Long userId) {
@@ -31,7 +31,7 @@ public class RefreshTokenService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public RefreshToken create(Long userId, String token) {
-		User user = userService.findById(userId);
+		User user = userFindService.findById(userId);
 		RefreshToken refreshToken = RefreshToken.of(user, token);
 		return refreshTokenRepository.save(refreshToken);
 	}

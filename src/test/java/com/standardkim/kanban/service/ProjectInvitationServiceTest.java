@@ -15,7 +15,7 @@ import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitationK
 import com.standardkim.kanban.domain.projectinvitation.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberService;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.infra.mail.MailService;
 
@@ -41,7 +41,7 @@ public class ProjectInvitationServiceTest {
 	ProjectMemberService projectMemberService;
 
 	@Mock
-	UserService userService;
+	UserFindService userFindService;
 
 	@Spy
 	ModelMapper modelMapper = new ModelMapper();
@@ -97,7 +97,7 @@ public class ProjectInvitationServiceTest {
 
 	@Test
 	void invite_ProjectInvitationIsExist_ThrowUserAlreadyInvitedException() {
-		given(userService.findById(2L)).willReturn(getUser(2L));
+		given(userFindService.findById(2L)).willReturn(getUser(2L));
 		given(projectInvitationRepository.existsByProjectIdAndInvitedUserId(1L, 2L)).willReturn(true);
 
 		assertThatThrownBy(() -> {

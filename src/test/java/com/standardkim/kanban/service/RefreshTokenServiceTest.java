@@ -1,10 +1,19 @@
 package com.standardkim.kanban.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
+
 import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
 import com.standardkim.kanban.domain.refreshtoken.dao.RefreshTokenRepository;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import org.junit.jupiter.api.Test;
@@ -14,19 +23,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.BDDMockito.*;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 public class RefreshTokenServiceTest {
 	@Mock
 	RefreshTokenRepository refreshTokenRepository;
 
 	@Mock
-	UserService userService;
+	UserFindService userFindService;
 
 	@InjectMocks
 	@Spy
@@ -82,7 +85,7 @@ public class RefreshTokenServiceTest {
 	@Test
 	void save_RefreshTokenIsNotExist_Create() {
 		given(refreshTokenRepository.existsById(1L)).willReturn(false);
-		given(userService.findById(1L)).willReturn(getUser());
+		given(userFindService.findById(1L)).willReturn(getUser());
 		given(refreshTokenRepository.save(any(RefreshToken.class))).willReturn(getRefreshToken());
 	
 		RefreshToken refreshToken = refreshTokenService.save(1L, "example");

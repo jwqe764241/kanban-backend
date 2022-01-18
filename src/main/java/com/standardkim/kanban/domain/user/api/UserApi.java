@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserCreateService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.dto.CreateUserParam;
 import com.standardkim.kanban.domain.user.dto.SuggestionUserDetail;
@@ -26,22 +27,24 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class UserApi {
-	private final UserService userService;
+	private final UserFindService userFindService;
+	
+	private final UserCreateService userCreateService;
 
 	private final ModelMapper modelMapper;
-
-	@PostMapping("/users")
-	@ResponseStatus(HttpStatus.CREATED)
-	public void join(@RequestBody @Valid CreateUserParam createUserParam) {
-		userService.create(createUserParam);
-	}
 
 	@GetMapping("/projects/{projectId}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public List<SuggestionUserDetail> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
-		List<User> users = userService.findNotMemberOrNotInvitedUser(projectId, query);
+		List<User> users = userFindService.findNotMemberOrNotInvitedUser(projectId, query);
 		List<SuggestionUserDetail> suggestionUserDetails = modelMapper.map(users, new TypeToken<List<SuggestionUserDetail>>(){}.getType());
 		return suggestionUserDetails;
+	}
+
+	@PostMapping("/users")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void join(@RequestBody @Valid CreateUserParam createUserParam) {
+		userCreateService.create(createUserParam);
 	}
 }

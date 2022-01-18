@@ -1,12 +1,9 @@
 package com.standardkim.kanban.service.project;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 import com.standardkim.kanban.domain.project.application.ProjectCreateService;
 import com.standardkim.kanban.domain.project.application.ProjectFindService;
@@ -14,10 +11,14 @@ import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 
-import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class ProjectCreateServiceTest {
@@ -25,7 +26,7 @@ public class ProjectCreateServiceTest {
 	ProjectFindService projectFindService;
 
 	@Mock
-	UserService userService;
+	UserFindService userFindService;
 
 	@Mock
 	ProjectRepository projectRepository;
@@ -36,7 +37,7 @@ public class ProjectCreateServiceTest {
 	@Test
 	void create_ProjectNameIsNotExist_Project() {
 		given(projectFindService.isNameExist("example")).willReturn(false);
-		given(userService.findById(1L)).willReturn(getUser(1L));
+		given(userFindService.findById(1L)).willReturn(getUser(1L));
 		given(projectRepository.save(any(Project.class))).willReturn(getProject(1L, "example", "example"));
 
 		Project project = projectCreateService.create(1L, getCreateProjectParam("example", "example"));

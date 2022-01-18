@@ -11,7 +11,7 @@ import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
 import com.standardkim.kanban.domain.projectmember.exception.CannotDeleteProjectOwnerException;
 import com.standardkim.kanban.domain.projectmember.exception.InvitationNotFoundException;
 import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class ProjectMemberService {
 
 	private final ProjectFindService projectFindService;
 
-	private final UserService userService;
+	private final UserFindService userFindService;
 
 	@Transactional(readOnly = true)
 	public boolean isExist(Long projectId, Long userId){
@@ -57,7 +57,7 @@ public class ProjectMemberService {
 	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember create(Long projectId, Long userId, boolean isRegister) {
 		Project project = projectFindService.findById(projectId);
-		User user = userService.findById(userId);
+		User user = userFindService.findById(userId);
 		ProjectMember projectMember = ProjectMember.of(project, user, isRegister);
 		return projectMemberRepository.save(projectMember);
 	}
