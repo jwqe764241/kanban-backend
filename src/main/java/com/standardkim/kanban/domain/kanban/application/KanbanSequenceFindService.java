@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class KanbanSequenceService {
+public class KanbanSequenceFindService {
 	private final KanbanSequenceRepository kanbanSequenceRepository;
 
 	@Transactional(readOnly = true)
