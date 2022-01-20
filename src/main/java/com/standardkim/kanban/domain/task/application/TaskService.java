@@ -12,7 +12,7 @@ import com.standardkim.kanban.domain.task.dto.CreateTaskParam;
 import com.standardkim.kanban.domain.task.dto.ReorderTaskParam;
 import com.standardkim.kanban.domain.task.dto.UpdateTaskParam;
 import com.standardkim.kanban.domain.task.exception.TaskNotFoundException;
-import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnService;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnFindService;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
 
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class TaskService {
 	private final TaskRepository taskRepository;
 
-	private final TaskColumnService taskColumnService;
+	private final TaskColumnFindService taskColumnFindService;
 
 	private final KanbanFindService kanbanFindService;
 
@@ -53,7 +53,7 @@ public class TaskService {
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public List<Task> create(Long projectId, Long kanbanSequenceId, Long columnId, CreateTaskParam param) {
 		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
-		TaskColumn taskColumn = taskColumnService.findByIdAndKanbanId(columnId, kanban.getId());
+		TaskColumn taskColumn = taskColumnFindService.findByIdAndKanbanId(columnId, kanban.getId());
 
 		Task firstTask = taskRepository.findByPrevIdAndTaskColumnId(null, taskColumn.getId());
 		Task task = Task.of(param.getText(), taskColumn);
@@ -75,7 +75,7 @@ public class TaskService {
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Task delete(Long projectId, Long kanbanSequenceId, Long columnId, Long taskId) {
 		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
-		TaskColumn taskColumn = taskColumnService.findByIdAndKanbanId(columnId, kanban.getId());
+		TaskColumn taskColumn = taskColumnFindService.findByIdAndKanbanId(columnId, kanban.getId());
 		Task task = taskRepository.findByIdAndTaskColumnId(taskId, taskColumn.getId());
 		Task nextTask = taskRepository.findByPrevIdAndTaskColumnId(task.getId(), taskColumn.getId());
 
@@ -107,7 +107,7 @@ public class TaskService {
 		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
 		Task task = findById(param.getTaskId());
 		TaskColumn srcColumn = task.getTaskColumn();
-		TaskColumn destColumn = taskColumnService.findByIdAndKanbanId(columnId, kanban.getId());
+		TaskColumn destColumn = taskColumnFindService.findByIdAndKanbanId(columnId, kanban.getId());
 		
 		Task prevTask = task.getPrevTask();
 		Task nextTask = taskRepository.findByPrevIdAndTaskColumnId(task.getId(), srcColumn.getId());
@@ -163,7 +163,7 @@ public class TaskService {
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Task update(Long projectId, Long kanbanSequenceId, Long columnId, Long taskId, UpdateTaskParam param) {
 		Kanban kanban = kanbanFindService.findByProjectIdAndSequenceId(projectId, kanbanSequenceId);
-		TaskColumn taskColumn = taskColumnService.findByIdAndKanbanId(columnId, kanban.getId());
+		TaskColumn taskColumn = taskColumnFindService.findByIdAndKanbanId(columnId, kanban.getId());
 		Task task = taskRepository.findByIdAndTaskColumnId(taskId, taskColumn.getId());
 
 		if(task != null) {

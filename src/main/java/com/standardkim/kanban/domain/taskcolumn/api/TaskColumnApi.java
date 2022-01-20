@@ -5,12 +5,16 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnActionService;
-import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnService;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnCreateService;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnDeleteService;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnFindService;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnReorderService;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnUpdateService;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
-import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDetail;
 import com.standardkim.kanban.domain.taskcolumn.dto.CreateTaskColumnParam;
-import com.standardkim.kanban.domain.taskcolumn.dto.UpdateTaskColumnParam;
 import com.standardkim.kanban.domain.taskcolumn.dto.ReorderTaskColumnParam;
+import com.standardkim.kanban.domain.taskcolumn.dto.TaskColumnDetail;
+import com.standardkim.kanban.domain.taskcolumn.dto.UpdateTaskColumnParam;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -30,7 +34,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class TaskColumnApi {
-	private final TaskColumnService taskColumnService;
+	private final TaskColumnFindService taskColumnFindService;
+
+	private final TaskColumnCreateService taskColumnCreateService;
+
+	private final TaskColumnUpdateService taskColumnUpdateService;
+	
+	private final TaskColumnDeleteService taskColumnDeleteService;
+
+	private final TaskColumnReorderService taskColumnReorderService;
 
 	private final TaskColumnActionService taskColumnActionService;
 
@@ -40,7 +52,7 @@ public class TaskColumnApi {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskColumnDetail> getTaskColumns(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		List<TaskColumn> taskColumns = taskColumnService.findByProjectIdAndSequenceId(projectId, sequenceId);
+		List<TaskColumn> taskColumns = taskColumnFindService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		List<TaskColumnDetail> taskColumnDetails = modelMapper.map(taskColumns, new TypeToken<List<TaskColumnDetail>>(){}.getType());
 		return taskColumnDetails;
 	}
@@ -50,7 +62,7 @@ public class TaskColumnApi {
 	@ResponseStatus(HttpStatus.CREATED)
 	public TaskColumnDetail createTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@Valid @RequestBody CreateTaskColumnParam param) {
-		TaskColumn taskColumn = taskColumnService.create(projectId, sequenceId, param);
+		TaskColumn taskColumn = taskColumnCreateService.create(projectId, sequenceId, param);
 		TaskColumnDetail taskColumnDetail = modelMapper.map(taskColumn, TaskColumnDetail.class);
 		taskColumnActionService.sendCreateAction(projectId, sequenceId, taskColumnDetail);
 		return taskColumnDetail;
@@ -61,7 +73,7 @@ public class TaskColumnApi {
 	@ResponseStatus(HttpStatus.OK)
 	public TaskColumnDetail updateTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId,
 		@Valid @RequestBody UpdateTaskColumnParam param) {
-		TaskColumn taskColumn = taskColumnService.update(projectId, sequenceId, columnId, param);
+		TaskColumn taskColumn = taskColumnUpdateService.update(projectId, sequenceId, columnId, param);
 		TaskColumnDetail taskColumnDetail = modelMapper.map(taskColumn, TaskColumnDetail.class);
 		taskColumnActionService.sendUpdateAction(projectId, sequenceId, taskColumnDetail);
 		return taskColumnDetail;
@@ -71,7 +83,7 @@ public class TaskColumnApi {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public TaskColumnDetail deleteTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId) {
-		TaskColumn updatedTaskColumn = taskColumnService.delete(columnId);
+		TaskColumn updatedTaskColumn = taskColumnDeleteService.delete(columnId);
 		TaskColumnDetail updatedTaskColumnDetail = null;
 		if(updatedTaskColumn != null) {
 			updatedTaskColumnDetail = modelMapper.map(updatedTaskColumn, TaskColumnDetail.class);
@@ -85,7 +97,7 @@ public class TaskColumnApi {
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskColumnDetail> reorderTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId,
 		@Valid @RequestBody ReorderTaskColumnParam param) {
-		List<TaskColumn> updatedTaskColumns = taskColumnService.reorder(projectId, sequenceId, param);
+		List<TaskColumn> updatedTaskColumns = taskColumnReorderService.reorder(projectId, sequenceId, param);
 		List<TaskColumnDetail> updatedTaskColumnDetails = modelMapper.map(updatedTaskColumns, new TypeToken<List<TaskColumnDetail>>(){}.getType());
 		taskColumnActionService.sendReorderAction(projectId, sequenceId, updatedTaskColumnDetails);
 		return updatedTaskColumnDetails;
