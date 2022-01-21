@@ -1,5 +1,6 @@
 package com.standardkim.kanban.global.auth.api;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -9,7 +10,6 @@ import com.standardkim.kanban.global.auth.dto.AccessToken;
 import com.standardkim.kanban.global.auth.dto.AuthenticationToken;
 import com.standardkim.kanban.global.auth.dto.LoginParam;
 import com.standardkim.kanban.global.auth.exception.EmptyRefreshTokenException;
-import com.standardkim.kanban.global.util.CookieUtil;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -63,7 +63,7 @@ public class AuthenticationApi {
 	@PostMapping("/auth/logout")
 	@ResponseStatus(HttpStatus.OK)
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null)
 			return;
 
@@ -82,7 +82,7 @@ public class AuthenticationApi {
 	@GetMapping("/auth/access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken getAccessToken(HttpServletRequest request) throws Exception {
-		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
@@ -93,7 +93,7 @@ public class AuthenticationApi {
 	@GetMapping("/auth/ws-token")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken getWebsocketToken(HttpServletRequest request) throws Exception {
-		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
@@ -104,4 +104,15 @@ public class AuthenticationApi {
 	@GetMapping("/auth/check-token")
 	@ResponseStatus(HttpStatus.OK)
 	public void checkToken() {}
+
+	private String getRefreshTokenFromRequest(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(refreshTokenName))
+					return cookie.getValue();
+			}
+		}
+		return null;
+	}
 }
