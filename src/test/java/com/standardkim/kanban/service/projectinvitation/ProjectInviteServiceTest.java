@@ -7,7 +7,6 @@ import com.standardkim.kanban.domain.projectinvitation.dao.ProjectInvitationRepo
 import com.standardkim.kanban.domain.projectinvitation.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.infra.mail.MailService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,9 +30,6 @@ public class ProjectInviteServiceTest {
 
 	@Mock
 	private ProjectInvitationRepository projectInvitationRepository;
-
-	@Mock
-	private MailService mailService;
 
 	@InjectMocks
 	private ProjectInviteService projectInviteService;

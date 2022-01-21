@@ -1,4 +1,4 @@
-package com.standardkim.kanban.infra.mail;
+package com.standardkim.kanban.infra.mail.application;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
 
-import com.standardkim.kanban.infra.mail.MailDto.InviteProjectMailParam;
+import com.standardkim.kanban.infra.mail.dto.InviteProjectMailParam;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MailService {
+public class InviteProjectMailSendService {
 	private final JavaMailSender mailSender;
 
 	private final Configuration configuration;
@@ -31,13 +31,15 @@ public class MailService {
 	@Value("${config.invitation.acceptInvitationUrl}")
 	private String acceptInvitationUrl;
 
-	private String getInviteProjectMailTitle(InviteProjectMailParam inviteProjectMailParam) {
+
+	
+	private String getTitle(InviteProjectMailParam inviteProjectMailParam) {
 		String title = String.format("[Kanban] @%s has invited you to join the \"%s\" project", 
 			inviteProjectMailParam.getInviterLogin(), inviteProjectMailParam.getProjectName());
 		return title;
 	}
 
-	private String getInviteProjectMailBody(InviteProjectMailParam inviteProjectMailParam) {
+	private String getBody(InviteProjectMailParam inviteProjectMailParam) {
 		Map<String, Object> model = new HashMap<>();
 		model.put("inviterLogin", inviteProjectMailParam.getInviterLogin());
 		model.put("projectName", inviteProjectMailParam.getProjectName());
@@ -45,7 +47,7 @@ public class MailService {
 
 		StringWriter writer = new StringWriter();
 		try {
-			configuration.getTemplate("mail/test.ftlh").process(model, writer);
+			configuration.getTemplate("mail/InviteProject.ftlh").process(model, writer);
 		} catch (IOException | TemplateException e) {
 			return "";
 		}
@@ -53,9 +55,9 @@ public class MailService {
 		return writer.getBuffer().toString();
 	}
 
-	public void sendInviteProjectMail(InviteProjectMailParam inviteProjectMailParam) {
-		String title = getInviteProjectMailTitle(inviteProjectMailParam);
-		String body = getInviteProjectMailBody(inviteProjectMailParam);
+	public void send(InviteProjectMailParam inviteProjectMailParam) {
+		String title = getTitle(inviteProjectMailParam);
+		String body = getBody(inviteProjectMailParam);
 
 		try {
 			MimeMessage message = mailSender.createMimeMessage();

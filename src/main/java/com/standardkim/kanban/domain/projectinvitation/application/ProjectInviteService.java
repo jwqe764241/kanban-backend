@@ -7,8 +7,8 @@ import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
 import com.standardkim.kanban.domain.projectinvitation.exception.UserAlreadyInvitedException;
 import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.infra.mail.MailDto.InviteProjectMailParam;
-import com.standardkim.kanban.infra.mail.MailService;
+import com.standardkim.kanban.infra.mail.application.InviteProjectMailSendService;
+import com.standardkim.kanban.infra.mail.dto.InviteProjectMailParam;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class ProjectInviteService {
 
 	private final ProjectInvitationRepository projectInvitationRepository;
 
-	private final MailService mailService;
+	private final InviteProjectMailSendService inviteProjectMailSendService;
 
 	@Transactional(rollbackFor = Exception.class)
 	private ProjectInvitation create(Project project, User inviteeUser, User inviterUser) {
@@ -46,7 +46,7 @@ public class ProjectInviteService {
 		ProjectInvitation projectInvitation = create(project, inviteeUser, inviterUser);
 
 		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
-		mailService.sendInviteProjectMail(InviteProjectMailParam.of(project, inviterUser, inviteeUser));
+		inviteProjectMailSendService.send(InviteProjectMailParam.of(project, inviterUser, inviteeUser));
 
 		return projectInvitation;
 	}
