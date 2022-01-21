@@ -5,12 +5,16 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.domain.task.application.TaskActionService;
-import com.standardkim.kanban.domain.task.application.TaskService;
+import com.standardkim.kanban.domain.task.application.TaskCreateService;
+import com.standardkim.kanban.domain.task.application.TaskDeleteService;
+import com.standardkim.kanban.domain.task.application.TaskFindService;
+import com.standardkim.kanban.domain.task.application.TaskReorderService;
+import com.standardkim.kanban.domain.task.application.TaskUpdateService;
 import com.standardkim.kanban.domain.task.domain.Task;
-import com.standardkim.kanban.domain.task.dto.TaskDetail;
 import com.standardkim.kanban.domain.task.dto.CreateTaskParam;
-import com.standardkim.kanban.domain.task.dto.UpdateTaskParam;
 import com.standardkim.kanban.domain.task.dto.ReorderTaskParam;
+import com.standardkim.kanban.domain.task.dto.TaskDetail;
+import com.standardkim.kanban.domain.task.dto.UpdateTaskParam;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -30,7 +34,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class TaskApi {
-	private final TaskService taskService;
+	private final TaskFindService taskFindService;
+
+	private final TaskCreateService taskCreateService;
+
+	private final TaskUpdateService taskUpdateService;
+	
+	private final TaskDeleteService taskDeleteService;
+	
+	private final TaskReorderService taskReorderService;
 
 	private final TaskActionService taskActionService;
 
@@ -40,7 +52,7 @@ public class TaskApi {
 	@PreAuthorize("isProjectMember(#projectId)")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskDetail> getTasks(@PathVariable Long projectId, @PathVariable Long sequenceId) {
-		List<Task> tasks = taskService.findByProjectIdAndSequenceId(projectId, sequenceId);
+		List<Task> tasks = taskFindService.findByProjectIdAndSequenceId(projectId, sequenceId);
 		List<TaskDetail> taskDetails = modelMapper.map(tasks, new TypeToken<List<TaskDetail>>(){}.getType());
 		return taskDetails;
 	}
@@ -50,7 +62,7 @@ public class TaskApi {
 	@ResponseStatus(HttpStatus.CREATED)
 	public List<TaskDetail> createTask(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId,
 		@Valid @RequestBody CreateTaskParam param) {
-		List<Task> updatedTasks = taskService.create(projectId, sequenceId, columnId, param);
+		List<Task> updatedTasks = taskCreateService.create(projectId, sequenceId, columnId, param);
 		List<TaskDetail> updatedTaskDetails = modelMapper.map(updatedTasks, new TypeToken<List<TaskDetail>>(){}.getType());
 		taskActionService.sendCreateAction(projectId, sequenceId, updatedTaskDetails);
 		return updatedTaskDetails;
@@ -61,7 +73,7 @@ public class TaskApi {
 	@ResponseStatus(HttpStatus.OK)
 	public TaskDetail updateTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 	@PathVariable Long columnId, @PathVariable Long taskId, @Valid @RequestBody UpdateTaskParam param) {
-		Task updatedTask = taskService.update(projectId, sequenceId, columnId, taskId, param);
+		Task updatedTask = taskUpdateService.update(projectId, sequenceId, columnId, taskId, param);
 		TaskDetail updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
 		taskActionService.sendUpdateAction(projectId, sequenceId, updatedTaskDetail);
 		return updatedTaskDetail;
@@ -72,7 +84,7 @@ public class TaskApi {
 	@ResponseStatus(HttpStatus.OK)
 	public TaskDetail deleteTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@PathVariable Long columnId, @PathVariable Long taskId) {
-		Task updatedTask = taskService.delete(projectId, sequenceId, columnId, taskId);
+		Task updatedTask = taskDeleteService.delete(projectId, sequenceId, columnId, taskId);
 		TaskDetail updatedTaskDetail = null;
 		if(updatedTask != null) {
 			updatedTaskDetail = modelMapper.map(updatedTask, TaskDetail.class);
@@ -86,7 +98,7 @@ public class TaskApi {
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskDetail> reorderTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@PathVariable Long columnId, @RequestBody ReorderTaskParam param) {
-		List<Task> updatedTasks = taskService.reorder(projectId, sequenceId, columnId, param);
+		List<Task> updatedTasks = taskReorderService.reorder(projectId, sequenceId, columnId, param);
 		List<TaskDetail> updatedTaskDetails = modelMapper.map(updatedTasks, new TypeToken<List<TaskDetail>>(){}.getType());
 		taskActionService.sendReorderAction(projectId, sequenceId, updatedTaskDetails);
 		return updatedTaskDetails;
