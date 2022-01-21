@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
-public class ErrorResponseController {
+public class GlobalExceptionHandler {
 	private HttpHeaders defaultHeaders;
 
 	@PostConstruct
