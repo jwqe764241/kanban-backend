@@ -8,10 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenService;
+import com.standardkim.kanban.domain.refreshtoken.application.RefreshTokenFindService;
 import com.standardkim.kanban.domain.refreshtoken.domain.RefreshToken;
 import com.standardkim.kanban.domain.refreshtoken.exception.RefreshTokenNotFoundException;
-import com.standardkim.kanban.domain.user.application.UserService;
+import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.global.auth.dto.AuthorizationHeader;
@@ -37,9 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 
-	private final UserService userService;
+	private final UserFindService userFindService;
 
-	private final RefreshTokenService refreshTokenService;
+	private final RefreshTokenFindService refreshTokenFindService;
 
 	@Value("${config.allowed-origins}")
 	String[] allowedOrigins;
@@ -71,8 +71,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			if(authorizationHeader.isValid() && jwtTokenProvider.isValid(token)) {
 				try{
 					String login = jwtTokenProvider.getLogin(token);
-					User user = userService.findByLogin(login);
-					RefreshToken refreshToken = refreshTokenService.findById(user.getId());
+					User user = userFindService.findByLogin(login);
+					RefreshToken refreshToken = refreshTokenFindService.findById(user.getId());
 					// access token and refresh token must not be same
 					if(refreshToken.getToken().equals(authorizationHeader.getCredentials())) {
 						setInvalidAccessTokenResponse(response);

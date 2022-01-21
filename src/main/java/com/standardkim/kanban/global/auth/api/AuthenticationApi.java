@@ -1,15 +1,17 @@
 package com.standardkim.kanban.global.auth.api;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import com.standardkim.kanban.global.auth.application.AuthenticationService;
+import com.standardkim.kanban.global.auth.application.AccessTokenIssueService;
+import com.standardkim.kanban.global.auth.application.SignInService;
+import com.standardkim.kanban.global.auth.application.SignOutService;
 import com.standardkim.kanban.global.auth.dto.AccessToken;
 import com.standardkim.kanban.global.auth.dto.AuthenticationToken;
 import com.standardkim.kanban.global.auth.dto.LoginParam;
 import com.standardkim.kanban.global.auth.exception.EmptyRefreshTokenException;
-import com.standardkim.kanban.global.util.CookieUtil;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationApi {
-	private final AuthenticationService authenticationService;
+	private final AccessTokenIssueService accessTokenIssueService;
+
+	private final SignInService signInService;
+	
+	private final SignOutService signOutService;
 
 	@Value("${config.refresh-token-name}")
 	private String refreshTokenName;
@@ -46,7 +52,7 @@ public class AuthenticationApi {
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken login(@RequestBody @Valid LoginParam loginParam, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = authenticationService.login(loginParam, refreshTokenTTL, accessTokenTTL);
+		AuthenticationToken authenticationToken = signInService.signIn(loginParam, refreshTokenTTL, accessTokenTTL);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain(cookieDomain)
@@ -63,11 +69,11 @@ public class AuthenticationApi {
 	@PostMapping("/auth/logout")
 	@ResponseStatus(HttpStatus.OK)
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null)
 			return;
 
-		authenticationService.logout(refreshToken);
+		signOutService.signOut(refreshToken);
 
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
 			.domain(cookieDomain)
@@ -82,26 +88,37 @@ public class AuthenticationApi {
 	@GetMapping("/auth/access-token")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken getAccessToken(HttpServletRequest request) throws Exception {
-		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
-		String accessToken = authenticationService.getAccessToken(refreshToken, accessTokenTTL);
+		String accessToken = accessTokenIssueService.issue(refreshToken, accessTokenTTL);
 		return AccessToken.of(accessToken);
 	}
 
 	@GetMapping("/auth/ws-token")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken getWebsocketToken(HttpServletRequest request) throws Exception {
-		String refreshToken = CookieUtil.getValueFromHttpServletRequest(request, refreshTokenName);
+		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
-		String accessToken = authenticationService.getAccessToken(refreshToken, wsTokenTTL);
+		String accessToken = accessTokenIssueService.issue(refreshToken, wsTokenTTL);
 		return AccessToken.of(accessToken);
 	}
 
 	@GetMapping("/auth/check-token")
 	@ResponseStatus(HttpStatus.OK)
 	public void checkToken() {}
+
+	private String getRefreshTokenFromRequest(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(refreshTokenName))
+					return cookie.getValue();
+			}
+		}
+		return null;
+	}
 }

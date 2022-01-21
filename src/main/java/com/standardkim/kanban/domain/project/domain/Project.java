@@ -65,8 +65,8 @@ public class Project extends BaseTimeEntity {
 		this.name = name;
 	}
 
-	public void addMember(User user, boolean isRegister) {
-		ProjectMember member = ProjectMember.of(this, user, isRegister);
+	public void addMemberAsRegister(User user) {
+		ProjectMember member = ProjectMember.of(this, user, true);
 		members.add(member);
 	}
 }

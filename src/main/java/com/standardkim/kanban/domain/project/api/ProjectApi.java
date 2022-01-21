@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.standardkim.kanban.domain.project.application.ProjectService;
+import com.standardkim.kanban.domain.project.application.ProjectCreateService;
+import com.standardkim.kanban.domain.project.application.ProjectFindService;
+import com.standardkim.kanban.domain.project.application.ProjectUpdateService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.dto.ProjectDetail;
@@ -29,22 +31,19 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class ProjectApi {
-	private final ProjectService projectService;
+	private final ProjectFindService projectFindService;
+
+	private final ProjectCreateService projectCreateService;
+
+	private final ProjectUpdateService projectUpdateService;
 
 	private final ModelMapper modelMapper;
-
-	@PostMapping("/projects")
-	@ResponseStatus(HttpStatus.CREATED)
-	public void createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
-		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
-		projectService.create(securityUser.getId(), createProjectParam);
-	}
 
 	@GetMapping("/projects")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProjectDetail> getMyProject() {
 		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
-		List<Project> projects = projectService.findByUserId(securityUser.getId());
+		List<Project> projects = projectFindService.findByUserId(securityUser.getId());
 		List<ProjectDetail> projectDetails = modelMapper.map(projects, new TypeToken<List<ProjectDetail>>(){}.getType());
 		return projectDetails;
 	}
@@ -53,7 +52,16 @@ public class ProjectApi {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectMember(#projectId)")
 	public ProjectDetail getProject(@PathVariable Long projectId) {
-		Project project = projectService.findById(projectId);
+		Project project = projectFindService.findById(projectId);
+		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
+		return projectDetail;
+	}
+
+	@PostMapping("/projects")
+	@ResponseStatus(HttpStatus.CREATED)
+	public ProjectDetail createProject(@RequestBody @Valid CreateProjectParam createProjectParam) {
+		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
+		Project project = projectCreateService.create(securityUser.getId(), createProjectParam);
 		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
 		return projectDetail;
 	}
@@ -62,7 +70,7 @@ public class ProjectApi {
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
 	public ProjectDetail updateProject(@PathVariable Long projectId, @RequestBody @Valid UpdateProjectParam updateProjectParam) {
-		Project project = projectService.update(projectId, updateProjectParam);
+		Project project = projectUpdateService.update(projectId, updateProjectParam);
 		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
 		return projectDetail;
 	}
