@@ -21,17 +21,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SecurityUser implements UserDetails {
 	private Long id;
-	private String login;
+	private String username;
 	private String password;
 	private String name;
 	private LocalDateTime createdAt;
 	@Builder.Default
 	private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-	public static SecurityUser of(User user ) {
+	public static SecurityUser of(User user) {
 		return SecurityUser.builder()
 			.id(user.getId())
-			.login(user.getLogin())
+			.username(user.getUsername())
 			.password(user.getPassword())
 			.name(user.getName())
 			.createdAt(user.getCreatedAt())
@@ -40,7 +40,7 @@ public class SecurityUser implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return login;
+		return username;
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class SignInService {
 	public AuthenticationToken signIn(LoginParam loginParam, Long refreshTokenTTL, Long accessTokenTTL) {
 		User user = null;
 		try {
-			user = userFindService.findByLogin(loginParam.getLogin());
+			user = userFindService.findByUsername(loginParam.getUsername());
 		}
 		catch (UserNotFoundException e) {
 			throw new CannotLoginException("incorrect username or password");
@@ -40,8 +40,8 @@ public class SignInService {
 			throw new CannotLoginException("incorrect username or password");
 		}
 
-		String refreshToken = jwtTokenProvider.build(user.getLogin(), user.getName(), refreshTokenTTL);
-		String accessToken = jwtTokenProvider.build(user.getLogin(), user.getName(), accessTokenTTL);
+		String refreshToken = jwtTokenProvider.build(user.getUsername(), user.getName(), refreshTokenTTL);
+		String accessToken = jwtTokenProvider.build(user.getUsername(), user.getName(), accessTokenTTL);
 
 		refreshTokenSaveService.save(user.getId(), refreshToken);
 

@@ -41,7 +41,7 @@ public class SignInServiceTest {
 
 	@Test
 	void signIn_UserIsExistAndPasswordMatched_AuthenticationToken() {
-		given(userFindService.findByLogin("example")).willReturn(getUser("example", "user", "pass"));
+		given(userFindService.findByUsername("example")).willReturn(getUser("example", "user", "pass"));
 		given(jwtTokenProvider.build("example", "user", 20L)).willReturn("refresh-token");
 		given(jwtTokenProvider.build("example", "user", 10L)).willReturn("access-token");
 		given(refreshTokenSaveService.save(null, "refresh-token")).willReturn(null);
@@ -55,7 +55,7 @@ public class SignInServiceTest {
 
 	@Test
 	void signIn_UserIsNotExist_ThrowCannotLoginException() {
-		given(userFindService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+		given(userFindService.findByUsername("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
 			signInService.signIn(getLoginParam("example", "example"), 20L, 10L);
@@ -64,24 +64,24 @@ public class SignInServiceTest {
 
 	@Test
 	void signIn_PasswordNotMatched_ThrowCannotLoginException() {
-		given(userFindService.findByLogin("example")).willReturn(getUser("example", "user", "wrongPass"));
+		given(userFindService.findByUsername("example")).willReturn(getUser("example", "user", "wrongPass"));
 
 		assertThatThrownBy(() -> {
 			signInService.signIn(getLoginParam("example", "example"), 20L, 10L);
 		}).isInstanceOf(CannotLoginException.class);
 	}
 
-	private LoginParam getLoginParam(String login, String password) {
+	private LoginParam getLoginParam(String username, String password) {
 		return LoginParam.builder()
-			.login(login)
+			.username(username)
 			.password(password)
 			.build();
 	}
 
-	private User getUser(String login, String name, String rawPassword) {
+	private User getUser(String username, String name, String rawPassword) {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		return User.builder()
-			.login(login)
+			.username(username)
 			.name(name)
 			.password(encoder.encode(rawPassword))
 			.build();

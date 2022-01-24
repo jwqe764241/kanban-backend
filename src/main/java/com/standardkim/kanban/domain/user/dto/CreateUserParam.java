@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class CreateUserParam {
 	@NotBlank
 	@Size(min = 5, max = 20)
-	private String login;
+	private String username;
 
 	@NotBlank
 	@Size(min = 5, max = 20)

@@ -17,16 +17,16 @@ public class InviteProjectMailParam {
 	private String inviteeMailAddress;
 	private Long projectId;
 	private String projectName;
-	private String inviterLogin;
-	private String inviteeLogin;
+	private String inviterUsername;
+	private String inviteeUsername;
 
 	public static InviteProjectMailParam of(Project project, User inviterUser, User inviteeUser) {
 		return InviteProjectMailParam.builder()
 			.inviteeMailAddress(inviteeUser.getEmail())
 			.projectId(project.getId())
 			.projectName(project.getName())
-			.inviterLogin(inviterUser.getLogin())
-			.inviteeLogin(inviteeUser.getLogin())
+			.inviterUsername(inviterUser.getUsername())
+			.inviteeUsername(inviteeUser.getUsername())
 			.build();
 	}
 }

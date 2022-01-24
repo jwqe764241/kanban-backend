@@ -23,9 +23,9 @@ public class JwtTokenProvider {
 		this.jwtParser = Jwts.parserBuilder().setSigningKey(signKey).build();
 	}
 
-	public String build(String login, String name, Long ttl) {
+	public String build(String username, String name, Long ttl) {
 		Claims claims = Jwts.claims();
-		claims.put("login", login);
+		claims.put("username", username);
 		claims.put("name", name);
 
 		return build(claims, ttl);
@@ -61,17 +61,17 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public String getLogin(String token) {
-		String login = null;
+	public String getUsername(String token) {
+		String username = null;
 
 		try {
-			login = jwtParser.parseClaimsJws(token)
+			username = jwtParser.parseClaimsJws(token)
 				.getBody()
-				.get("login", String.class);
+				.get("username", String.class);
 		} catch (ExpiredJwtException e) {
-			login = e.getClaims().get("login", String.class);
+			username = e.getClaims().get("username", String.class);
 		}
 
-		return login;
+		return username;
 	}
 }
