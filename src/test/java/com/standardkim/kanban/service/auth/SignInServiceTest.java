@@ -6,8 +6,8 @@ import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.global.auth.application.SignInService;
 import com.standardkim.kanban.global.auth.dto.AuthenticationToken;
-import com.standardkim.kanban.global.auth.dto.LoginParam;
-import com.standardkim.kanban.global.auth.exception.CannotLoginException;
+import com.standardkim.kanban.global.auth.dto.SignInParam;
+import com.standardkim.kanban.global.auth.exception.CannotSignInException;
 import com.standardkim.kanban.global.util.JwtTokenProvider;
 
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class SignInServiceTest {
 		given(jwtTokenProvider.build("example", "user", 10L)).willReturn("access-token");
 		given(refreshTokenSaveService.save(null, "refresh-token")).willReturn(null);
 
-		AuthenticationToken token = signInService.signIn(getLoginParam("example", "pass"), 20L, 10L);
+		AuthenticationToken token = signInService.signIn(getSignInParam("example", "pass"), 20L, 10L);
 
 		assertThat(token).isNotNull();
 		assertThat(token.getRefreshToken()).isEqualTo("refresh-token");
@@ -54,25 +54,25 @@ public class SignInServiceTest {
 	}
 
 	@Test
-	void signIn_UserIsNotExist_ThrowCannotLoginException() {
+	void signIn_UserIsNotExist_ThrowCannotSignInException() {
 		given(userFindService.findByUsername("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
-			signInService.signIn(getLoginParam("example", "example"), 20L, 10L);
-		}).isInstanceOf(CannotLoginException.class);
+			signInService.signIn(getSignInParam("example", "example"), 20L, 10L);
+		}).isInstanceOf(CannotSignInException.class);
 	}
 
 	@Test
-	void signIn_PasswordNotMatched_ThrowCannotLoginException() {
+	void signIn_PasswordNotMatched_ThrowCannotSignInException() {
 		given(userFindService.findByUsername("example")).willReturn(getUser("example", "user", "wrongPass"));
 
 		assertThatThrownBy(() -> {
-			signInService.signIn(getLoginParam("example", "example"), 20L, 10L);
-		}).isInstanceOf(CannotLoginException.class);
+			signInService.signIn(getSignInParam("example", "example"), 20L, 10L);
+		}).isInstanceOf(CannotSignInException.class);
 	}
 
-	private LoginParam getLoginParam(String username, String password) {
-		return LoginParam.builder()
+	private SignInParam getSignInParam(String username, String password) {
+		return SignInParam.builder()
 			.username(username)
 			.password(password)
 			.build();

@@ -10,7 +10,7 @@ import com.standardkim.kanban.global.auth.application.SignInService;
 import com.standardkim.kanban.global.auth.application.SignOutService;
 import com.standardkim.kanban.global.auth.dto.AccessToken;
 import com.standardkim.kanban.global.auth.dto.AuthenticationToken;
-import com.standardkim.kanban.global.auth.dto.LoginParam;
+import com.standardkim.kanban.global.auth.dto.SignInParam;
 import com.standardkim.kanban.global.auth.exception.EmptyRefreshTokenException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -48,11 +48,11 @@ public class AuthenticationApi {
 	@Value("${config.cookie-domain}")
 	private String cookieDomain;
 
-	@PostMapping("/auth/login")
+	@PostMapping("/auth/sign-in")
 	@ResponseStatus(HttpStatus.OK)
-	public AccessToken login(@RequestBody @Valid LoginParam loginParam, HttpServletResponse response) throws Exception {
+	public AccessToken signIn(@RequestBody @Valid SignInParam signInParam, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = signInService.signIn(loginParam, refreshTokenTTL, accessTokenTTL);
+		AuthenticationToken authenticationToken = signInService.signIn(signInParam, refreshTokenTTL, accessTokenTTL);
 		
 		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
 			.domain(cookieDomain)
