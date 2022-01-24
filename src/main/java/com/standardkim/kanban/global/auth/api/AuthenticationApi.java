@@ -66,9 +66,9 @@ public class AuthenticationApi {
 		return AccessToken.of(authenticationToken.getAccessToken());
 	}
 
-	@PostMapping("/auth/logout")
+	@PostMapping("/auth/sign-out")
 	@ResponseStatus(HttpStatus.OK)
-	public void logout(HttpServletRequest request, HttpServletResponse response) {
+	public void signOut(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = getRefreshTokenFromRequest(request);
 		if(refreshToken == null)
 			return;

@@ -32,7 +32,7 @@ public class SignOutServiceTest {
 	private SignOutService signOutService;
 
 	@Test
-	void logout_UserIsNotExist_DoesNotThrowAnyException() {
+	void signOut_UserIsNotExist_DoesNotThrowAnyException() {
 		given(jwtTokenProvider.getUsername(anyString())).willReturn("example");
 		given(userFindService.findByUsername("example")).willThrow(new UserNotFoundException(""));
 

@@ -27,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.httpBasic().disable()
 			.csrf().disable()
 			.authorizeRequests()
-				.antMatchers(HttpMethod.POST, "/users", "/auth/sign-in", "/auth/logout").permitAll()
+				.antMatchers(HttpMethod.POST, "/users", "/auth/sign-in", "/auth/sign-out").permitAll()
 				.antMatchers(HttpMethod.GET, "/auth/access-token", "/auth/ws-token", "/kanban-event/**").permitAll()
 				.anyRequest().authenticated()
 			.and()
