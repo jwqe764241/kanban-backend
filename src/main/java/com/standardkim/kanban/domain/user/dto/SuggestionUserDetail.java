@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SuggestionUserDetail {
 	private Long id;
-	private String login;
+	private String username;
 	private String name;
 }

@@ -35,13 +35,13 @@ public class InviteProjectMailSendService {
 	
 	private String getTitle(InviteProjectMailParam inviteProjectMailParam) {
 		String title = String.format("[Kanban] @%s has invited you to join the \"%s\" project", 
-			inviteProjectMailParam.getInviterLogin(), inviteProjectMailParam.getProjectName());
+			inviteProjectMailParam.getInviterUsername(), inviteProjectMailParam.getProjectName());
 		return title;
 	}
 
 	private String getBody(InviteProjectMailParam inviteProjectMailParam) {
 		Map<String, Object> model = new HashMap<>();
-		model.put("inviterLogin", inviteProjectMailParam.getInviterLogin());
+		model.put("inviterUsername", inviteProjectMailParam.getInviterUsername());
 		model.put("projectName", inviteProjectMailParam.getProjectName());
 		model.put("url", String.format(acceptInvitationUrl, inviteProjectMailParam.getProjectId()));
 

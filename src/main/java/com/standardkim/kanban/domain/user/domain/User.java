@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "login" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }) })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
@@ -37,7 +37,7 @@ public class User extends BaseTimeEntity {
 	private Long id;
 
 	@Column(length = 50, nullable = false)
-	private String login;
+	private String username;
 
 	@Column(length = 200, nullable = false)
 	private String password;
@@ -52,9 +52,9 @@ public class User extends BaseTimeEntity {
 	@OrderBy("created_at desc")
 	private Set<ProjectMember> projects;
 
-	public static User of(String login, String password, String name, String email, PasswordEncoder passwordEncoder) {
+	public static User of(String username, String password, String name, String email, PasswordEncoder passwordEncoder) {
 		return User.builder()
-			.login(login)
+			.username(username)
 			.password(passwordEncoder.encode(password))
 			.name(name)
 			.email(email)

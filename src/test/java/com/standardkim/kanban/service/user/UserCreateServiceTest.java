@@ -34,8 +34,8 @@ public class UserCreateServiceTest {
 	private UserCreateService userCreateService;
 
 	@Test
-	public void create_LoginIsExist_ThrowDuplicateUserNameException() {
-		given(userFindService.isLoginExists("example")).willReturn(true);
+	public void create_UsernameIsExist_ThrowDuplicateUserNameException() {
+		given(userFindService.isUsernameExists("example")).willReturn(true);
 
 		assertThatThrownBy(() -> {
 			userCreateService.create(getCreateUserParam("example"));
@@ -43,8 +43,8 @@ public class UserCreateServiceTest {
 	}
 
 	@Test
-	public void create_LoginIsNotExist_User() {
-		given(userFindService.isLoginExists("example")).willReturn(false);
+	public void create_UsernameIsNotExist_User() {
+		given(userFindService.isUsernameExists("example")).willReturn(false);
 		given(userRepository.save(any(User.class))).willReturn(getUser("example"));
 
 		User user = userCreateService.create(getCreateUserParam("example"));
@@ -52,15 +52,15 @@ public class UserCreateServiceTest {
 		assertThat(user).isNotNull();
 	}
 
-	private User getUser(String login) {
+	private User getUser(String username) {
 		return User.builder()
-			.login(login)
+			.username(username)
 			.build();
 	}
 
-	private CreateUserParam getCreateUserParam(String login) {
+	private CreateUserParam getCreateUserParam(String username) {
 		return CreateUserParam.builder()
-			.login(login)
+			.username(username)
 			.password("qwer1234")
 			.name("example")
 			.email("example@example.com")
