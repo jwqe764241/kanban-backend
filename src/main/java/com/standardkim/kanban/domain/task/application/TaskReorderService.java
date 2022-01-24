@@ -46,6 +46,12 @@ public class TaskReorderService {
 			throw new RuntimeException("task column is invalid state");
 		}
 
+		//reorder to same position
+		if(isSameColumn && ((param.getPrevTaskId() == null && prevTask == null) || 
+			(prevTask != null && prevTask.getId().equals(param.getPrevTaskId())))) {
+			return new ArrayList<>();
+		}
+
 		List<Task> updatedTasks = new ArrayList<>();
 
 		//update next task's previous task to current task(task that will be deleted)'s previous task
