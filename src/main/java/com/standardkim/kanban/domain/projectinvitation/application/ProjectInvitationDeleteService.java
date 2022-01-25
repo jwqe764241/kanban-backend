@@ -21,4 +21,9 @@ public class ProjectInvitationDeleteService {
 	public void deleteByProjectIdAndUserId(Long projectId, Long userId) {
 		projectInvitationRepository.deleteByProjectIdAndUserId(projectId, userId);
 	}
+
+	@Transactional
+	public void deleteByProjectId(Long projectId) {
+		projectInvitationRepository.deleteByProjectId(projectId);
+	}
 }

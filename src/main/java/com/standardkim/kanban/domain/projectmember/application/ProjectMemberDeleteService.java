@@ -18,7 +18,7 @@ public class ProjectMemberDeleteService {
 
 	private final ProjectInvitationDeleteService projectInvitationDeleteService;
 
-	private ProjectMemberRepository projectMemberRepository;
+	private final ProjectMemberRepository projectMemberRepository;
 
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long userId) {
@@ -36,5 +36,11 @@ public class ProjectMemberDeleteService {
 
 		projectInvitationDeleteService.deleteByProjectIdAndUserId(projectId, userId);
 		projectMemberRepository.delete(member);
+	}
+
+	@Transactional
+	public void deleteByProjectId(Long projectId) {
+		projectInvitationDeleteService.deleteByProjectId(projectId);
+		projectMemberRepository.deleteByProjectId(projectId);
 	}
 }
