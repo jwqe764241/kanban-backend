@@ -1,5 +1,7 @@
 package com.standardkim.kanban.domain.task.application;
 
+import java.util.List;
+
 import com.standardkim.kanban.domain.kanban.application.KanbanFindService;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.task.dao.TaskRepository;
@@ -50,5 +52,11 @@ public class TaskDeleteService {
 			nextTask.updatePrevTask(prevTask);
 			return nextTask;
 		}
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void deleteByTaskColumnIds(List<Long> taskColumnIds) {
+		taskRepository.updatePrevIdToNullByTaskColumnIds(taskColumnIds);
+		taskRepository.deleteByTaskColumnIds(taskColumnIds);
 	}
 }
