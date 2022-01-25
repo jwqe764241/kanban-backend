@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.domain.project.application.ProjectCreateService;
+import com.standardkim.kanban.domain.project.application.ProjectDeleteService;
 import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.application.ProjectUpdateService;
 import com.standardkim.kanban.domain.project.domain.Project;
@@ -18,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,8 @@ public class ProjectApi {
 	private final ProjectCreateService projectCreateService;
 
 	private final ProjectUpdateService projectUpdateService;
+
+	private final ProjectDeleteService projectDeleteService;
 
 	private final ModelMapper modelMapper;
 
@@ -73,5 +77,12 @@ public class ProjectApi {
 		Project project = projectUpdateService.update(projectId, updateProjectParam);
 		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
 		return projectDetail;
+	}
+
+	@DeleteMapping("/projects/{projectId}")
+	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public void removeProject(@PathVariable Long projectId) {
+		projectDeleteService.delete(projectId);
 	}
 }
