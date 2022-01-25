@@ -1,6 +1,6 @@
 package com.standardkim.kanban.service.taskcolumn;
 
-import com.standardkim.kanban.domain.task.dao.TaskRepository;
+import com.standardkim.kanban.domain.task.application.TaskDeleteService;
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnDeleteService;
 import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnFindService;
 import com.standardkim.kanban.domain.taskcolumn.dao.TaskColumnRepository;
@@ -21,10 +21,10 @@ public class TaskColumnDeleteServiceTest {
 	private TaskColumnFindService taskColumnFindService;
 
 	@Mock
-	private TaskColumnRepository taskColumnRepository;
-	
+	private TaskDeleteService taskDeleteService;
+
 	@Mock
-	private TaskRepository taskRepository;
+	private TaskColumnRepository taskColumnRepository;
 
 	@InjectMocks
 	private TaskColumnDeleteService taskColumnDeleteService;
