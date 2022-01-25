@@ -5,8 +5,10 @@ import java.util.Optional;
 
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface KanbanRepository extends CrudRepository<Kanban, Long> {
 	@Query(value = "SELECT k.* FROM kanban k LEFT JOIN v_kanban_sequence ks ON ks.project_id = ?1 and ks.sequence_id = ?2 WHERE k.id = ks.id", nativeQuery = true)
@@ -14,4 +16,9 @@ public interface KanbanRepository extends CrudRepository<Kanban, Long> {
 
 	@Query("select id from Kanban k where k.project.id = ?1")
 	List<Long> findIdByProjectId(Long projectId);
+
+	@Transactional
+	@Modifying
+	@Query("delete from Kanban k where k.id in (?1)")
+	void deleteByIds(List<Long> ids);
 }

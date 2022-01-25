@@ -40,6 +40,6 @@ public class KanbanDeleteService {
 	public void deleteByProjectId(Long projectId) {
 		List<Long> kanbanIds = kanbanRepository.findIdByProjectId(projectId);
 		taskColumnDeleteService.deleteByKanbanIds(kanbanIds);
-		kanbanRepository.deleteAllById(kanbanIds);
+		kanbanRepository.deleteByIds(kanbanIds);
 	}
 }
