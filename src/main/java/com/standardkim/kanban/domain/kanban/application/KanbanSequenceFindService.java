@@ -18,7 +18,7 @@ public class KanbanSequenceFindService {
 
 	@Transactional(readOnly = true)
 	public List<KanbanSequence> findByProjectId(Long projectId) {
-		return kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(projectId, false);
+		return kanbanSequenceRepository.findByProjectIdOrderBySequenceId(projectId);
 	}
 
 	@Transactional(readOnly = true)

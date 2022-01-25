@@ -1,7 +1,9 @@
 package com.standardkim.kanban.domain.kanban.application;
 
+import com.standardkim.kanban.domain.kanban.dao.KanbanRepository;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.kanban.exception.KanbanNotFoundException;
+import com.standardkim.kanban.domain.taskcolumn.application.TaskColumnDeleteService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,10 @@ import lombok.RequiredArgsConstructor;
 public class KanbanDeleteService {
 	private final KanbanFindService kanbanFindService;
 
+	private final TaskColumnDeleteService taskColumnDeleteService;
+
+	private final KanbanRepository kanbanRepository;
+
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long sequenceId) {
 		Kanban kanban = null;
@@ -23,8 +29,7 @@ public class KanbanDeleteService {
 			return;
 		}
 
-		if(!kanban.isDeleted()) {
-			kanban.delete();
-		}
+		taskColumnDeleteService.deleteByKanbanId(kanban.getId());
+		kanbanRepository.delete(kanban);
 	}
 }

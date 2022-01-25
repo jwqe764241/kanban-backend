@@ -2,12 +2,9 @@ package com.standardkim.kanban.domain.kanban.domain;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.standardkim.kanban.global.util.BooleanToYNConverter;
 
 import org.hibernate.annotations.Immutable;
 
@@ -37,7 +34,4 @@ public class KanbanSequence {
 	private String description;
 
 	private LocalDateTime createdAt;
-
-	@Convert(converter = BooleanToYNConverter.class)
-	private boolean isDeleted;
 }

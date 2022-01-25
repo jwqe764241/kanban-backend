@@ -1,6 +1,8 @@
 package com.standardkim.kanban.domain.taskcolumn.application;
 
-import com.standardkim.kanban.domain.task.dao.TaskRepository;
+import java.util.List;
+
+import com.standardkim.kanban.domain.task.application.TaskDeleteService;
 import com.standardkim.kanban.domain.taskcolumn.dao.TaskColumnRepository;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
 
@@ -15,18 +17,17 @@ import lombok.RequiredArgsConstructor;
 public class TaskColumnDeleteService {
 	private final TaskColumnFindService taskColumnFindService;
 
+	private final TaskDeleteService taskDeleteService;
+
 	private final TaskColumnRepository taskColumnRepository;
 
-	private final TaskRepository taskRepository;
-
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public TaskColumn delete(Long columnId) {
-		TaskColumn taskColumn = taskColumnFindService.findById(columnId);
+	public TaskColumn delete(Long taskColumnId) {
+		TaskColumn taskColumn = taskColumnFindService.findById(taskColumnId);
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(taskColumn.getId());
 		
 		//delete tasks
-		taskRepository.updatePrevIdToNullByTaskColumnId(columnId);
-		taskRepository.deleteByTaskColumnId(columnId);
+		taskDeleteService.deleteByTaskColumnId(taskColumnId);
 
 		//task column is last column or there's no other column
 		if(nextTaskColumn == null) {
@@ -49,5 +50,13 @@ public class TaskColumnDeleteService {
 			nextTaskColumn.updatePrevColumn(prevTaskColumn);
 			return nextTaskColumn;
 		}
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void deleteByKanbanId(Long kanbanId) {
+		List<Long> taskColumnIds = taskColumnRepository.findIdByKanbanId(kanbanId);
+		taskDeleteService.deleteByTaskColumnIds(taskColumnIds);
+		taskColumnRepository.updatePrevIdToNullByKanbanId(kanbanId);
+		taskColumnRepository.deleteByKanbanId(kanbanId);
 	}
 }
