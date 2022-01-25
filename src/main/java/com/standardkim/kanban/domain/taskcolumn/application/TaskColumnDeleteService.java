@@ -59,4 +59,12 @@ public class TaskColumnDeleteService {
 		taskColumnRepository.updatePrevIdToNullByKanbanId(kanbanId);
 		taskColumnRepository.deleteByKanbanId(kanbanId);
 	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void deleteByKanbanIds(List<Long> kanbanIds) {
+		List<Long> taskColumnIds = taskColumnRepository.findIdByKanbanIds(kanbanIds);
+		taskDeleteService.deleteByTaskColumnIds(taskColumnIds);
+		taskColumnRepository.updatePrevIdToNullByKanbanIds(kanbanIds);
+		taskColumnRepository.deleteByKanbanIds(kanbanIds);
+	}
 }

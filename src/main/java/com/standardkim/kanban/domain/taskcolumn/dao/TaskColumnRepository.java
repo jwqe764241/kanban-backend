@@ -24,6 +24,9 @@ public interface TaskColumnRepository extends JpaRepository<TaskColumn, Long>{
 	@Query("select tc.id from TaskColumn tc where tc.kanban.id = ?1")
 	List<Long> findIdByKanbanId(Long kanbanId);
 
+	@Query("select tc.id from TaskColumn tc where tc.kanban.id in (?1)")
+	List<Long> findIdByKanbanIds(List<Long> kanbanIds);
+
 	@Transactional
 	@Modifying
 	@Query("update TaskColumn tc set prevId = null where tc.kanban.id = ?1")
@@ -31,6 +34,16 @@ public interface TaskColumnRepository extends JpaRepository<TaskColumn, Long>{
 
 	@Transactional
 	@Modifying
+	@Query("update TaskColumn tc set prevId = null where tc.kanban.id in (?1)")
+	void updatePrevIdToNullByKanbanIds(List<Long> kanbanIds);
+
+	@Transactional
+	@Modifying
 	@Query("delete from TaskColumn tc where tc.kanban.id = ?1")
 	void deleteByKanbanId(Long kanbanId);
+
+	@Transactional
+	@Modifying
+	@Query("delete from TaskColumn tc where tc.kanban.id in (?1)")
+	void deleteByKanbanIds(List<Long> kanbanIds);
 }
