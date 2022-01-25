@@ -55,6 +55,12 @@ public class TaskDeleteService {
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
+	public void deleteByTaskColumnId(Long taskColumnId) {
+		taskRepository.updatePrevIdToNullByTaskColumnId(taskColumnId);
+		taskRepository.deleteByTaskColumnId(taskColumnId);
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public void deleteByTaskColumnIds(List<Long> taskColumnIds) {
 		taskRepository.updatePrevIdToNullByTaskColumnIds(taskColumnIds);
 		taskRepository.deleteByTaskColumnIds(taskColumnIds);
