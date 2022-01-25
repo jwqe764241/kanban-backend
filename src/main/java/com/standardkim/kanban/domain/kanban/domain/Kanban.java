@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +16,6 @@ import javax.persistence.OneToMany;
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.taskcolumn.domain.TaskColumn;
-import com.standardkim.kanban.global.util.BooleanToYNConverter;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,11 +40,6 @@ public class Kanban extends BaseTimeEntity {
 	@Column(length = 200)
 	private String description;
 
-	@Builder.Default
-	@Column(name = "is_deleted", nullable = false)
-	@Convert(converter = BooleanToYNConverter.class)
-	private boolean isDeleted = false;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id", nullable = false)
 	private Project project;
@@ -62,10 +55,6 @@ public class Kanban extends BaseTimeEntity {
 			.project(project)
 			.build();
 		return kanban;
-	}
-
-	public void delete() {
-		isDeleted = true;
 	}
 
 	public void updateName(String name) {
