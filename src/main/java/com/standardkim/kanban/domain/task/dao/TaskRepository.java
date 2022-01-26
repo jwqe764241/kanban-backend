@@ -18,21 +18,21 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Transactional
 	@Modifying
-	@Query("delete from Task t where t.taskColumnId = ?1")
+	@Query("delete from Task t where t.taskColumn.id = ?1")
 	void deleteByTaskColumnId(Long taskColumnId);
 
 	@Transactional
 	@Modifying
-	@Query("delete from Task t where t.taskColumnId in (?1)")
+	@Query("delete from Task t where t.taskColumn.id in (?1)")
 	void deleteByTaskColumnIds(List<Long> taskColumnIds);
 
 	@Transactional
 	@Modifying
-	@Query("update Task t set t.prevId = null where t.taskColumnId = ?1")
+	@Query("update Task t set t.prevId = null where t.taskColumn.id = ?1")
 	void updatePrevIdToNullByTaskColumnId(Long taskColumnId);
 	
 	@Transactional
 	@Modifying
-	@Query("update Task t set t.prevId = null where t.taskColumnId in (?1)")
+	@Query("update Task t set t.prevId = null where t.taskColumn.id in (?1)")
 	void updatePrevIdToNullByTaskColumnIds(List<Long> taskColumnIds);
 }
