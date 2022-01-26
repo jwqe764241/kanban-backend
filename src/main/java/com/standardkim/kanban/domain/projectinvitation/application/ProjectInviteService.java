@@ -1,10 +1,10 @@
 package com.standardkim.kanban.domain.projectinvitation.application;
 
-import com.standardkim.kanban.domain.project.application.ProjectFindService;
-import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.dao.ProjectInvitationRepository;
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
 import com.standardkim.kanban.domain.projectinvitation.exception.UserAlreadyInvitedException;
+import com.standardkim.kanban.domain.projectmember.application.ProjectMemberFindService;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.infra.mail.application.InviteProjectMailSendService;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectInviteService {
 	private final ProjectInvitationFindService projectInvitationFindService;
 
-	private final ProjectFindService projectFindService;
+	private final ProjectMemberFindService projectMemberFindService;
 
 	private final UserFindService userFindService;
 
@@ -29,8 +29,8 @@ public class ProjectInviteService {
 	private final InviteProjectMailSendService inviteProjectMailSendService;
 
 	@Transactional(rollbackFor = Exception.class)
-	private ProjectInvitation create(Project project, User inviteeUser, User inviterUser) {
-		ProjectInvitation invitation = ProjectInvitation.of(project, inviteeUser, inviterUser);
+	private ProjectInvitation create(ProjectMember projectMember, User inviteeUser) {
+		ProjectInvitation invitation = ProjectInvitation.of(projectMember, inviteeUser);
 		return projectInvitationRepository.save(invitation);
 	}
 
@@ -41,12 +41,11 @@ public class ProjectInviteService {
 			throw new UserAlreadyInvitedException("user already invited");
 		}
 
-		User inviterUser = userFindService.findById(inviterUserId);
-		Project project = projectFindService.findById(projectId);
-		ProjectInvitation projectInvitation = create(project, inviteeUser, inviterUser);
+		ProjectMember projectMember = projectMemberFindService.findById(projectId, inviterUserId);
+		ProjectInvitation projectInvitation = create(projectMember, inviteeUser);
 
 		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
-		inviteProjectMailSendService.send(InviteProjectMailParam.of(project, inviterUser, inviteeUser));
+		inviteProjectMailSendService.send(InviteProjectMailParam.of(projectMember, inviteeUser));
 
 		return projectInvitation;
 	}

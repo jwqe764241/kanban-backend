@@ -1,6 +1,6 @@
 package com.standardkim.kanban.infra.mail.dto;
 
-import com.standardkim.kanban.domain.project.domain.Project;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import lombok.AccessLevel;
@@ -20,12 +20,12 @@ public class InviteProjectMailParam {
 	private String inviterUsername;
 	private String inviteeUsername;
 
-	public static InviteProjectMailParam of(Project project, User inviterUser, User inviteeUser) {
+	public static InviteProjectMailParam of(ProjectMember projectMember, User inviteeUser) {
 		return InviteProjectMailParam.builder()
 			.inviteeMailAddress(inviteeUser.getEmail())
-			.projectId(project.getId())
-			.projectName(project.getName())
-			.inviterUsername(inviterUser.getUsername())
+			.projectId(projectMember.getId().getProjectId())
+			.projectName(projectMember.getProject().getName())
+			.inviterUsername(projectMember.getUser().getUsername())
 			.inviteeUsername(inviteeUser.getUsername())
 			.build();
 	}

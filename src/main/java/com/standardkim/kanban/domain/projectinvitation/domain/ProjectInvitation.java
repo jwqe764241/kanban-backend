@@ -10,9 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
-import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import lombok.AccessLevel;
@@ -49,14 +47,9 @@ public class ProjectInvitation extends BaseTimeEntity {
 	@JoinColumn(name = "invited_user_id", nullable = false, insertable = false)
 	private User invitedUser;
 
-	public static ProjectInvitation of(Project project, User inviteeUser, User inviterUser) {
-		ProjectMemberKey projectMemberId = ProjectMemberKey.of(project.getId(), inviterUser.getId());
-		ProjectMember projectMember = ProjectMember.builder()
-			.id(projectMemberId)
-			.build();
-
+	public static ProjectInvitation of(ProjectMember projectMember, User inviteeUser) {
 		ProjectInvitationKey key = ProjectInvitationKey.builder()
-			.projectMemberId(projectMemberId)
+			.projectMemberId(projectMember.getId())
 			.invitedUserId(inviteeUser.getId())
 			.build();
 		return ProjectInvitation.builder()
