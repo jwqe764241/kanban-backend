@@ -1,6 +1,5 @@
 package com.standardkim.kanban.domain.project.dto;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import lombok.AccessLevel;
@@ -13,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UpdateProjectParam {
-	@NotBlank
-	@Size(min = 2, max = 50)
-	private String name;
+public class UpdateProjectDescriptionParam {
+	@Size(max = 200)
+	private String description;
 }
