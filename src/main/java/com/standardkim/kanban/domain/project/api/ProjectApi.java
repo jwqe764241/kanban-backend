@@ -5,12 +5,14 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.standardkim.kanban.domain.project.application.ProjectCreateService;
+import com.standardkim.kanban.domain.project.application.ProjectDeleteService;
 import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.application.ProjectUpdateService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.dto.ProjectDetail;
-import com.standardkim.kanban.domain.project.dto.UpdateProjectParam;
+import com.standardkim.kanban.domain.project.dto.UpdateProjectDescriptionParam;
+import com.standardkim.kanban.domain.project.dto.UpdateProjectNameParam;
 import com.standardkim.kanban.global.auth.dto.SecurityUser;
 import com.standardkim.kanban.global.util.SecurityContextFacade;
 
@@ -18,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +39,8 @@ public class ProjectApi {
 	private final ProjectCreateService projectCreateService;
 
 	private final ProjectUpdateService projectUpdateService;
+
+	private final ProjectDeleteService projectDeleteService;
 
 	private final ModelMapper modelMapper;
 
@@ -66,12 +71,30 @@ public class ProjectApi {
 		return projectDetail;
 	}
 
-	@PatchMapping("/projects/{projectId}")
+	@PatchMapping("/projects/{projectId}/name")
 	@ResponseStatus(HttpStatus.OK)
 	@PreAuthorize("isProjectOwner(#projectId)")
-	public ProjectDetail updateProject(@PathVariable Long projectId, @RequestBody @Valid UpdateProjectParam updateProjectParam) {
-		Project project = projectUpdateService.update(projectId, updateProjectParam);
+	public ProjectDetail updateProjectName(@PathVariable Long projectId, 
+		@RequestBody @Valid UpdateProjectNameParam updateProjectNameParam) {
+		Project project = projectUpdateService.updateName(projectId, updateProjectNameParam);
 		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
 		return projectDetail;
+	}
+
+	@PatchMapping("/projects/{projectId}/description")
+	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public ProjectDetail updateProjectDescription(@PathVariable Long projectId, 
+		@RequestBody @Valid UpdateProjectDescriptionParam updateProjectDescriptionParam) {
+		Project project = projectUpdateService.updateDescription(projectId, updateProjectDescriptionParam);
+		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
+		return projectDetail;
+	}
+
+	@DeleteMapping("/projects/{projectId}")
+	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("isProjectOwner(#projectId)")
+	public void removeProject(@PathVariable Long projectId) {
+		projectDeleteService.delete(projectId);
 	}
 }

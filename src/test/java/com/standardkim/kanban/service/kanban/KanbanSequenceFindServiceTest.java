@@ -28,7 +28,7 @@ public class KanbanSequenceFindServiceTest {
 
 	@Test
 	void findByProjectId_KanbanSequenceIsExist_ListOfKanbanSequence() {
-		given(kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(1L, false)).willReturn(getKanbanSequenceList(1L, 3));
+		given(kanbanSequenceRepository.findByProjectIdOrderBySequenceId(1L)).willReturn(getKanbanSequenceList(1L, 3));
 		
 		List<KanbanSequence> kanbanSequences = kanbanSequenceFindService.findByProjectId(1L);
 		
@@ -37,7 +37,7 @@ public class KanbanSequenceFindServiceTest {
 
 	@Test
 	void findByProjectId_KanbanSequenceIsNotExist_EmptyList() {
-		given(kanbanSequenceRepository.findByProjectIdAndIsDeletedOrderBySequenceId(1L, false)).willReturn(new ArrayList<>());
+		given(kanbanSequenceRepository.findByProjectIdOrderBySequenceId(1L)).willReturn(new ArrayList<>());
 	
 		List<KanbanSequence> kanbanSequences = kanbanSequenceFindService.findByProjectId(1L);
 

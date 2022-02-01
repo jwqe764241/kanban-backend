@@ -28,19 +28,19 @@ public class UserFindServiceTest {
 	private UserFindService userFindService;
 
 	@Test
-	public void isLoginExists_UserIsExist_true() {
-		given(userRepository.existsByLogin("example")).willReturn(true);
+	public void isUsernameExists_UserIsExist_true() {
+		given(userRepository.existsByUsername("example")).willReturn(true);
 
-		boolean isExist = userFindService.isLoginExists("example");
+		boolean isExist = userFindService.isUsernameExists("example");
 		
 		assertThat(isExist).isTrue();
 	}
 
 	@Test
-	public void isLoginExists_UserIsNotExist_False() {
-		given(userRepository.existsByLogin("example")).willReturn(false);
+	public void isUsernameExists_UserIsNotExist_False() {
+		given(userRepository.existsByUsername("example")).willReturn(false);
 
-		boolean isExist = userFindService.isLoginExists("example");
+		boolean isExist = userFindService.isUsernameExists("example");
 
 		assertThat(isExist).isFalse();
 	}
@@ -64,20 +64,20 @@ public class UserFindServiceTest {
 	}
 
 	@Test
-	public void findByLogin_UserIsExist_User() {
-		given(userRepository.findByLogin("example")).willReturn(Optional.of(getUser("example")));
+	public void findByUsername_UserIsExist_User() {
+		given(userRepository.findByUsername("example")).willReturn(Optional.of(getUser("example")));
 
-		User user = userFindService.findByLogin("example");
+		User user = userFindService.findByUsername("example");
 
 		assertThat(user).isNotNull();
 	}
 
 	@Test
-	public void findByLogin_UserIsNotExist_ThrowUserNotFoundException() {
-		given(userRepository.findByLogin("example")).willReturn(Optional.empty());
+	public void findByUsername_UserIsNotExist_ThrowUserNotFoundException() {
+		given(userRepository.findByUsername("example")).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> {
-			userFindService.findByLogin("example");
+			userFindService.findByUsername("example");
 		}).isInstanceOf(UserNotFoundException.class);
 	}
 
@@ -105,9 +105,9 @@ public class UserFindServiceTest {
 			.build();
 	}
 
-	private User getUser(String login) {
+	private User getUser(String username) {
 		return User.builder()
-			.login(login)
+			.username(username)
 			.build();
 	}
 

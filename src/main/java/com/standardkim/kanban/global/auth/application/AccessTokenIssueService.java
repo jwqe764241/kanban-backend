@@ -33,7 +33,7 @@ public class AccessTokenIssueService {
 		User user = null;
 		RefreshToken refreshToken = null;
 		try {
-			user = userFindService.findByLogin(jwtTokenProvider.getLogin(token));
+			user = userFindService.findByUsername(jwtTokenProvider.getUsername(token));
 			refreshToken = refreshTokenFindService.findById(user.getId());
 		} catch (UserNotFoundException | RefreshTokenNotFoundException e) {
 			throw new InvalidRefreshTokenException("refresh token was invalid", e);
@@ -48,6 +48,6 @@ public class AccessTokenIssueService {
 			throw new ExpiredRefreshTokenException("refresh token was expired");
 		}
  
-		return jwtTokenProvider.build(user.getLogin(), user.getName(), ttl);
+		return jwtTokenProvider.build(user.getUsername(), user.getName(), ttl);
 	}
 }

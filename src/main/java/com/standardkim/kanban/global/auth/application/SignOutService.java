@@ -22,9 +22,9 @@ public class SignOutService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void signOut(String refreshToken) {
-		String login = jwtTokenProvider.getLogin(refreshToken);
+		String username = jwtTokenProvider.getUsername(refreshToken);
 		try {
-			User user = userFindService.findByLogin(login);
+			User user = userFindService.findByUsername(username);
 			refreshTokenDeleteService.delete(user.getId());
 		} catch (UserNotFoundException e) {
 			return;

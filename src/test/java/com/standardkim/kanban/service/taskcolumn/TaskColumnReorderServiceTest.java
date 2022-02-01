@@ -15,6 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.BDDMockito.*;
+
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -131,6 +134,29 @@ public class TaskColumnReorderServiceTest {
 		assertThat(prevTaskColumn.getPrevId()).isEqualTo(2L);
 		assertThat(taskColumn.getPrevId()).isEqualTo(0L);
 		assertThat(nextTaskColumn.getPrevId()).isEqualTo(1L);
+	}
+
+	@Test
+	void reorder_MoveToSamePosition() {
+		TaskColumn firstTaskColumn = getTaskColumn(0L);
+		TaskColumn prevTaskColumn = getTaskColumn(1L);
+		TaskColumn taskColumn = getTaskColumn(2L);
+		TaskColumn nextTaskColumn = getTaskColumn(3L);
+		prevTaskColumn.updatePrevColumn(firstTaskColumn);
+		taskColumn.updatePrevColumn(prevTaskColumn);
+		nextTaskColumn.updatePrevColumn(taskColumn);
+		given(kanbanFindService.findByProjectIdAndSequenceId(1L, 1L)).willReturn(getKanban(1L));
+		given(taskColumnFindService.findById(2L)).willReturn(taskColumn);
+		given(taskColumnRepository.findByPrevId(2L)).willReturn(nextTaskColumn);
+		given(taskColumnRepository.findByKanbanIdAndPrevId(1L, null)).willReturn(firstTaskColumn);
+
+		List<TaskColumn> updated = taskColumnReorderService.reorder(1L, 1L, getReorderTaskColumnParam(2L, 1L));
+
+		assertThat(updated).isEmpty();
+		assertThat(firstTaskColumn.getPrevId()).isNull();
+		assertThat(prevTaskColumn.getPrevId()).isEqualTo(firstTaskColumn.getId());
+		assertThat(taskColumn.getPrevId()).isEqualTo(prevTaskColumn.getId());
+		assertThat(nextTaskColumn.getPrevId()).isEqualTo(taskColumn.getId());
 	}
 
 	private ReorderTaskColumnParam getReorderTaskColumnParam(Long columnId, Long prevColumnId) {

@@ -30,16 +30,22 @@ public class TaskColumnReorderService {
 		TaskColumn taskColumn = taskColumnFindService.findById(param.getColumnId());
 		TaskColumn nextTaskColumn = taskColumnRepository.findByPrevId(param.getColumnId());
 		TaskColumn firstTaskColumn = taskColumnRepository.findByKanbanIdAndPrevId(kanban.getId(), null);
+		TaskColumn prevTaskColumn = taskColumn.getPrevTaskColumn();
 
 		//check first column is exist. if not exists, something is wrong.
 		if(firstTaskColumn == null) {
 			throw new RuntimeException("task column is invalid state");
 		}
 
+		//reorder to same position
+		if((param.getPrevColumnId() == null && prevTaskColumn == null ) || 
+			(prevTaskColumn != null && prevTaskColumn.getId().equals(param.getPrevColumnId()))) {
+			return new ArrayList<>();
+		}
+
 		List<TaskColumn> updatedTaskColumns = new ArrayList<>();
 
 		//update next columns's previous column to current column(column that will be deleted)'s previous column
-		TaskColumn prevTaskColumn = taskColumn.getPrevTaskColumn();
 		taskColumn.updatePrevColumn(null);
 		if(nextTaskColumn != null) {
 			nextTaskColumn.updatePrevColumn(prevTaskColumn);

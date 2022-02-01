@@ -17,8 +17,8 @@ public class UserFindService {
 	private final UserRepository userRepository;
 	
 	@Transactional(readOnly = true)
-	public boolean isLoginExists(String login) {
-		return userRepository.existsByLogin(login);
+	public boolean isUsernameExists(String username) {
+		return userRepository.existsByUsername(username);
 	}
 
 	@Transactional(readOnly = true)
@@ -28,8 +28,8 @@ public class UserFindService {
 	}
 
 	@Transactional(readOnly = true)
-	public User findByLogin(String login) {
-		return userRepository.findByLogin(login)
+	public User findByUsername(String username) {
+		return userRepository.findByUsername(username)
 			.orElseThrow(() -> new UserNotFoundException("user not found"));
 	}
 

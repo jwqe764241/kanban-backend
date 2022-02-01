@@ -32,9 +32,9 @@ public class SignOutServiceTest {
 	private SignOutService signOutService;
 
 	@Test
-	void logout_UserIsNotExist_DoesNotThrowAnyException() {
-		given(jwtTokenProvider.getLogin(anyString())).willReturn("example");
-		given(userFindService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+	void signOut_UserIsNotExist_DoesNotThrowAnyException() {
+		given(jwtTokenProvider.getUsername(anyString())).willReturn("example");
+		given(userFindService.findByUsername("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatCode(() -> {
 			signOutService.signOut("refresh-token");

@@ -43,8 +43,8 @@ public class AccessTokenIssueServiceTest {
 
 	@Test
 	void issue_UserIsNotExist_ThrowInvalidRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userFindService.findByLogin("example")).willThrow(new UserNotFoundException(""));
+		given(jwtTokenProvider.getUsername("refresh-token")).willReturn("example");
+		given(userFindService.findByUsername("example")).willThrow(new UserNotFoundException(""));
 
 		assertThatThrownBy(() -> {
 			accessTokenIssueService.issue("refresh-token", 10L);
@@ -53,8 +53,8 @@ public class AccessTokenIssueServiceTest {
 
 	@Test
 	void issue_RefreshTokenIsNotExist_ThrowInvalidRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userFindService.findByLogin("example")).willReturn(getUser(""));
+		given(jwtTokenProvider.getUsername("refresh-token")).willReturn("example");
+		given(userFindService.findByUsername("example")).willReturn(getUser(""));
 		given(refreshTokenFindService.findById(1L)).willThrow(new RefreshTokenNotFoundException(""));
 
 		assertThatThrownBy(() -> {
@@ -64,8 +64,8 @@ public class AccessTokenIssueServiceTest {
 
 	@Test
 	void issue_RefreshTokenNotMatched_ThrowUnknownRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userFindService.findByLogin("example")).willReturn(getUser(""));
+		given(jwtTokenProvider.getUsername("refresh-token")).willReturn("example");
+		given(userFindService.findByUsername("example")).willReturn(getUser(""));
 		given(refreshTokenFindService.findById(1L)).willReturn(getRefreshToken("example1"));
 
 		assertThatThrownBy(() -> {
@@ -75,8 +75,8 @@ public class AccessTokenIssueServiceTest {
 
 	@Test
 	void issue_RefreshTokenIsExpired_ThrowExpiredRefreshTokenException() {
-		given(jwtTokenProvider.getLogin("refresh-token")).willReturn("example");
-		given(userFindService.findByLogin("example")).willReturn(getUser(""));
+		given(jwtTokenProvider.getUsername("refresh-token")).willReturn("example");
+		given(userFindService.findByUsername("example")).willReturn(getUser(""));
 		given(refreshTokenFindService.findById(1L)).willReturn(getRefreshToken("refresh-token"));
 		given(jwtTokenProvider.isExpired("refresh-token")).willReturn(true);
 
@@ -89,7 +89,7 @@ public class AccessTokenIssueServiceTest {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		return User.builder()
 			.id(1L)
-			.login("example")
+			.username("example")
 			.name("example")
 			.password(encoder.encode(rawPassword))
 			.build();

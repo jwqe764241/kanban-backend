@@ -1,4 +1,7 @@
-package com.standardkim.kanban.domain.user.dto;
+package com.standardkim.kanban.domain.project.dto;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class SuggestionUserDetail {
-	private Long id;
-	private String username;
+public class UpdateProjectNameParam {
+	@NotBlank
+	@Size(min = 2, max = 50)
 	private String name;
 }

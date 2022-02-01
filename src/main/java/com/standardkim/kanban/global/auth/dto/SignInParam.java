@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class LoginParam {
+public class SignInParam {
 	@NotBlank
 	@Size(min = 5, max = 20)
-	private String login;
+	private String username;
 
 	@NotBlank
 	@Size(min = 5, max = 20)

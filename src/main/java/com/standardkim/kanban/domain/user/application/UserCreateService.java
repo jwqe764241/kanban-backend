@@ -22,10 +22,10 @@ public class UserCreateService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public User create(CreateUserParam createUserParam) {
-		if(userFindService.isLoginExists(createUserParam.getLogin())) {
+		if(userFindService.isUsernameExists(createUserParam.getUsername())) {
 			throw new DuplicateUserNameException("duplicate user name");
 		}
-		User user = User.of(createUserParam.getLogin(), 
+		User user = User.of(createUserParam.getUsername(), 
 			createUserParam.getPassword(),
 			createUserParam.getName(),
 			createUserParam.getEmail(),	

@@ -6,7 +6,8 @@ import static org.mockito.BDDMockito.*;
 import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.application.ProjectUpdateService;
 import com.standardkim.kanban.domain.project.domain.Project;
-import com.standardkim.kanban.domain.project.dto.UpdateProjectParam;
+import com.standardkim.kanban.domain.project.dto.UpdateProjectDescriptionParam;
+import com.standardkim.kanban.domain.project.dto.UpdateProjectNameParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
 
 import org.junit.jupiter.api.Test;
@@ -24,22 +25,31 @@ public class ProjectUpdateServiceTest {
 	private ProjectUpdateService projectUpdateService;
 
 	@Test
-	void update_ProjectNameIsNotExist_UpdatedProject() {
+	void updateName_ProjectNameIsNotExist_UpdatedProjectName() {
 		given(projectFindService.isNameExist("updated")).willReturn(false);
 		given(projectFindService.findById(1L)).willReturn(getProject(1L, "example", "example"));
 
-		Project updatedProject = projectUpdateService.update(1L, getUpdateProjectParam("updated"));
+		Project updatedProject = projectUpdateService.updateName(1L, getUpdateProjectNameParam("updated"));
 
 		assertThat(updatedProject.getName()).isEqualTo("updated");
 	}
 
 	@Test
-	void update_ProjectNameIsExist_ThrowDuplicateProjectNameException() {
+	void updateName_ProjectNameIsExist_ThrowDuplicateProjectNameException() {
 		given(projectFindService.isNameExist("updated")).willReturn(true);
 
 		assertThatThrownBy(() -> {
-			projectUpdateService.update(1L, getUpdateProjectParam("updated"));
+			projectUpdateService.updateName(1L, getUpdateProjectNameParam("updated"));
 		}).isInstanceOf(DuplicateProjectNameException.class);
+	}
+
+	@Test
+	void updateDescription_ProjectIsExist_UpdateProjectDescription() {
+		given(projectFindService.findById(1L)).willReturn(getProject(1L, "example", "example"));
+
+		Project updatedProject = projectUpdateService.updateDescription(1L, getUpdateProjectDescriptionParam("updated"));
+
+		assertThat(updatedProject.getDescription()).isEqualTo("updated");
 	}
 
 	private Project getProject(Long id, String name, String description) {
@@ -50,9 +60,15 @@ public class ProjectUpdateServiceTest {
 			.build();
 	}
 
-	private UpdateProjectParam getUpdateProjectParam(String name) {
-		return UpdateProjectParam.builder()
+	private UpdateProjectNameParam getUpdateProjectNameParam(String name) {
+		return UpdateProjectNameParam.builder()
 			.name(name)
+			.build();
+	}
+
+	private UpdateProjectDescriptionParam getUpdateProjectDescriptionParam(String description) {
+		return UpdateProjectDescriptionParam.builder()
+			.description(description)
 			.build();
 	}
 }

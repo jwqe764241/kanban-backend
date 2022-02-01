@@ -8,6 +8,6 @@ import com.standardkim.kanban.domain.kanban.domain.KanbanSequence;
 import org.springframework.data.repository.CrudRepository;
 
 public interface KanbanSequenceRepository extends CrudRepository<KanbanSequence, Long>{
-	List<KanbanSequence> findByProjectIdAndIsDeletedOrderBySequenceId(Long projectId, boolean isDeleted);
+	List<KanbanSequence> findByProjectIdOrderBySequenceId(Long projectId);
 	Optional<KanbanSequence> findByProjectIdAndSequenceId(Long projectId, Long sequenceId);
 }

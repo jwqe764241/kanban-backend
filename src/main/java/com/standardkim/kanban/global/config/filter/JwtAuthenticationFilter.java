@@ -70,8 +70,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String token = authorizationHeader.getCredentials();
 			if(authorizationHeader.isValid() && jwtTokenProvider.isValid(token)) {
 				try{
-					String login = jwtTokenProvider.getLogin(token);
-					User user = userFindService.findByLogin(login);
+					String username = jwtTokenProvider.getUsername(token);
+					User user = userFindService.findByUsername(username);
 					RefreshToken refreshToken = refreshTokenFindService.findById(user.getId());
 					// access token and refresh token must not be same
 					if(refreshToken.getToken().equals(authorizationHeader.getCredentials())) {
