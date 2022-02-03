@@ -7,9 +7,9 @@ import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
 
+import com.standardkim.kanban.global.config.property.InvitationProperties;
 import com.standardkim.kanban.infra.mail.dto.InviteProjectMailParam;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -25,13 +25,7 @@ public class InviteProjectMailSendService {
 
 	private final Configuration configuration;
 
-	@Value("${config.mail.fromAddress}")
-	private String fromAddress;
-
-	@Value("${config.invitation.acceptInvitationUrl}")
-	private String acceptInvitationUrl;
-
-
+	private final InvitationProperties invitationProperties;
 	
 	private String getTitle(InviteProjectMailParam inviteProjectMailParam) {
 		String title = String.format("[Kanban] @%s has invited you to join the \"%s\" project", 
@@ -43,7 +37,7 @@ public class InviteProjectMailSendService {
 		Map<String, Object> model = new HashMap<>();
 		model.put("inviterUsername", inviteProjectMailParam.getInviterUsername());
 		model.put("projectName", inviteProjectMailParam.getProjectName());
-		model.put("url", String.format(acceptInvitationUrl, inviteProjectMailParam.getProjectId()));
+		model.put("url", String.format(invitationProperties.getAcceptInvitationUrl(), inviteProjectMailParam.getProjectId()));
 
 		StringWriter writer = new StringWriter();
 		try {
