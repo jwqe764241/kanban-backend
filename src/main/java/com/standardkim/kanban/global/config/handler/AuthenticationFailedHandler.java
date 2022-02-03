@@ -7,27 +7,29 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.standardkim.kanban.global.config.property.ConfigProperties;
 import com.standardkim.kanban.global.error.ErrorCode;
 import com.standardkim.kanban.global.error.ErrorResponse;
 import com.standardkim.kanban.global.util.ErrorResponseJsonConverter;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class AuthenticationFailedHandler implements AuthenticationEntryPoint{
 	private ErrorResponseJsonConverter errorResponseJsonConverter = new ErrorResponseJsonConverter();
 	
-	@Value("${config.allowed-origins}")
-	String[] allowedOrigins;
+	private final ConfigProperties configProperties;
 
 	private String flattenAllowedOrigins;
 
 	@PostConstruct
 	public void init() {
-		flattenAllowedOrigins = String.join(",", allowedOrigins);
+		flattenAllowedOrigins = String.join(",", configProperties.getAllowedOrigins());
 	}
 
 	@Override

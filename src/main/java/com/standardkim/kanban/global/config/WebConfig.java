@@ -1,8 +1,8 @@
 package com.standardkim.kanban.global.config;
 
 import com.standardkim.kanban.global.config.interceptor.HttpLoggingInterceptor;
+import com.standardkim.kanban.global.config.property.ConfigProperties;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -16,13 +16,12 @@ import lombok.RequiredArgsConstructor;
 public class WebConfig implements WebMvcConfigurer{
 	private final HttpLoggingInterceptor httpLoggingInterceptor;
 
-	@Value("${config.allowed-origins}")
-	String[] allowedOrigins;
+	private final ConfigProperties configProperties;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			.allowedOrigins(allowedOrigins)
+			.allowedOrigins(configProperties.getAllowedOrigins())
 			.allowedMethods(HttpMethod.GET.name(),
 				HttpMethod.POST.name(),
 				HttpMethod.PUT.name(),
