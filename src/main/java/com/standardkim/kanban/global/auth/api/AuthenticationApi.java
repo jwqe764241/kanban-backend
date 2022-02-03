@@ -12,8 +12,8 @@ import com.standardkim.kanban.global.auth.dto.AccessToken;
 import com.standardkim.kanban.global.auth.dto.AuthenticationToken;
 import com.standardkim.kanban.global.auth.dto.SignInParam;
 import com.standardkim.kanban.global.auth.exception.EmptyRefreshTokenException;
+import com.standardkim.kanban.global.config.property.AuthenticationProperties;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,32 +33,21 @@ public class AuthenticationApi {
 	
 	private final SignOutService signOutService;
 
-	@Value("${config.refresh-token-name}")
-	private String refreshTokenName;
-
-	@Value("${config.authentication.refresh-token-ttl}")
-	private Long refreshTokenTTL;
-
-	@Value("${config.authentication.access-token-ttl}")
-	private Long accessTokenTTL;
-
-	@Value("${config.authentication.ws-token-ttl}")
-	private Long wsTokenTTL;
-
-	@Value("${config.cookie-domain}")
-	private String cookieDomain;
+	private final AuthenticationProperties authenticationProperties;
 
 	@PostMapping("/auth/sign-in")
 	@ResponseStatus(HttpStatus.OK)
 	public AccessToken signIn(@RequestBody @Valid SignInParam signInParam, HttpServletResponse response) throws Exception {
 		//TODO:Add prev refresh token to blacklist
-		AuthenticationToken authenticationToken = signInService.signIn(signInParam, refreshTokenTTL, accessTokenTTL);
+		AuthenticationToken authenticationToken = signInService.signIn(signInParam, 
+			authenticationProperties.getRefreshTokenTtl(), authenticationProperties.getAccessTokenTtl());
 		
-		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, authenticationToken.getRefreshToken())
-			.domain(cookieDomain)
+		ResponseCookie cookie = ResponseCookie.from(
+			authenticationProperties.getRefreshTokenName(), authenticationToken.getRefreshToken())
+			.domain(authenticationProperties.getCookieDomain())
 			.path("/")
 			.sameSite("Lax")
-			.maxAge(refreshTokenTTL)
+			.maxAge(authenticationProperties.getRefreshTokenTtl())
 			.httpOnly(true)
 			.build();
 		response.setHeader("Set-Cookie", cookie.toString());
@@ -75,8 +64,9 @@ public class AuthenticationApi {
 
 		signOutService.signOut(refreshToken);
 
-		ResponseCookie cookie = ResponseCookie.from(refreshTokenName, null)
-			.domain(cookieDomain)
+		ResponseCookie cookie = ResponseCookie.from(
+			authenticationProperties.getRefreshTokenName(), null)
+			.domain(authenticationProperties.getCookieDomain())
 			.path("/")
 			.sameSite("Lax")
 			.maxAge(0)
@@ -92,7 +82,8 @@ public class AuthenticationApi {
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
-		String accessToken = accessTokenIssueService.issue(refreshToken, accessTokenTTL);
+		String accessToken = accessTokenIssueService.issue(
+			refreshToken, authenticationProperties.getAccessTokenTtl());
 		return AccessToken.of(accessToken);
 	}
 
@@ -103,7 +94,8 @@ public class AuthenticationApi {
 		if(refreshToken == null || refreshToken.isBlank()) {
 			throw new EmptyRefreshTokenException("refresh token was empty");
 		}
-		String accessToken = accessTokenIssueService.issue(refreshToken, wsTokenTTL);
+		String accessToken = accessTokenIssueService.issue(refreshToken, 
+			authenticationProperties.getWsTokenTtl());
 		return AccessToken.of(accessToken);
 	}
 
@@ -115,7 +107,7 @@ public class AuthenticationApi {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(refreshTokenName))
+				if (cookie.getName().equals(authenticationProperties.getRefreshTokenName()))
 					return cookie.getValue();
 			}
 		}
