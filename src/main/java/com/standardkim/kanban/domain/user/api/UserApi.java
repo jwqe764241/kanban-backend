@@ -35,7 +35,7 @@ public class UserApi {
 
 	@GetMapping("/projects/{projectId}/members/suggestions")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
 	public List<SuggestionUserDetail> getProjectMemberSuggestions(@PathVariable Long projectId, @RequestParam("q") String query) {
 		List<User> users = userFindService.findNotMemberOrNotInvitedUser(projectId, query);
 		List<SuggestionUserDetail> suggestionUserDetails = modelMapper.map(users, new TypeToken<List<SuggestionUserDetail>>(){}.getType());
