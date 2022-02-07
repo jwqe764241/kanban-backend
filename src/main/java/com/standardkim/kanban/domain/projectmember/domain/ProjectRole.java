@@ -13,8 +13,6 @@ import com.standardkim.kanban.domain.projectmember.dto.ProjectRoleName;
 import com.standardkim.kanban.domain.projectmember.dto.RoleNameToStringConverter;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,8 +20,6 @@ import lombok.NoArgsConstructor;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class ProjectRole {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

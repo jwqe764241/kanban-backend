@@ -48,33 +48,6 @@ public class ProjectMemberFindServiceTest {
 	}
 
 	@Test
-	void isProjectOwner_UserIsProjectOwner_True() {
-		given(projectMemberRepository.findById(getProjectMemberKey(1L, 1L))).willReturn(Optional.of(getProjectMember(1L, 1L, true)));
-	
-		boolean isProjectOwner = projectMemberFindService.isProjectOwner(1L, 1L);
-
-		assertThat(isProjectOwner).isTrue();
-	}
-
-	@Test
-	void isProjectOwner_UserIsNotProjectOwner_False() {
-		given(projectMemberRepository.findById(getProjectMemberKey(1L, 1L))).willReturn(Optional.of(getProjectMember(1L, 1L, false)));
-	
-		boolean isProjectOwner = projectMemberFindService.isProjectOwner(1L, 1L);
-
-		assertThat(isProjectOwner).isFalse();
-	}
-
-	@Test
-	void isProjectOwner_ProjectMemberIsNotExist_ThrowProjectMemberNotFoundException() {
-		given(projectMemberRepository.findById(getProjectMemberKey(1L, 1L))).willReturn(Optional.empty());
-	
-		assertThatThrownBy(() -> {
-			projectMemberFindService.isProjectOwner(1L, 1L);
-		}).isInstanceOf(ProjectMemberNotFoundException.class);
-	}
-
-	@Test
 	void findById_ProjectMemberIsExist_ProjectMember() {
 		given(projectMemberRepository.findById(getProjectMemberKey(1L, 1L))).willReturn(Optional.of(getProjectMember(1L, 1L)));
 
@@ -121,14 +94,6 @@ public class ProjectMemberFindServiceTest {
 		ProjectMemberKey id = getProjectMemberKey(projectId, userId);
 		return ProjectMember.builder()
 			.id(id)
-			.build();
-	}
-
-	private ProjectMember getProjectMember(Long projectId, Long userId, boolean isRegister) {
-		ProjectMemberKey id = getProjectMemberKey(projectId, userId);
-		return ProjectMember.builder()
-			.id(id)
-			.isRegister(isRegister)
 			.build();
 	}
 

@@ -20,6 +20,8 @@ public class ProjectMemberDeleteService {
 
 	private final ProjectMemberRepository projectMemberRepository;
 
+	private final ProjectRoleHierarchy projectRoleHierarchy;
+
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Long projectId, Long userId) {
 		ProjectMember member = null;
@@ -30,7 +32,7 @@ public class ProjectMemberDeleteService {
 			return;
 		}
 
-		if(member.isRegister()) {
+		if(projectRoleHierarchy.hasAdminRole(member.getProjectRole().getName())) {
 			throw new CannotDeleteProjectOwnerException("can't delete project owner");
 		}
 
