@@ -3,7 +3,7 @@ package com.standardkim.kanban.domain.projectmember.application;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationDeleteService;
 import com.standardkim.kanban.domain.projectmember.dao.ProjectMemberRepository;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
-import com.standardkim.kanban.domain.projectmember.exception.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.domain.projectmember.exception.CannotDeleteAdminMemberException;
 import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
 
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class ProjectMemberDeleteService {
 		}
 
 		if(projectRoleHierarchy.hasAdminRole(member.getProjectRole().getName())) {
-			throw new CannotDeleteProjectOwnerException("can't delete project owner");
+			throw new CannotDeleteAdminMemberException("can't delete admin member");
 		}
 
 		projectInvitationDeleteService.deleteByProjectIdAndUserId(projectId, userId);

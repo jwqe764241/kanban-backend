@@ -8,7 +8,7 @@ import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMemberKey;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectRole;
 import com.standardkim.kanban.domain.projectmember.dto.ProjectRoleName;
-import com.standardkim.kanban.domain.projectmember.exception.CannotDeleteProjectOwnerException;
+import com.standardkim.kanban.domain.projectmember.exception.CannotDeleteAdminMemberException;
 import com.standardkim.kanban.domain.projectmember.exception.ProjectMemberNotFoundException;
 
 import org.junit.jupiter.api.Test;
@@ -49,12 +49,12 @@ public class ProjectMemberDeleteServiceTest {
 	}
 
 	@Test
-	void delete_ProjectMemberIsAdmin_ThrowCannotDeleteProjectOwnerException() {
+	void delete_ProjectMemberIsAdmin_ThrowCannotDeleteAdminMemberException() {
 		given(projectMemberFindService.findById(1L, 1L)).willReturn(getAdminProjectMember(1L, 1L));
 
 		assertThatThrownBy(() -> {
 			ProjectMemberDeleteService.delete(1L, 1L);
-		}).isInstanceOf(CannotDeleteProjectOwnerException.class);
+		}).isInstanceOf(CannotDeleteAdminMemberException.class);
 	}
 
 	private ProjectMemberKey getProjectMemberKey(Long projectId, Long userId) {
