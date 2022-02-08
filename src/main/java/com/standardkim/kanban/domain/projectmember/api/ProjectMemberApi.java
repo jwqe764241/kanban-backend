@@ -52,7 +52,7 @@ public class ProjectMemberApi {
 
 	@DeleteMapping("/projects/{projectId}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
 		projectMemberDeleteService.delete(projectId, userId);
 	}

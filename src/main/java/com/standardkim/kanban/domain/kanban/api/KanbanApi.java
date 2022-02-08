@@ -61,7 +61,7 @@ public class KanbanApi {
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans")
-	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	@ResponseStatus(HttpStatus.CREATED)
 	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
 		Kanban kanban = kanbanCreateService.create(projectId, createKanbanParam);
@@ -71,14 +71,14 @@ public class KanbanApi {
 	}
 
 	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}")
-	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	@ResponseStatus(HttpStatus.OK)
 	public void updateKanban(@PathVariable Long projectId, @PathVariable Long sequenceId, @RequestBody @Valid UpdateKanbanParam updateKanbanParam) {
 		kanbanUpdateService.update(projectId, sequenceId, updateKanbanParam);
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")
-	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
 		kanbanDeleteService.delete(projectId, sequenceId);
