@@ -24,12 +24,6 @@ public class ProjectMemberFindService {
 	}
 
 	@Transactional(readOnly = true)
-	public boolean isProjectOwner(Long projectId, Long userId) {
-		ProjectMember projectMember = findById(projectId, userId);
-		return projectMember.isRegister();
-	}
-
-	@Transactional(readOnly = true)
 	public ProjectMember findById(Long projectId, Long userId) {
 		ProjectMemberKey key = ProjectMemberKey.of(projectId, userId);
 		return projectMemberRepository.findById(key)

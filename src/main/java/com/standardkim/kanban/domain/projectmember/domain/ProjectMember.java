@@ -3,8 +3,7 @@ package com.standardkim.kanban.domain.projectmember.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -16,7 +15,6 @@ import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.domain.ProjectInvitation;
 import com.standardkim.kanban.domain.user.domain.User;
-import com.standardkim.kanban.global.util.BooleanToYNConverter;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,21 +42,20 @@ public class ProjectMember extends BaseTimeEntity {
 	private User user;
 
 	@Builder.Default
-	@Column(name = "is_register", nullable = false)
-	@Convert(converter = BooleanToYNConverter.class)
-	private boolean isRegister = false;
-
-	@Builder.Default
 	@OneToMany(mappedBy = "projectMember")
 	private Set<ProjectInvitation> invitations = new HashSet<>();
 
-	public static ProjectMember of(Project project, User user, boolean isRegister) {
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
+	private ProjectRole projectRole;
+
+	public static ProjectMember of(Project project, User user, ProjectRole projectRole) {
 		ProjectMemberKey id = ProjectMemberKey.of(project.getId(), user.getId());
 		return ProjectMember.builder()
 			.id(id)
 			.project(project)
 			.user(user)
-			.isRegister(isRegister)
+			.projectRole(projectRole)
 			.build();
 	}
 }

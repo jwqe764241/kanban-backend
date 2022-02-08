@@ -49,7 +49,7 @@ public class TaskApi {
 	private final ModelMapper modelMapper;
 
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/tasks")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskDetail> getTasks(@PathVariable Long projectId, @PathVariable Long sequenceId) {
 		List<Task> tasks = taskFindService.findByProjectIdAndSequenceId(projectId, sequenceId);
@@ -58,7 +58,7 @@ public class TaskApi {
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.CREATED)
 	public List<TaskDetail> createTask(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId,
 		@Valid @RequestBody CreateTaskParam param) {
@@ -69,7 +69,7 @@ public class TaskApi {
 	}
 
 	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks/{taskId}")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public TaskDetail updateTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 	@PathVariable Long columnId, @PathVariable Long taskId, @Valid @RequestBody UpdateTaskParam param) {
@@ -80,7 +80,7 @@ public class TaskApi {
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/tasks/{taskId}")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public TaskDetail deleteTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@PathVariable Long columnId, @PathVariable Long taskId) {
@@ -94,7 +94,7 @@ public class TaskApi {
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}/reorder")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskDetail> reorderTask(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@PathVariable Long columnId, @RequestBody ReorderTaskParam param) {

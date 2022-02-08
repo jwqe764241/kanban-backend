@@ -55,7 +55,7 @@ public class ProjectApi {
 
 	@GetMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	public ProjectDetail getProject(@PathVariable Long projectId) {
 		Project project = projectFindService.findById(projectId);
 		ProjectDetail projectDetail = modelMapper.map(project, ProjectDetail.class);
@@ -73,7 +73,7 @@ public class ProjectApi {
 
 	@PatchMapping("/projects/{projectId}/name")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
 	public ProjectDetail updateProjectName(@PathVariable Long projectId, 
 		@RequestBody @Valid UpdateProjectNameParam updateProjectNameParam) {
 		Project project = projectUpdateService.updateName(projectId, updateProjectNameParam);
@@ -83,7 +83,7 @@ public class ProjectApi {
 
 	@PatchMapping("/projects/{projectId}/description")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
 	public ProjectDetail updateProjectDescription(@PathVariable Long projectId, 
 		@RequestBody @Valid UpdateProjectDescriptionParam updateProjectDescriptionParam) {
 		Project project = projectUpdateService.updateDescription(projectId, updateProjectDescriptionParam);
@@ -93,7 +93,7 @@ public class ProjectApi {
 
 	@DeleteMapping("/projects/{projectId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'ADMIN')")
 	public void removeProject(@PathVariable Long projectId) {
 		projectDeleteService.delete(projectId);
 	}
