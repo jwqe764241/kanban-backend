@@ -3,8 +3,6 @@ package com.standardkim.kanban.domain.task.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.standardkim.kanban.global.dto.KanbanAction;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +10,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DeleteTaskAction extends KanbanAction {
+public class DeleteTaskAction extends TaskAction {
 	@Builder
 	public DeleteTaskAction(Object payload) {
-		super(ActionType.Delete, Target.Task, payload);
+		super(ActionType.Delete, payload);
 	}
 
 	public static DeleteTaskAction of(Long deletedTaskId, TaskDetail updatedTaskDetail) {

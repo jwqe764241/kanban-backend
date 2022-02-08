@@ -3,8 +3,6 @@ package com.standardkim.kanban.domain.taskcolumn.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.standardkim.kanban.global.dto.KanbanAction;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +10,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DeleteColumnAction extends KanbanAction {
+public class DeleteColumnAction extends ColumnAction {
 	@Builder
 	public DeleteColumnAction(Object payload) {
-		super(ActionType.Delete, Target.Column, payload);
+		super(ActionType.Delete, payload);
 	}
 
 	public static DeleteColumnAction of(Long deletedColumnId, TaskColumnDetail updatedColumn) {
