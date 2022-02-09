@@ -4,7 +4,6 @@ import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationDeleteService;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationFindService;
-import com.standardkim.kanban.domain.projectmember.dao.ProjectMemberRepository;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectRole;
 import com.standardkim.kanban.domain.projectmember.dto.ProjectRoleName;
@@ -27,8 +26,6 @@ public class ProjectMemberAcceptService {
 	private final ProjectFindService projectFindService;
 
 	private final UserFindService userFindService;
-
-	private final ProjectMemberRepository projectMemberRepository;
 	
 	private final ProjectRoleFindService projectRoleFindService;
 
@@ -40,9 +37,8 @@ public class ProjectMemberAcceptService {
 		Project project = projectFindService.findById(projectId);
 		User user = userFindService.findById(userId);
 		ProjectRole memberRole = projectRoleFindService.findByName(ProjectRoleName.MEMBER);
-		ProjectMember projectMember = ProjectMember.of(project, user, memberRole);
-		ProjectMember newProjectMember = projectMemberRepository.save(projectMember);
+		ProjectMember projectMember = project.addMember(user, memberRole);
 		projectInvitationDeleteService.deleteByProjectIdAndInvitedUserId(projectId, userId);
-		return newProjectMember;
+		return projectMember;
 	}
 }

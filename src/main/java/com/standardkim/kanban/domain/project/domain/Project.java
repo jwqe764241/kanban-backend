@@ -70,8 +70,9 @@ public class Project extends BaseTimeEntity {
 		this.description = description;
 	}
 
-	public void addMember(User user, ProjectRole projectRole) {
+	public ProjectMember addMember(User user, ProjectRole projectRole) {
 		ProjectMember member = ProjectMember.of(this, user, projectRole);
 		members.add(member);
+		return member;
 	}
 }
