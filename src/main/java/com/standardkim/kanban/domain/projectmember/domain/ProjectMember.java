@@ -45,7 +45,7 @@ public class ProjectMember extends BaseTimeEntity {
 	@OneToMany(mappedBy = "projectMember")
 	private Set<ProjectInvitation> invitations = new HashSet<>();
 
-	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToOne(cascade = {CascadeType.MERGE})
 	@JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
 	private ProjectRole projectRole;
 
