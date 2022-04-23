@@ -1,7 +1,5 @@
 package com.standardkim.kanban.domain.taskcolumn.dto;
 
-import com.standardkim.kanban.global.dto.KanbanAction;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdateColumnAction extends KanbanAction {
+public class UpdateColumnAction extends ColumnAction {
 	@Builder
 	public UpdateColumnAction(Object payload) {
-		super(ActionType.Update, Target.Column, payload);
+		super(ActionType.Update, payload);
 	}
 
 	public static UpdateColumnAction of(TaskColumnDetail taskColumnDetail) {

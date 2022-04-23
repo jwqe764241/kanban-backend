@@ -1,5 +1,7 @@
 package com.standardkim.kanban.domain.task.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,4 +17,5 @@ public class TaskDetail {
 	private Long prevId;
 	private Long taskColumnId;
 	private String text;
+	private LocalDateTime createdAt;
 }

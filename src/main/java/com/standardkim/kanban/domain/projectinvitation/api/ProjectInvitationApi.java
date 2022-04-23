@@ -40,7 +40,7 @@ public class ProjectInvitationApi {
 
 	@GetMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	public List<InvitedUserDetail> getInvitations(@PathVariable Long projectId) {
 		List<ProjectInvitation> projectInvitations = projectInvitationFindService.findByProjectId(projectId);
 		List<InvitedUserDetail> invitedUserDetails = modelMapper.map(projectInvitations, new TypeToken<List<InvitedUserDetail>>(){}.getType());
@@ -49,7 +49,7 @@ public class ProjectInvitationApi {
 
 	@PostMapping("/projects/{projectId}/invitations")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	public InvitedUserDetail inviteProjectMember(@PathVariable Long projectId, 
 		@RequestBody @Valid InviteProjectMemeberParam param) {
 		SecurityUser securityUser = SecurityContextFacade.getSecurityUser();
@@ -60,7 +60,7 @@ public class ProjectInvitationApi {
 
 	@DeleteMapping("/projects/{projectId}/invitations/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	public void removeInvitation(@PathVariable Long projectId, @PathVariable Long userId) {
 		projectInvitationDeleteService.deleteByProjectIdAndInvitedUserId(projectId, userId);
 	}

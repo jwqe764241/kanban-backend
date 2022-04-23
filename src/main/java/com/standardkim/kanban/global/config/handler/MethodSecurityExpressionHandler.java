@@ -1,6 +1,7 @@
 package com.standardkim.kanban.global.config.handler;
 
 import com.standardkim.kanban.domain.projectmember.application.ProjectMemberFindService;
+import com.standardkim.kanban.domain.projectmember.application.ProjectRoleHierarchy;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -19,9 +20,12 @@ public class MethodSecurityExpressionHandler extends DefaultMethodSecurityExpres
 
 	private final ProjectMemberFindService projectMemberFindService;
 
+	private final ProjectRoleHierarchy projectRoleHierarchy;
+
 	@Override
 	protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
-		MethodSecurityExpressionRoot methodSecurityExpressionRoot = new MethodSecurityExpressionRoot(authentication, projectMemberFindService);
+		MethodSecurityExpressionRoot methodSecurityExpressionRoot = 
+			new MethodSecurityExpressionRoot(authentication, projectMemberFindService, projectRoleHierarchy);
 		methodSecurityExpressionRoot.setPermissionEvaluator(getPermissionEvaluator());
 		methodSecurityExpressionRoot.setTrustResolver(trustResolver);
 		methodSecurityExpressionRoot.setRoleHierarchy(getRoleHierarchy());

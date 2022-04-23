@@ -4,8 +4,9 @@ import com.standardkim.kanban.domain.project.application.ProjectFindService;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationDeleteService;
 import com.standardkim.kanban.domain.projectinvitation.application.ProjectInvitationFindService;
-import com.standardkim.kanban.domain.projectmember.dao.ProjectMemberRepository;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectRole;
+import com.standardkim.kanban.domain.projectmember.dto.ProjectRoleName;
 import com.standardkim.kanban.domain.projectmember.exception.InvitationNotFoundException;
 import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
@@ -25,8 +26,8 @@ public class ProjectMemberAcceptService {
 	private final ProjectFindService projectFindService;
 
 	private final UserFindService userFindService;
-
-	private final ProjectMemberRepository projectMemberRepository;
+	
+	private final ProjectRoleFindService projectRoleFindService;
 
 	@Transactional(rollbackFor = Exception.class)
 	public ProjectMember accept(Long projectId, Long userId) {
@@ -35,9 +36,9 @@ public class ProjectMemberAcceptService {
 		}
 		Project project = projectFindService.findById(projectId);
 		User user = userFindService.findById(userId);
-		ProjectMember projectMember = ProjectMember.of(project, user, false);
-		ProjectMember newProjectMember = projectMemberRepository.save(projectMember);
+		ProjectRole memberRole = projectRoleFindService.findByName(ProjectRoleName.MEMBER);
+		ProjectMember projectMember = project.addMember(user, memberRole);
 		projectInvitationDeleteService.deleteByProjectIdAndInvitedUserId(projectId, userId);
-		return newProjectMember;
+		return projectMember;
 	}
 }

@@ -49,7 +49,7 @@ public class TaskColumnApi {
 	private final ModelMapper modelMapper;
 
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}/columns")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskColumnDetail> getTaskColumns(@PathVariable Long projectId, @PathVariable Long sequenceId) {
 		List<TaskColumn> taskColumns = taskColumnFindService.findByProjectIdAndSequenceId(projectId, sequenceId);
@@ -58,7 +58,7 @@ public class TaskColumnApi {
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.CREATED)
 	public TaskColumnDetail createTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, 
 		@Valid @RequestBody CreateTaskColumnParam param) {
@@ -69,7 +69,7 @@ public class TaskColumnApi {
 	}
 
 	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public TaskColumnDetail updateTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId,
 		@Valid @RequestBody UpdateTaskColumnParam param) {
@@ -80,7 +80,7 @@ public class TaskColumnApi {
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/{columnId}")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public TaskColumnDetail deleteTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId, @PathVariable Long columnId) {
 		TaskColumn updatedTaskColumn = taskColumnDeleteService.delete(columnId);
@@ -93,7 +93,7 @@ public class TaskColumnApi {
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans/{sequenceId}/columns/reorder")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public List<TaskColumnDetail> reorderTaskColumn(@PathVariable Long projectId, @PathVariable Long sequenceId,
 		@Valid @RequestBody ReorderTaskColumnParam param) {

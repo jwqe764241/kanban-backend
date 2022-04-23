@@ -36,7 +36,7 @@ public class ProjectMemberApi {
 
 	@GetMapping("/projects/{projectId}/members")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	public List<ProjectMemberDetail> getProjectMember(@PathVariable Long projectId) {
 		List<ProjectMember> projectMembers = projectMemberFindService.findByProjectId(projectId);
 		List<ProjectMemberDetail> projectMemberDetails = modelMapper.map(projectMembers, new TypeToken<List<ProjectMemberDetail>>(){}.getType());
@@ -52,7 +52,7 @@ public class ProjectMemberApi {
 
 	@DeleteMapping("/projects/{projectId}/members/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	public void removeProjectMember(@PathVariable Long projectId, @PathVariable Long userId) {
 		projectMemberDeleteService.delete(projectId, userId);
 	}

@@ -16,12 +16,12 @@ import com.standardkim.kanban.domain.user.domain.User;
 import com.standardkim.kanban.domain.user.exception.UserNotFoundException;
 import com.standardkim.kanban.global.auth.dto.AuthorizationHeader;
 import com.standardkim.kanban.global.auth.dto.SecurityUser;
+import com.standardkim.kanban.global.config.property.ConfigProperties;
 import com.standardkim.kanban.global.error.ErrorCode;
 import com.standardkim.kanban.global.error.ErrorResponse;
 import com.standardkim.kanban.global.util.ErrorResponseJsonConverter;
 import com.standardkim.kanban.global.util.JwtTokenProvider;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,14 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final RefreshTokenFindService refreshTokenFindService;
 
-	@Value("${config.allowed-origins}")
-	String[] allowedOrigins;
+	private final ConfigProperties configProperties;
 
 	private String flattenAllowedOrigins;
 
 	@PostConstruct
 	public void init() {
-		flattenAllowedOrigins = String.join(",", allowedOrigins);
+		flattenAllowedOrigins = String.join(",", configProperties.getAllowedOrigins());
 	}
 
 	@Override

@@ -19,6 +19,7 @@ public class TaskToTaskDetailConverter extends ModelMapperConverter<Task, TaskDe
 					.prevId(task.getPrevId())
 					.taskColumnId(task.getTaskColumnId())
 					.text(task.getText())
+					.createdAt(task.getCreatedAt())
 					.build();
 				return taskDetail;
 			}

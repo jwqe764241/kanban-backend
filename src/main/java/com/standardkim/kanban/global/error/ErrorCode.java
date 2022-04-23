@@ -21,7 +21,7 @@ public enum ErrorCode {
 	INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT-003", "user not invited"),
 	USER_ALREADY_INVITED(HttpStatus.CONFLICT, "PROJECT-004", "user already invited"),
 	DUPLICATE_PROJECT_NAME(HttpStatus.CONFLICT, "PROJECT-006", "duplicate project name"),
-	CANNOT_DELETE_PROJECT_OWNER(HttpStatus.BAD_REQUEST, "PROJECT-005", "can't delete project owner"),
+	CANNOT_DELETE_ADMIN_MEMBER(HttpStatus.BAD_REQUEST, "PROJECT-005", "can't delete admin member"),
 	//TaskColumn
 	DUPLICATE_TASK_COLUMN_NAME(HttpStatus.CONFLICT, "TASKCOLUMN-001", "duplicate task column name"),
 	TASK_COLUMN_NOT_FOUND(HttpStatus.NOT_FOUND, "TASKCOLUMN-002", "task column not found"),

@@ -29,12 +29,6 @@ public class ProjectInviteService {
 	private final InviteProjectMailSendService inviteProjectMailSendService;
 
 	@Transactional(rollbackFor = Exception.class)
-	private ProjectInvitation create(ProjectMember projectMember, User inviteeUser) {
-		ProjectInvitation invitation = ProjectInvitation.of(projectMember, inviteeUser);
-		return projectInvitationRepository.save(invitation);
-	}
-
-	@Transactional(rollbackFor = Exception.class)
 	public ProjectInvitation invite(Long projectId, Long inviterUserId, Long inviteeUserId) {
 		User inviteeUser = userFindService.findById(inviteeUserId);
 		if(projectInvitationFindService.isExist(projectId, inviteeUser.getId())) {
@@ -42,7 +36,8 @@ public class ProjectInviteService {
 		}
 
 		ProjectMember projectMember = projectMemberFindService.findById(projectId, inviterUserId);
-		ProjectInvitation projectInvitation = create(projectMember, inviteeUser);
+		ProjectInvitation projectInvitation = ProjectInvitation.of(projectMember, inviteeUser);
+		projectInvitationRepository.save(projectInvitation);
 
 		//TODO: 시간이 오래 걸리므로 큐에 넣어서 작업하도록 수정해야 함
 		inviteProjectMailSendService.send(InviteProjectMailParam.of(projectMember, inviteeUser));

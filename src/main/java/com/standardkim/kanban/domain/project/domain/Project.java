@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.model.BaseTimeEntity;
 import com.standardkim.kanban.domain.projectmember.domain.ProjectMember;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectRole;
 import com.standardkim.kanban.domain.user.domain.User;
 
 import lombok.AccessLevel;
@@ -69,8 +70,9 @@ public class Project extends BaseTimeEntity {
 		this.description = description;
 	}
 
-	public void addMemberAsRegister(User user) {
-		ProjectMember member = ProjectMember.of(this, user, true);
+	public ProjectMember addMember(User user, ProjectRole projectRole) {
+		ProjectMember member = ProjectMember.of(this, user, projectRole);
 		members.add(member);
+		return member;
 	}
 }

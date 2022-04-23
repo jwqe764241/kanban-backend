@@ -12,7 +12,8 @@ import com.standardkim.kanban.domain.kanban.domain.Kanban;
 import com.standardkim.kanban.domain.kanban.domain.KanbanSequence;
 import com.standardkim.kanban.domain.kanban.dto.CreateKanbanParam;
 import com.standardkim.kanban.domain.kanban.dto.KanbanDetail;
-import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanParam;
+import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanDescriptionParam;
+import com.standardkim.kanban.domain.kanban.dto.UpdateKanbanNameParam;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -43,7 +44,7 @@ public class KanbanApi {
 	private final ModelMapper modelMapper;
 
 	@GetMapping("/projects/{projectId}/kanbans")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public List<KanbanDetail> getKanbans(@PathVariable Long projectId) {
 		List<KanbanSequence> kanbanSequences = kanbanSequenceFindService.findByProjectId(projectId);
@@ -52,7 +53,7 @@ public class KanbanApi {
 	}
 
 	@GetMapping("/projects/{projectId}/kanbans/{sequenceId}")
-	@PreAuthorize("isProjectMember(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MEMBER')")
 	@ResponseStatus(HttpStatus.OK)
 	public KanbanDetail getKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
 		KanbanSequence kanbanSequence = kanbanSequenceFindService.findByProjectIdAndSequenceId(projectId, sequenceId);
@@ -61,24 +62,34 @@ public class KanbanApi {
 	}
 
 	@PostMapping("/projects/{projectId}/kanbans")
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	@ResponseStatus(HttpStatus.CREATED)
-	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody @Valid CreateKanbanParam createKanbanParam) {
+	public KanbanDetail createKanban(@PathVariable Long projectId, @RequestBody 
+		@Valid CreateKanbanParam createKanbanParam) {
 		Kanban kanban = kanbanCreateService.create(projectId, createKanbanParam);
 		KanbanSequence kanbanSequence = kanbanSequenceFindService.findById(kanban.getId());
 		KanbanDetail kanbanDetail = modelMapper.map(kanbanSequence, KanbanDetail.class);
 		return kanbanDetail;
 	}
 
-	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}")
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/name")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	@ResponseStatus(HttpStatus.OK)
-	public void updateKanban(@PathVariable Long projectId, @PathVariable Long sequenceId, @RequestBody @Valid UpdateKanbanParam updateKanbanParam) {
-		kanbanUpdateService.update(projectId, sequenceId, updateKanbanParam);
+	public void updateKanbanName(@PathVariable Long projectId, @PathVariable Long sequenceId, 
+		@RequestBody @Valid UpdateKanbanNameParam updateKanbanNameParam) {
+		kanbanUpdateService.updateName(projectId, sequenceId, updateKanbanNameParam);
+	}
+
+	@PatchMapping("/projects/{projectId}/kanbans/{sequenceId}/description")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
+	@ResponseStatus(HttpStatus.OK)
+	public void updateKanbanDescription(@PathVariable Long projectId, @PathVariable Long sequenceId, 
+		@RequestBody @Valid UpdateKanbanDescriptionParam updateKanbanDescriptionParam) {
+		kanbanUpdateService.updateDescription(projectId, sequenceId, updateKanbanDescriptionParam);
 	}
 
 	@DeleteMapping("/projects/{projectId}/kanbans/{sequenceId}")
-	@PreAuthorize("isProjectOwner(#projectId)")
+	@PreAuthorize("hasProjectRole(#projectId, 'MANAGER')")
 	@ResponseStatus(HttpStatus.OK)
 	public void removeKanban(@PathVariable Long projectId, @PathVariable Long sequenceId) {
 		kanbanDeleteService.delete(projectId, sequenceId);

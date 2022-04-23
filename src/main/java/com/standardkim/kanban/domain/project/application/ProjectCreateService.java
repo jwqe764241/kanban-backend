@@ -4,6 +4,9 @@ import com.standardkim.kanban.domain.project.dao.ProjectRepository;
 import com.standardkim.kanban.domain.project.domain.Project;
 import com.standardkim.kanban.domain.project.dto.CreateProjectParam;
 import com.standardkim.kanban.domain.project.exception.DuplicateProjectNameException;
+import com.standardkim.kanban.domain.projectmember.application.ProjectRoleFindService;
+import com.standardkim.kanban.domain.projectmember.domain.ProjectRole;
+import com.standardkim.kanban.domain.projectmember.dto.ProjectRoleName;
 import com.standardkim.kanban.domain.user.application.UserFindService;
 import com.standardkim.kanban.domain.user.domain.User;
 
@@ -21,6 +24,8 @@ public class ProjectCreateService {
 
 	private final ProjectRepository projectRepository;
 
+	private final ProjectRoleFindService projectRoleFindService;
+
 	@Transactional(rollbackFor = Exception.class)
 	public Project create(Long userId, CreateProjectParam createProjectParam) {
 		if(projectFindService.isNameExist(createProjectParam.getName())) {
@@ -29,7 +34,8 @@ public class ProjectCreateService {
 		User user = userFindService.findById(userId);
 		Project project = Project.of(createProjectParam.getName(), createProjectParam.getDescription(), user);
 		Project newProject = projectRepository.save(project);
-		newProject.addMemberAsRegister(user);
+		ProjectRole adminRole = projectRoleFindService.findByName(ProjectRoleName.ADMIN);
+		newProject.addMember(user, adminRole);
 		return newProject;
 	}
 }

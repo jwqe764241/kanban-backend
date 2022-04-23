@@ -1,7 +1,5 @@
 package com.standardkim.kanban.domain.task.dto;
 
-import com.standardkim.kanban.global.dto.KanbanAction;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdateTaskAction extends KanbanAction {
+public class UpdateTaskAction extends TaskAction {
 	@Builder
 	public UpdateTaskAction(Object payload) {
-		super(ActionType.Update, Target.Task, payload);
+		super(ActionType.Update, payload);
 	}
 
 	public static UpdateTaskAction of(TaskDetail updatedTaskDetail) {
