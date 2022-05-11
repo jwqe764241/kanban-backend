@@ -23,6 +23,10 @@ public class SignOutService {
 	@Transactional(rollbackFor = Exception.class)
 	public void signOut(String refreshToken) {
 		String username = jwtTokenProvider.getUsername(refreshToken);
+		if(username == null) {
+			return;
+		}
+
 		try {
 			User user = userFindService.findByUsername(username);
 			refreshTokenDeleteService.delete(user.getId());
