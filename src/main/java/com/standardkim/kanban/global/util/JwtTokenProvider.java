@@ -70,6 +70,8 @@ public class JwtTokenProvider {
 				.get("username", String.class);
 		} catch (ExpiredJwtException e) {
 			username = e.getClaims().get("username", String.class);
+		} catch (Exception e) {
+			return null;
 		}
 
 		return username;
